@@ -12,7 +12,7 @@
 // =============================================================================
 
 #ifndef __FUNSAPE_AVR_GLOBAL_DEFINES_HPP
-#define __FUNSAPE_AVR_GLOBAL_DEFINES_HPP                220
+#define __FUNSAPE_AVR_GLOBAL_DEFINES_HPP        220
 
 // =============================================================================
 // Basic definitions
@@ -40,15 +40,15 @@
 #include <string.h>
 
 //     //////////////////     LIBRARY DEPENDENCIES     //////////////////     //
-#if __has_include("pinout.hpp")
-#   include "pinout.hpp"
-#   if !defined(__PINOUT_HPP)
-#       error "Header file (pinout.hpp) is corrupted!"
-#   elif __PINOUT_HPP != __FUNSAPE_AVR_GLOBAL_DEFINES_HPP
+#if __has_include("funsapeAvrPinout.hpp")
+#   include "funsapeAvrPinout.hpp"
+#   if !defined(__FUNSAPE_AVR_PINOUT_HPP)
+#       error "Header file (funsapeAvrPinout.hpp) is corrupted!"
+#   elif __FUNSAPE_AVR_PINOUT_HPP != __FUNSAPE_AVR_GLOBAL_DEFINES_HPP
 #       error "Version mismatch between header file and library dependency (funsapeAvrSevenSegments.hpp)!"
 #   endif
 #else
-#   error "Header file (pinout.hpp) is missing!"
+#   error "Header file (funsapeAvrPinout.hpp) is missing!"
 #endif
 
 // =============================================================================

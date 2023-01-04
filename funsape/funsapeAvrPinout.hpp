@@ -1,7 +1,7 @@
 // =============================================================================
 // Project:         FunSAPE AVR8 Integrated Library
-// File:            pinout.hpp
-// Module:          Microcontroller pinout
+// File:            funsapeAvrPinout.hpp
+// Module:          Microcontroller funsapeAvrPinout
 // Author:          Leandro Schwarz
 // Version:         22.0
 // Last edition:    2022-11-27
@@ -17,8 +17,8 @@
 // Include guard (START)
 // =============================================================================
 
-#ifndef __PINOUT_HPP
-#define __PINOUT_HPP                    220
+#ifndef __FUNSAPE_AVR_PINOUT_HPP
+#define __FUNSAPE_AVR_PINOUT_HPP                220
 
 // =============================================================================
 // Dependencies
@@ -114,7 +114,7 @@
 // Include guard (END)
 // =============================================================================
 
-#endif  // __PINOUT_HPP
+#endif  // __FUNSAPE_AVR_PINOUT_HPP
 
 // =============================================================================
 // END OF FILE

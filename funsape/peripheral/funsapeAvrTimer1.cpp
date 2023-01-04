@@ -184,12 +184,12 @@ bool_t Timer1::setInputCaptureMode(Edge edgeSelection_p, bool_t noiseCanceler_p)
     uint8_t auxTccr1B = TCCR1B;
 
     // Configure Input Capture
-    if (noiseCanceler_p) {
+    if(noiseCanceler_p) {
         setBit(auxTccr1B, ICNC1);
     } else {
         clrBit(auxTccr1B, ICNC1);
     }
-    if (edgeSelection_p == Edge::RISING) {
+    if(edgeSelection_p == Edge::RISING) {
         setBit(auxTccr1B, ICES1);
     } else {
         clrBit(auxTccr1B, ICES1);

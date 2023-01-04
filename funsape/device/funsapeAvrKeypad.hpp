@@ -125,7 +125,7 @@ private:
     ioRegAddress_t                      _columnsDdr;
     ioRegAddress_t                      _columnsPort;
     ioPinIndex_t                        _columnsFirst   : 3;
-    Type                                _type           : 2;
+    Type                                _type;
     uint8_t                             _columnsMax     : 3;
     uint8_t                             _linesMax       : 3;
     bool_t                              _isPortsSet     : 1;

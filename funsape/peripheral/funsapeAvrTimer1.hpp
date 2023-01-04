@@ -286,8 +286,8 @@ public:
     // Properties --------------------------------------------------------------
 private:
     bool_t          _isInitialized      : 1;
-    ClockSource     _clockSource        : 3;
-    Mode            _mode               : 4;
+    ClockSource     _clockSource;
+    Mode            _mode;
     Error           _lastError;
 }; // class Timer1
 

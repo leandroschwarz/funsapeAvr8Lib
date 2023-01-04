@@ -87,7 +87,7 @@ public:
     //!
     enum class Reference : uint8_t {
         EXTERNAL                        = 0,    //!< Adc full scale reference is the voltage at the AVREF pin.
-        POWER_SUPPLY                    = 1,    //!< Adc full scale reference is teh voltage of the analog power supply.
+        POWER_SUPPLY                    = 1,    //!< Adc full scale reference is the voltage of the analog power supply.
         // RESERVED                     = 2,
         INTERNAL                        = 3     //!< Adc full scale reference is the internal 1.1 V bandgap generator.
     };
@@ -240,10 +240,10 @@ private:
     bool_t          _isInitialized      : 1;
     bool_t          _isInterruptEnabled : 1;
     Error           _lastError;
-    Prescaler       _prescaler          : 3;
-    Reference       _reference          : 2;
-    Channel         _channel            : 4;
-    Mode            _mode               : 4;
+    Prescaler       _prescaler;
+    Reference       _reference;
+    Channel         _channel;
+    Mode            _mode;
     DataAdjust      _dataAdjust         : 1;
 }; // class Adc
 

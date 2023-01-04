@@ -95,11 +95,11 @@ public:
         DOUBLE                          = 1     //|< Two stop bits
     };
     enum class DataSize : uint8_t {
-        DATA_5_BITS                     0,
-        DATA_6_BITS                     1,
-        DATA_7_BITS                     2,
-        DATA_8_BITS                     3,
-        DATA_9_BITS                     7,
+        DATA_5_BITS                     = 0,
+        DATA_6_BITS                     = 1,
+        DATA_7_BITS                     = 2,
+        DATA_8_BITS                     = 3,
+        DATA_9_BITS                     = 7,
     };
 
     enum class FrameFormat {
@@ -188,7 +188,7 @@ public:
         clrMaskOffset(UCSR0C, 0x03, UCSZ00);
         setMaskOffset(UCSR0C, (0x03 & (uint8_t)dataSize_p), UCSZ00);
 
-        return true;
+        return;
     }
 
     //     ///////////////////////     STATUS    ////////////////////////     //

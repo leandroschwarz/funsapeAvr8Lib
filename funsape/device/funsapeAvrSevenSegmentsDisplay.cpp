@@ -65,48 +65,48 @@ uint8_t convertToSevenSegments(uint8_t numericValue_p, cbool_t point_p, SevenSeg
 {
     uint8_t auxData = 0;
 
-    switch (numericValue_p) { //                            PGFEDCBA
-    case (uint8_t)SevenSegmentsCode::LETTER_O:
-    case (uint8_t)SevenSegmentsCode::HEX_0:     auxData = 0b00111111;  break;
-    case (uint8_t)SevenSegmentsCode::HEX_1:     auxData = 0b00000110;  break;
-    case (uint8_t)SevenSegmentsCode::HEX_2:     auxData = 0b01011011;  break;
-    case (uint8_t)SevenSegmentsCode::HEX_3:     auxData = 0b01001111;  break;
-    case (uint8_t)SevenSegmentsCode::HEX_4:     auxData = 0b01100110;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_S:
-    case (uint8_t)SevenSegmentsCode::HEX_5:     auxData = 0b01101101;  break;
-    case (uint8_t)SevenSegmentsCode::HEX_6:     auxData = 0b01111101;  break;
-    case (uint8_t)SevenSegmentsCode::HEX_7:     auxData = 0b00000111;  break;
-    case (uint8_t)SevenSegmentsCode::HEX_8:     auxData = 0b01111111;  break;
-    case (uint8_t)SevenSegmentsCode::HEX_9:     auxData = 0b01101111;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_A:
-    case (uint8_t)SevenSegmentsCode::HEX_A:     auxData = 0b01110111;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_B:
-    case (uint8_t)SevenSegmentsCode::HEX_B:     auxData = 0b01111100;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_C:
-    case (uint8_t)SevenSegmentsCode::HEX_C:     auxData = 0b00111001;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_D:
-    case (uint8_t)SevenSegmentsCode::HEX_D:     auxData = 0b01011110;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_E:
-    case (uint8_t)SevenSegmentsCode::HEX_E:     auxData = 0b01111001;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_F:
-    case (uint8_t)SevenSegmentsCode::HEX_F:     auxData = 0b01110001;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_H:  auxData = 0b01110110;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_I:  auxData = 0b00000100;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_J:  auxData = 0b00011110;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_L:  auxData = 0b00111000;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_N:  auxData = 0b01010100;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_P:  auxData = 0b01110011;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_Q:  auxData = 0b01100111;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_R:  auxData = 0b01010000;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_T:  auxData = 0b01111000;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_U:  auxData = 0b00111110;  break;
-    case (uint8_t)SevenSegmentsCode::LETTER_Y:  auxData = 0b01101110;  break;
-    case (uint8_t)SevenSegmentsCode::DASH:      auxData = 0b01000000;  break;
-    case (uint8_t)SevenSegmentsCode::ON:        auxData = 0b11111111;  break;
-    case (uint8_t)SevenSegmentsCode::OFF:       auxData = 0b00000000;  break;
+    switch(numericValue_p) {  //                          0bPGFEDCBA
+    case(uint8_t)SevenSegmentsCode::LETTER_O:
+    case(uint8_t)SevenSegmentsCode::HEX_0:     auxData = 0b00111111;  break;
+    case(uint8_t)SevenSegmentsCode::HEX_1:     auxData = 0b00000110;  break;
+    case(uint8_t)SevenSegmentsCode::HEX_2:     auxData = 0b01011011;  break;
+    case(uint8_t)SevenSegmentsCode::HEX_3:     auxData = 0b01001111;  break;
+    case(uint8_t)SevenSegmentsCode::HEX_4:     auxData = 0b01100110;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_S:
+    case(uint8_t)SevenSegmentsCode::HEX_5:     auxData = 0b01101101;  break;
+    case(uint8_t)SevenSegmentsCode::HEX_6:     auxData = 0b01111101;  break;
+    case(uint8_t)SevenSegmentsCode::HEX_7:     auxData = 0b00000111;  break;
+    case(uint8_t)SevenSegmentsCode::HEX_8:     auxData = 0b01111111;  break;
+    case(uint8_t)SevenSegmentsCode::HEX_9:     auxData = 0b01101111;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_A:
+    case(uint8_t)SevenSegmentsCode::HEX_A:     auxData = 0b01110111;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_B:
+    case(uint8_t)SevenSegmentsCode::HEX_B:     auxData = 0b01111100;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_C:
+    case(uint8_t)SevenSegmentsCode::HEX_C:     auxData = 0b00111001;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_D:
+    case(uint8_t)SevenSegmentsCode::HEX_D:     auxData = 0b01011110;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_E:
+    case(uint8_t)SevenSegmentsCode::HEX_E:     auxData = 0b01111001;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_F:
+    case(uint8_t)SevenSegmentsCode::HEX_F:     auxData = 0b01110001;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_H:  auxData = 0b01110110;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_I:  auxData = 0b00000100;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_J:  auxData = 0b00011110;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_L:  auxData = 0b00111000;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_N:  auxData = 0b01010100;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_P:  auxData = 0b01110011;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_Q:  auxData = 0b01100111;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_R:  auxData = 0b01010000;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_T:  auxData = 0b01111000;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_U:  auxData = 0b00111110;  break;
+    case(uint8_t)SevenSegmentsCode::LETTER_Y:  auxData = 0b01101110;  break;
+    case(uint8_t)SevenSegmentsCode::DASH:      auxData = 0b01000000;  break;
+    case(uint8_t)SevenSegmentsCode::ON:        auxData = 0b11111111;  break;
+    case(uint8_t)SevenSegmentsCode::OFF:       auxData = 0b00000000;  break;
     default:                                    auxData = 0b00000000;  break;
     }
-    if (point_p) {
+    if(point_p) {
         setBit(auxData, 7);
     }
     auxData = (displayType_p == SevenSegmentsDisplayType::COMMON_CATHODE) ? auxData : (~auxData);
