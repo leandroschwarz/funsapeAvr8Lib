@@ -1,41 +1,41 @@
 //!
-//! \file           funsapeAvrTimer2.hpp
+//! \file           timer2.cpp
 //! \brief          TIMER2 peripheral control for the FunSAPE AVR8 Library
-//! \details        TODO
-//! \author         Leandro Schwarz
-//! \version        22.0
-//! \date           2022-12-02
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        TIMER2 peripheral control for the FunSAPE AVR8 Library
+//! \todo           Todo list
 //!
 
 // =============================================================================
 // System file dependencies
 // =============================================================================
 
-#if __has_include("funsapeAvrTimer2.hpp")
-#   include "funsapeAvrTimer2.hpp"
-#   if !defined(__FUNSAPE_AVR_TIMER2_HPP)
-#       error "Header file is corrupted!"
-#   elif __FUNSAPE_AVR_TIMER2_HPP != 220
-#       error "Version mismatch between source and header files!"
-#   endif
-#else
-#   error "Header file is missing!"
+#include "timer2.hpp"
+#if !defined(__TIMER2_HPP)
+#    error "Header file is corrupted!"
+#elif __TIMER2_HPP != 2304
+#    error "Version mismatch between source and header files!"
 #endif
 
 // =============================================================================
 // File exclusive - Constants
 // =============================================================================
 
-cuint8_t constOutputModeAOffset         = COM2A0;
-cuint8_t constOutputModeAMask           = 0x03;
-cuint8_t constOutputModeBOffset         = COM2B0;
-cuint8_t constOutputModeBMask           = 0x03;
-cuint8_t constModeOffsetPart1           = WGM20;
-cuint8_t constModeMaskPart1             = 0x03;
-cuint8_t constModeOffsetPart2           = WGM22;
-cuint8_t constModeMaskPart2             = 0x01;
-cuint8_t constClockSourceOffset         = CS20;
-cuint8_t constClockSourceMask           = 0x07;
+#define DEBUG_TIMER2                    0x1FFF
+
+cuint8_t constOutputModeAOffset         = COM2A0;   //!< Output A bit position offset
+cuint8_t constOutputModeAMask           = 0x03;     //!< Output A bit mask
+cuint8_t constOutputModeBOffset         = COM2B0;   //!< Output B bit position offset
+cuint8_t constOutputModeBMask           = 0x03;     //!< Output B bit mask
+cuint8_t constModeOffsetPart1           = WGM20;    //!< Operation mode part 1 bit position offset
+cuint8_t constModeMaskPart1             = 0x03;     //!< Operation mode part 1 bit mask
+cuint8_t constModeOffsetPart2           = WGM22;    //!< Operation mode part 2 bit position offset
+cuint8_t constModeMaskPart2             = 0x01;     //!< Operation mode part 2 bit mask
+cuint8_t constClockSourceOffset         = CS20;     //!< Clock source bit position offset
+cuint8_t constClockSourceMask           = 0x07;     //!< Clock source bit mask
 
 // =============================================================================
 // File exclusive - New data types
@@ -61,6 +61,9 @@ Timer2 timer2;
 
 Timer2::Timer2()
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer2::Timer2(void)", DEBUG_TIMER2);
+
     // Reset data members
     this->_clockSource                  = ClockSource::DISABLED;
     this->_mode                         = Mode::NORMAL;
@@ -68,12 +71,14 @@ Timer2::Timer2()
 
     // Returns successfully
     this->_lastError                    = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER2);
     return;
 }
 
 Timer2::~Timer2()
 {
     // Returns successfully
+    debugMessage(Error::NONE, DEBUG_TIMER2);
     return;
 }
 
@@ -84,6 +89,9 @@ Timer2::~Timer2()
 //     ///////////////////     CONFIGURATION     ////////////////////     //
 bool_t Timer2::init(Mode mode_p, ClockSource clockSource_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer2::init(Mode, ClockSource)", DEBUG_TIMER2);
+
     // Local variables
     uint8_t auxTccr2A = TCCR2A;
     uint8_t auxTccr2B = TCCR2B;
@@ -110,11 +118,15 @@ bool_t Timer2::init(Mode mode_p, ClockSource clockSource_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER2);
     return true;
 }
 
 bool_t Timer2::setMode(Mode mode_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer2::setMode(Mode)", DEBUG_TIMER2);
+
     // Local variables
     uint8_t auxTccr2A = TCCR2A;
     uint8_t auxTccr2B = TCCR2B;
@@ -136,11 +148,15 @@ bool_t Timer2::setMode(Mode mode_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER2);
     return true;
 }
 
 bool_t Timer2::setClockSource(ClockSource clockSource_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer2::setClockSource(ClockSource)", DEBUG_TIMER2);
+
     // Local variables
     uint8_t auxTccr2B = TCCR2B;
 
@@ -156,11 +172,15 @@ bool_t Timer2::setClockSource(ClockSource clockSource_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER2);
     return true;
 }
 
 bool_t Timer2::setOutputMode(OutputMode compA_p, OutputMode compB_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer2::setOutputMode(OutputMode, OutputMode)", DEBUG_TIMER2);
+
     // Local variables
     uint8_t auxTccr2A = TCCR2A;
 
@@ -175,6 +195,7 @@ bool_t Timer2::setOutputMode(OutputMode compA_p, OutputMode compB_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER2);
     return true;
 }
 
@@ -226,16 +247,28 @@ weakened void timer2OverflowCallback(void)
 // Interrupt handlers
 // =============================================================================
 
+//!
+//! \brief          TIMER2 Compare A Match interrupt service routine
+//! \details        TIMER2 Compare A Match interrupt service routine.
+//!
 ISR(TIMER2_COMPA_vect)
 {
     timer2CompareACallback();
 }
 
+//!
+//! \brief          TIMER2 Compare B Match interrupt service routine
+//! \details        TIMER2 Compare B Match interrupt service routine.
+//!
 ISR(TIMER2_COMPB_vect)
 {
     timer2CompareBCallback();
 }
 
+//!
+//! \brief          TIMER2 Overflow interrupt service routine
+//! \details        TIMER2 Overflow interrupt service routine.
+//!
 ISR(TIMER2_OVF_vect)
 {
     timer2OverflowCallback();

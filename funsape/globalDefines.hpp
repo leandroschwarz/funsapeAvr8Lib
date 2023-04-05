@@ -1,18 +1,20 @@
-/* =============================================================================
- * Project:         FunSAPE AVR8 Integrated Library
- * File:            funsapeAvrGlobalDefines.hpp
- * Module:          Global definitions file
- * Author:          Leandro Schwarz
- * Version:         22.0
- * Last edition:    2022-11-27
- * ========================================================================== */
+//!
+//! \file           globalDefines.hpp
+//! \brief          Global definitions file
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        Global definitions file.
+//! \todo           Todo list
+//!
 
 // =============================================================================
 // Include guard (START)
 // =============================================================================
 
-#ifndef __FUNSAPE_AVR_GLOBAL_DEFINES_HPP
-#define __FUNSAPE_AVR_GLOBAL_DEFINES_HPP        220
+#ifndef __GLOBAL_DEFINES_HPP
+#define __GLOBAL_DEFINES_HPP                    2304
 
 // =============================================================================
 // Basic definitions
@@ -40,15 +42,11 @@
 #include <string.h>
 
 //     //////////////////     LIBRARY DEPENDENCIES     //////////////////     //
-#if __has_include("funsapeAvrPinout.hpp")
-#   include "funsapeAvrPinout.hpp"
-#   if !defined(__FUNSAPE_AVR_PINOUT_HPP)
-#       error "Header file (funsapeAvrPinout.hpp) is corrupted!"
-#   elif __FUNSAPE_AVR_PINOUT_HPP != __FUNSAPE_AVR_GLOBAL_DEFINES_HPP
-#       error "Version mismatch between header file and library dependency (funsapeAvrSevenSegments.hpp)!"
-#   endif
-#else
-#   error "Header file (funsapeAvrPinout.hpp) is missing!"
+#include "pinout.hpp"
+#if !defined(__PINOUT_HPP)
+#   error "Header file (pinout.hpp) is corrupted!"
+#elif __PINOUT_HPP != __GLOBAL_DEFINES_HPP
+#   error "Version mismatch between header file and library dependency (pinout.hpp)!"
 #endif
 
 // =============================================================================
@@ -548,11 +546,11 @@ enum class Error : cuint16_t {
 // =============================================================================
 
 //     //////////////////////     DATA VALIDITY    //////////////////////     //
-#define isGpioAddressValid(gpioPort)       (    \
+#define isGpioAddressValid(gpioPort)    (       \
         (IS_GPIO_ALL_INSTANCE(gpioPort))        \
         ? (bool_t)true                          \
         : (bool_t)false)
-#define isGpioPinIndexValid(gpioPin)         (  \
+#define isGpioPinIndexValid(gpioPin)    (       \
         (IS_GPIO_ALL_PIN_NUMBER(gpioPin))       \
         ? (bool_t)true                          \
         : (bool_t)false)
@@ -684,7 +682,7 @@ enum class Error : cuint16_t {
         ? (min)                                 \
         : (((var) > (max))                      \
                 ? (max)                         \
-                : (var) \
+                : (var)                         \
         ))
 
 //     //////////////////////     STRINGIFYING    ///////////////////////     //
@@ -702,97 +700,97 @@ enum class Error : cuint16_t {
 // =============================================================================
 
 //     ///////////////////     CHARACTER HANDLING    ////////////////////     //
-inlined char_t toLowerCase(cchar_t character_p);
-inlined char_t toUpperCase(cchar_t character_p);
+char_t inlined toLowerCase(cchar_t character_p);
+char_t inlined toUpperCase(cchar_t character_p);
 
 //     /////////////////////     DATA VALIDITY     //////////////////////     //
-inlined bool_t isAsciiLowerCaseLetter(cchar_t character_p);
-inlined bool_t isAsciiUpperCaseLetter(cchar_t character_p);
-inlined bool_t isAsciiCommand(cchar_t character_p);
-inlined bool_t isAsciiLetter(cchar_t character_p);
-inlined bool_t isAsciiNumber(cchar_t character_p);
-inlined bool_t isAsciiSymbol(cchar_t character_p);
+bool_t inlined isAsciiLowerCaseLetter(cchar_t character_p);
+bool_t inlined isAsciiUpperCaseLetter(cchar_t character_p);
+bool_t inlined isAsciiCommand(cchar_t character_p);
+bool_t inlined isAsciiLetter(cchar_t character_p);
+bool_t inlined isAsciiNumber(cchar_t character_p);
+bool_t inlined isAsciiSymbol(cchar_t character_p);
 
 //     /////////////////////     SYSTEM ACTIONS    //////////////////////     //
-inlined void die(Error errorCode_p);
-inlined void doNop(void);
-inlined void doNothing(void);
-inlined void systemHalt(void (*function_p)(void) = nullptr);
+void inlined die(Error errorCode_p);
+void inlined doNop(void);
+void inlined doNothing(void);
+void inlined systemHalt(void (*function_p)(void) = nullptr);
 
 // =============================================================================
 // Inline functions definitions
 // =============================================================================
 
 //     ///////////////////     CHARACTER HANDLING    ////////////////////     //
-inlined char_t toLowerCase(cchar_t character_p)
+char_t inlined toLowerCase(cchar_t character_p)
 {
     return ((isAsciiUpperCaseLetter(character_p)) ? (character_p + 0x20) : character_p);
 }
 
-inlined char_t toUpperCase(cchar_t character_p)
+char_t inlined toUpperCase(cchar_t character_p)
 {
     return ((isAsciiLowerCaseLetter(character_p)) ? (character_p - 0x20) : character_p);
 }
 
 //     /////////////////////     DATA VALIDITY     //////////////////////     //
-inlined bool_t isAsciiLowerCaseLetter(const char character_p)
+bool_t inlined isAsciiLowerCaseLetter(cchar_t character_p)
 {
     return ((bool_t)(((character_p >= 'a') && (character_p <= 'z')) ? true : false));
 }
 
-inlined bool_t isAsciiUpperCaseLetter(const char character_p)
+bool_t inlined isAsciiUpperCaseLetter(cchar_t character_p)
 {
     return ((bool_t)(((character_p >= 'A') && (character_p <= 'Z')) ? true : false));
 }
 
-inlined bool_t isAsciiCommand(const char character_p)
+bool_t inlined isAsciiCommand(cchar_t character_p)
 {
     return ((bool_t)((character_p < ' ') ? true : false));
 }
 
-inlined bool_t isAsciiLetter(const char character_p)
+bool_t inlined isAsciiLetter(cchar_t character_p)
 {
     return ((bool_t)((isAsciiLowerCaseLetter(character_p) || (isAsciiUpperCaseLetter(character_p)) ? true : false)));
 }
 
-inlined bool_t isAsciiNumber(const char character_p)
+bool_t inlined isAsciiNumber(cchar_t character_p)
 {
     return ((bool_t)(((character_p >= '0') && (character_p <= '9')) ? true : false));
 }
 
-inlined bool_t isAsciiSymbol(const char character_p)
+bool_t inlined isAsciiSymbol(cchar_t character_p)
 {
     return ((bool_t)(((!isAsciiNumber(character_p)) && (!isAsciiCommand(character_p)) &&
                                     (!isAsciiLetter(character_p))) ? true : false));
 }
 
 //     /////////////////////     SYSTEM ACTIONS    //////////////////////     //
-inlined void die(Error errorCode_p)
+void inlined die(Error errorCode_p)
 {
-    printf("Failed with error=%u.\r", (cuint16_t)errorCode_p);
+    printf("Failed with error=%u (0x%04x).\r", (cuint16_t)errorCode_p, (cuint16_t)errorCode_p);
     systemHalt();
 
     return;
 }
 
-inlined void doNop(void)
+void inlined doNop(void)
 {
     asm volatile("nop");
 
     return;
 }
 
-inlined void doNothing(void)
+void inlined doNothing(void)
 {
     return;
 }
 
-inlined void systemHalt(void (*function_p)(void))
+void inlined systemHalt(void (*function_p)(void))
 {
-    if (isPointerValid(function_p)) {
+    if(isPointerValid(function_p)) {
         function_p();
     }
-    while (1) {
+    while(1) {
         doNothing();
     }
 
@@ -803,18 +801,7 @@ inlined void systemHalt(void (*function_p)(void))
 // Public functions weakly defined
 // =============================================================================
 
-// weakened void delayMs(cuint16_t time_p)
-// {
-//     _delay_ms(time_p);
-//     return;
-// }
 #define delayMs(time_p)                 _delay_ms(time_p)
-
-// weakened void delayUs(cuint16_t time_p)
-// {
-//     _delay_us(time_p);
-//     return;
-// }
 #define delayUs(time_p)                 _delay_us(time_p)
 
 weakened uint32_t getTick(void)
@@ -824,18 +811,16 @@ weakened uint32_t getTick(void)
 }
 
 // =============================================================================
-// Includes Low Level Abstration Layer
+// Includes Low Level Abstraction Layer
 // =============================================================================
 
 #define dumpBool(auxBool)       (char_t *)((auxBool) ? "true" : "false")
-#define debugMessage(errorCode, module)         {}
-#define debugMark(string, module)               {}
 
 // =============================================================================
 // Include guard (END)
 // =============================================================================
 
-#endif  // __FUNSAPE_AVR_GLOBAL_DEFINES_HPP
+#endif  // __GLOBAL_DEFINES_HPP
 
 // =============================================================================
 // END OF FILE

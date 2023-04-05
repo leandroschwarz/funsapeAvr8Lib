@@ -1,41 +1,41 @@
 //!
-//! \file           funsapeAvrTimer1.cpp
+//! \file           timer1.cpp
 //! \brief          TIMER1 peripheral control for the FunSAPE AVR8 Library
-//! \details        TODO
-//! \author         Leandro Schwarz
-//! \version        22.0
-//! \date           2022-12-02
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        TIMER1 peripheral control for the FunSAPE AVR8 Library
+//! \todo           Todo list
 //!
 
 // =============================================================================
 // System file dependencies
 // =============================================================================
 
-#if __has_include("funsapeAvrTimer1.hpp")
-#   include "funsapeAvrTimer1.hpp"
-#   if !defined(__FUNSAPE_AVR_TIMER1_HPP)
-#       error "Header file is corrupted!"
-#   elif __FUNSAPE_AVR_TIMER1_HPP != 220
-#       error "Version mismatch between source and header files!"
-#   endif
-#else
-#   error "Header file is missing!"
+#include "timer1.hpp"
+#if !defined(__TIMER1_HPP)
+#    error "Header file is corrupted!"
+#elif __TIMER1_HPP != 2304
+#    error "Version mismatch between source and header files!"
 #endif
 
 // =============================================================================
 // File exclusive - Constants
 // =============================================================================
 
-cuint8_t constOutputModeAOffset         = COM1A0;
-cuint8_t constOutputModeAMask           = 0x03;
-cuint8_t constOutputModeBOffset         = COM1B0;
-cuint8_t constOutputModeBMask           = 0x03;
-cuint8_t constModeOffsetPart1           = WGM10;
-cuint8_t constModeMaskPart1             = 0x03;
-cuint8_t constModeOffsetPart2           = WGM12;
-cuint8_t constModeMaskPart2             = 0x03;
-cuint8_t constClockSourceOffset         = CS10;
-cuint8_t constClockSourceMask           = 0x07;
+#define DEBUG_TIMER1                    0x3FFF
+
+cuint8_t constOutputModeAOffset         = COM1A0;       //!< Output A bit position offset
+cuint8_t constOutputModeAMask           = 0x03;         //!< Output A bit mask
+cuint8_t constOutputModeBOffset         = COM1B0;       //!< Output B bit position offset
+cuint8_t constOutputModeBMask           = 0x03;         //!< Output B bit mask
+cuint8_t constModeOffsetPart1           = WGM10;        //!< Operation mode part 1 bit position offset
+cuint8_t constModeMaskPart1             = 0x03;         //!< Operation mode part 1 bit mask
+cuint8_t constModeOffsetPart2           = WGM12;        //!< Operation mode part 2 bit position offset
+cuint8_t constModeMaskPart2             = 0x03;         //!< Operation mode part 2 bit mask
+cuint8_t constClockSourceOffset         = CS10;         //!< Clock source bit position offset
+cuint8_t constClockSourceMask           = 0x07;         //!< Clock source bit mask
 
 // =============================================================================
 // File exclusive - New data types
@@ -61,6 +61,9 @@ Timer1 timer1;
 
 Timer1::Timer1()
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer1::Timer1(void)", DEBUG_TIMER1);
+
     // Reset data members
     this->_clockSource                  = ClockSource::DISABLED;
     this->_mode                         = Mode::NORMAL;
@@ -68,12 +71,14 @@ Timer1::Timer1()
 
     // Returns successfully
     this->_lastError                    = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER1);
     return;
 }
 
 Timer1::~Timer1()
 {
     // Returns successfully
+    debugMessage(Error::NONE, DEBUG_TIMER1);
     return;
 }
 
@@ -82,8 +87,11 @@ Timer1::~Timer1()
 // =============================================================================
 
 //     ///////////////////     CONFIGURATION     ////////////////////     //
-bool_t Timer1::init(Mode mode_p, ClockSource clockSource_p)
+bool_t Timer1::init(const Mode mode_p, const ClockSource clockSource_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer1::init(const Mode, const ClockSource)", DEBUG_TIMER1);
+
     // Local variables
     uint8_t auxTccr1A = TCCR1A;
     uint8_t auxTccr1B = TCCR1B;
@@ -110,11 +118,15 @@ bool_t Timer1::init(Mode mode_p, ClockSource clockSource_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER1);
     return true;
 }
 
-bool_t Timer1::setMode(Mode mode_p)
+bool_t Timer1::setMode(const Mode mode_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer1::setMode(const Mode)", DEBUG_TIMER1);
+
     // Local variables
     uint8_t auxTccr1A = TCCR1A;
     uint8_t auxTccr1B = TCCR1B;
@@ -136,11 +148,15 @@ bool_t Timer1::setMode(Mode mode_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER1);
     return true;
 }
 
-bool_t Timer1::setClockSource(ClockSource clockSource_p)
+bool_t Timer1::setClockSource(const ClockSource clockSource_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer1::setClockSource(const ClockSource)", DEBUG_TIMER1);
+
     // Local variables
     uint8_t auxTccr1B = TCCR1B;
 
@@ -156,11 +172,15 @@ bool_t Timer1::setClockSource(ClockSource clockSource_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER1);
     return true;
 }
 
-bool_t Timer1::setOutputMode(OutputMode compA_p, OutputMode compB_p)
+bool_t Timer1::setOutputMode(const OutputMode compA_p, const OutputMode compB_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer1::setOutputMode(const OutputMode, const OutputMode)", DEBUG_TIMER1);
+
     // Local variables
     uint8_t auxTccr1A = TCCR1A;
 
@@ -175,11 +195,15 @@ bool_t Timer1::setOutputMode(OutputMode compA_p, OutputMode compB_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER1);
     return true;
 }
 
-bool_t Timer1::setInputCaptureMode(Edge edgeSelection_p, bool_t noiseCanceler_p)
+bool_t Timer1::setInputCaptureMode(const Edge edgeSelection_p, cbool_t noiseCanceler_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer1::setInputCaptureMode(const Edge, cbool_t)", DEBUG_TIMER1);
+
     // Local variables
     uint8_t auxTccr1B = TCCR1B;
 
@@ -200,6 +224,7 @@ bool_t Timer1::setInputCaptureMode(Edge edgeSelection_p, bool_t noiseCanceler_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER1);
     return true;
 }
 
@@ -256,21 +281,37 @@ weakened void timer1OverflowCallback(void)
 // Interrupt handlers
 // =============================================================================
 
+//!
+//! \brief          TIMER1 Compare B Match interrupt service routine
+//! \details        TIMER1 Compare B Match interrupt service routine.
+//!
 ISR(TIMER1_COMPA_vect)
 {
     timer1CompareACallback();
 }
 
+//!
+//! \brief          TIMER1 Compare B Match interrupt service routine
+//! \details        TIMER1 Compare B Match interrupt service routine.
+//!
 ISR(TIMER1_COMPB_vect)
 {
     timer1CompareBCallback();
 }
 
+//!
+//! \brief          TIMER1 Input Capture interrupt service routine
+//! \details        TIMER1 Input Capture interrupt service routine.
+//!
 ISR(TIMER1_CAPT_vect)
 {
     timer1InputCaptureCallback();
 }
 
+//!
+//! \brief          TIMER1 Overflow interrupt service routine
+//! \details        TIMER1 Overflow interrupt service routine.
+//!
 ISR(TIMER1_OVF_vect)
 {
     timer1OverflowCallback();

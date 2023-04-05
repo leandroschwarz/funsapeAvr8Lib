@@ -1,30 +1,27 @@
-/* =============================================================================
- * Project:         FunSAPE AVR8 Integrated Library
- * File:            funsapeAvrSevenSegmentsMuxDisplay.cpp
- * Module:          Seven segments multiplexed display controller
- * Author:          Leandro Schwarz
- * Version:         22.0
- * Last edition:    2022-11-28
- * Purpose:         Seven segments multiplexed display controller with support
- *                      to variable number of digits (2 to 8). The library
- *                      supports both common anode and common cathode displays,
- *                      decimal point, and the special characters defined in
- *                      funsapeAvrSevenSegments.hpp.
- * ========================================================================== */
+//!
+//! \file           sevenSegmentsMuxDisplay.cpp
+//! \brief          Seven segments multiplexed display controller
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        Seven segments multiplexed display controller with support
+//!                     to variable number of digits (2 to 8). The library
+//!                     supports both common anode and common cathode displays,
+//!                     decimal point, and the special characters defined in
+//!                     sevenSegmentsDisplay.hpp.
+//! \todo           Todo list
+//!
 
 // =============================================================================
 // System file dependencies
 // =============================================================================
 
-#if __has_include("funsapeAvrSevenSegmentsMuxDisplay.hpp")
-#   include "funsapeAvrSevenSegmentsMuxDisplay.hpp"
-#   if !defined(__FUNSAPE_AVR_SEVEN_SEGMENTS_MUX_DISPLAY_HPP)
-#       error "Header file is corrupted!"
-#   elif __FUNSAPE_AVR_SEVEN_SEGMENTS_MUX_DISPLAY_HPP != 220
-#       error "Version mismatch between source and header files!"
-#   endif
-#else
-#   error "Header file is missing!"
+#include "sevenSegmentsMuxDisplay.hpp"
+#if !defined(__SEVEN_SEGMENTS_MUX_DISPLAY_HPP)
+#   error "Header file is corrupted!"
+#elif __SEVEN_SEGMENTS_MUX_DISPLAY_HPP != 2304
+#   error "Version mismatch between source and header files!"
 #endif
 
 // =============================================================================
@@ -71,7 +68,7 @@ SevenSegmentsMuxDisplay::SevenSegmentsMuxDisplay(void)
     this->_controlFirst                 = 0;
     this->_digitMax                     = 0;
     this->_digitIndex                   = 0;
-    for (uint8_t i = 0; i < 8; i++) {
+    for(uint8_t i = 0; i < 8; i++) {
         this->_digitValue[i]            = (uint8_t)SevenSegmentsCode::OFF;
         this->_digitPoint[i]            = false;
     }
@@ -100,10 +97,11 @@ SevenSegmentsMuxDisplay::~SevenSegmentsMuxDisplay(void)
 // Class public methods
 // =============================================================================
 
-bool_t SevenSegmentsMuxDisplay::init(uint8_t numberOfDigits_p, SevenSegmentsDisplayType displayType_p)
+bool_t SevenSegmentsMuxDisplay::init(Digits numberOfDigits_p, SevenSegmentsDisplayType displayType_p)
 {
     // Mark passage for debugging purpose
-    debugMark("SevenSegmentsMuxDisplay::init(uint8_t, SevenSegmentsDisplayType)", DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
+    debugMark("SevenSegmentsMuxDisplay::init(SevenSegmentsMuxDisplay::Digits, SevenSegmentsDisplayType)",
+            DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
 
     // Local variables
     uint8_t auxMask = 0;
@@ -115,19 +113,19 @@ bool_t SevenSegmentsMuxDisplay::init(uint8_t numberOfDigits_p, SevenSegmentsDisp
     this->_isInitialized        = false;
 
     // Check for errors
-    if (!this->_isPortsSet) {
+    if(!this->_isPortsSet) {
         // Returns error
         this->_lastError = Error::GPIO_PORT_NOT_SET;
         debugMessage(Error::GPIO_PORT_NOT_SET, DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
         return false;
     }
-    if ((numberOfDigits_p < 2) || (numberOfDigits_p > 8)) {
+    if(((uint8_t)numberOfDigits_p < 2) || ((uint8_t)numberOfDigits_p > 8)) {
         // Returns error
         this->_lastError = Error::ARGUMENT_VALUE_INVALID;
         debugMessage(Error::ARGUMENT_VALUE_INVALID, DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
         return false;
     }
-    if (!isGpioPinIndexValid(numberOfDigits_p + this->_controlFirst - 1)) {
+    if(!isGpioPinIndexValid((uint8_t)numberOfDigits_p + this->_controlFirst - 1)) {
         // Returns error
         this->_lastError = Error::GPIO_PIN_INDEX_OUT_OF_BOUNDARIES;
         debugMessage(Error::GPIO_PIN_INDEX_OUT_OF_BOUNDARIES, DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
@@ -135,13 +133,13 @@ bool_t SevenSegmentsMuxDisplay::init(uint8_t numberOfDigits_p, SevenSegmentsDisp
     }
 
     // Evaluates control mask
-    auxMask = constSevenSegmentMuxDisplayMask[numberOfDigits_p - 1];
+    auxMask = constSevenSegmentMuxDisplayMask[(uint8_t)numberOfDigits_p - 1];
 
     // I/O initialization
     *(this->_dataDdr) = 0xFF;
     setMaskOffset(*(this->_controlDdr), auxMask, this->_controlFirst);
     *(this->_dataPort) = (displayType_p == SevenSegmentsDisplayType::COMMON_ANODE) ? 0xFF : 0x00;
-    if (this->_controlActiveLevel == LogicLevel::HIGH) {
+    if(this->_controlActiveLevel == LogicLevel::HIGH) {
         clrMaskOffset(*(this->_controlPort), auxMask, this->_controlFirst);
     } else {
         setMaskOffset(*(this->_controlPort), auxMask, this->_controlFirst);
@@ -149,7 +147,7 @@ bool_t SevenSegmentsMuxDisplay::init(uint8_t numberOfDigits_p, SevenSegmentsDisp
 
     // Updates data members
     this->_displayType          = displayType_p;
-    this->_digitMax             = numberOfDigits_p - 1;
+    this->_digitMax             = (uint8_t)numberOfDigits_p - 1;
     this->_controlMask          = auxMask;
     this->_isInitialized        = true;
 
@@ -176,19 +174,19 @@ bool_t SevenSegmentsMuxDisplay::setPorts(ioRegAddress_t dataRegAddress_p, ioRegA
     this->_digitIndex       = 0;
 
     // Check for errors
-    if (!isGpioAddressValid(dataRegAddress_p)) {
+    if(!isGpioAddressValid(dataRegAddress_p)) {
         // Returns error
         debugMessage(Error::GPIO_DATA_PORT_INVALID, DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
         this->_lastError = Error::GPIO_DATA_PORT_INVALID;
         return false;
     }
-    if (!isGpioAddressValid(controlRegAddress_p)) {
+    if(!isGpioAddressValid(controlRegAddress_p)) {
         // Returns error
         debugMessage(Error::GPIO_CONTROL_PORT_INVALID, DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
         this->_lastError = Error::GPIO_CONTROL_PORT_INVALID;
         return false;
     }
-    if (!isGpioPinIndexValid(controlFirstPin_p)) {
+    if(!isGpioPinIndexValid(controlFirstPin_p)) {
         // Returns error
         debugMessage(Error::GPIO_PIN_INDEX_INVALID, DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
         this->_lastError = Error::GPIO_PIN_INDEX_INVALID;
@@ -216,7 +214,7 @@ bool_t SevenSegmentsMuxDisplay::showNextDigit(void)
     debugMark("SevenSegmentsMuxDisplay::showNextDigit(void)", DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
 
     // Checks for errors
-    if (!this->_isInitialized) {
+    if(!this->_isInitialized) {
         // Returns error
         this->_lastError = Error::NOT_INITIALIZED;
         debugMessage(Error::NOT_INITIALIZED, DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
@@ -225,7 +223,7 @@ bool_t SevenSegmentsMuxDisplay::showNextDigit(void)
 
     // Turns current digit OFF
     *(this->_dataPort) = (this->_displayType == SevenSegmentsDisplayType::COMMON_ANODE) ? 0xFF : 0x00;
-    if (this->_controlActiveLevel == LogicLevel::HIGH) {
+    if(this->_controlActiveLevel == LogicLevel::HIGH) {
         clrMaskOffset(*(this->_controlPort), this->_controlMask, this->_controlFirst);
     } else {
         setMaskOffset(*(this->_controlPort), this->_controlMask, this->_controlFirst);
@@ -237,7 +235,7 @@ bool_t SevenSegmentsMuxDisplay::showNextDigit(void)
     // Send data to port
     *(this->_dataPort) = convertToSevenSegments(this->_digitValue[this->_digitIndex], this->_digitPoint[this->_digitIndex],
                     this->_displayType);
-    if (this->_controlActiveLevel == LogicLevel::HIGH) {
+    if(this->_controlActiveLevel == LogicLevel::HIGH) {
         setBit(*(this->_controlPort), (this->_controlFirst + this->_digitIndex));
     } else {
         clrBit(*(this->_controlPort), (this->_controlFirst + this->_digitIndex));
@@ -255,7 +253,7 @@ bool_t SevenSegmentsMuxDisplay::updateDigitValues(cuint8_t *digitValues_p, cbool
     debugMark("SevenSegmentsMuxDisplay::updateDigitValues(cuint8_t *, cbool_t *)", DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
 
     // Check for errors
-    if (!isPointerValid(digitValues_p)) {
+    if(!isPointerValid(digitValues_p)) {
         // Returns error
         debugMessage(Error::ARGUMENT_POINTER_NULL, DEBUG_SEVEN_SEGMENTS_MUX_DISPLAY);
         this->_lastError = Error::ARGUMENT_POINTER_NULL;
@@ -263,9 +261,9 @@ bool_t SevenSegmentsMuxDisplay::updateDigitValues(cuint8_t *digitValues_p, cbool
     }
 
     // Updates data members
-    for (uint8_t i = 0; i < (this->_digitMax + 1); i++) {
+    for(uint8_t i = 0; i < (this->_digitMax + 1); i++) {
         this->_digitValue[i] = digitValues_p[i];
-        if (isPointerValid(digitPoints_p)) {
+        if(isPointerValid(digitPoints_p)) {
             this->_digitPoint[i] = digitPoints_p[i];
         }
     }

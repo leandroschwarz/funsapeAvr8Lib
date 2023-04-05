@@ -1,24 +1,24 @@
-// =============================================================================
-// Project:         FunSAPE AVR8 Integrated Library
-// File:            funsapeAvrPinout.hpp
-// Module:          Microcontroller funsapeAvrPinout
-// Author:          Leandro Schwarz
-// Version:         22.0
-// Last edition:    2022-11-27
-// Notes:           Microcontroller support list:
-//                      - ATmegaX8Y (ATmega48, ATmega48A, ATmega48P, ATmega48PA,
-//                          ATmega88, ATmega88A, ATmega88P, ATmega88PA,
-//                          ATmega168, ATmega168A, ATmega168P, ATmega168PA,
-//                          ATmega328, ATmega328P)
-// To do list:      Implement the other microcontrollers
-// =============================================================================
+//!
+//! \file           pinout.hpp
+//! \brief          Microcontroller pinout
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        Microcontroller support list:
+//!                     - ATmegaX8Y (ATmega48, ATmega48A, ATmega48P, ATmega48PA,
+//!                         ATmega88, ATmega88A, ATmega88P, ATmega88PA,
+//!                         ATmega168, ATmega168A, ATmega168P, ATmega168PA,
+//!                         ATmega328, ATmega328P)
+//! \todo           Implement other microcontrollers
+//!
 
 // =============================================================================
 // Include guard (START)
 // =============================================================================
 
-#ifndef __FUNSAPE_AVR_PINOUT_HPP
-#define __FUNSAPE_AVR_PINOUT_HPP                220
+#ifndef __PINOUT_HPP
+#define __PINOUT_HPP                            2304
 
 // =============================================================================
 // Dependencies
@@ -76,7 +76,7 @@
 // NONE
 
 // =============================================================================
-// Includes Low Level Abstration Layer
+// Includes Low Level Abstraction Layer
 // =============================================================================
 
 // NONE
@@ -94,10 +94,10 @@
     defined(__AVR_ATmega168__) || defined(__AVR_ATmega168A__) || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega168PA__) || \
     defined(__AVR_ATmega328__) ||                                defined(__AVR_ATmega328P__)
 
-#   define _LS_GPIO_PORT_B_EXISTS
-#   define _LS_GPIO_PORT_C_EXISTS
-#   define _LS_GPIO_PORT_D_EXISTS
-#   define IS_GPIO_ALL_INSTANCE(regAddress)    (bool_t)(       \
+#   define _FUNSAPE_GPIO_PORT_B_EXISTS
+#   define _FUNSAPE_GPIO_PORT_C_EXISTS
+#   define _FUNSAPE_GPIO_PORT_D_EXISTS
+#   define IS_GPIO_ALL_INSTANCE(regAddress)    (bool_t)(        \
         ((regAddress >= &PINB) && (regAddress <= &PORTD))       \
         ? true                                                  \
         : false)
@@ -114,7 +114,7 @@
 // Include guard (END)
 // =============================================================================
 
-#endif  // __FUNSAPE_AVR_PINOUT_HPP
+#endif  // __PINOUT_HPP
 
 // =============================================================================
 // END OF FILE

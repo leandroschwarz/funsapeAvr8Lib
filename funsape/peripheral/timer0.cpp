@@ -1,41 +1,41 @@
 //!
-//! \file           funsapeAvrTimer0.cpp
+//! \file           timer0.cpp
 //! \brief          TIMER0 peripheral control for the FunSAPE AVR8 Library
-//! \details        TODO
-//! \author         Leandro Schwarz
-//! \version        22.0
-//! \date           2022-12-02
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        TIMER0 peripheral control for the FunSAPE AVR8 Library
+//! \todo           Todo list
 //!
 
 // =============================================================================
 // System file dependencies
 // =============================================================================
 
-#if __has_include("funsapeAvrTimer0.hpp")
-#   include "funsapeAvrTimer0.hpp"
-#   if !defined(__FUNSAPE_AVR_TIMER0_HPP)
-#       error "Header file is corrupted!"
-#   elif __FUNSAPE_AVR_TIMER0_HPP != 220
-#       error "Version mismatch between source and header files!"
-#   endif
-#else
-#   error "Header file is missing!"
+#include "timer0.hpp"
+#if !defined(__TIMER0_HPP)
+#    error "Header file is corrupted!"
+#elif __TIMER0_HPP != 2304
+#    error "Version mismatch between source and header files!"
 #endif
 
 // =============================================================================
 // File exclusive - Constants
 // =============================================================================
 
-cuint8_t constOutputModeAOffset         = COM0A0;
-cuint8_t constOutputModeAMask           = 0x03;
-cuint8_t constOutputModeBOffset         = COM0B0;
-cuint8_t constOutputModeBMask           = 0x03;
-cuint8_t constModeOffsetPart1           = WGM00;
-cuint8_t constModeMaskPart1             = 0x03;
-cuint8_t constModeOffsetPart2           = WGM02;
-cuint8_t constModeMaskPart2             = 0x01;
-cuint8_t constClockSourceOffset         = CS00;
-cuint8_t constClockSourceMask           = 0x07;
+#define DEBUG_TIMER0                    0x2FFF
+
+cuint8_t constOutputModeAOffset         = COM0A0;   //!< Output A bit position offset
+cuint8_t constOutputModeAMask           = 0x03;     //!< Output A bit mask
+cuint8_t constOutputModeBOffset         = COM0B0;   //!< Output B bit position offset
+cuint8_t constOutputModeBMask           = 0x03;     //!< Output B bit mask
+cuint8_t constModeOffsetPart1           = WGM00;    //!< Operation mode part 1 bit position offset
+cuint8_t constModeMaskPart1             = 0x03;     //!< Operation mode part 1 bit mask
+cuint8_t constModeOffsetPart2           = WGM02;    //!< Operation mode part 2 bit position offset
+cuint8_t constModeMaskPart2             = 0x01;     //!< Operation mode part 2 bit mask
+cuint8_t constClockSourceOffset         = CS00;     //!< Clock source bit position offset
+cuint8_t constClockSourceMask           = 0x07;     //!< Clock source bit mask
 
 // =============================================================================
 // File exclusive - New data types
@@ -61,6 +61,9 @@ Timer0 timer0;
 
 Timer0::Timer0()
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer0::Timer0(void)", DEBUG_TIMER0);
+
     // Reset data members
     this->_clockSource                  = ClockSource::DISABLED;
     this->_mode                         = Mode::NORMAL;
@@ -68,12 +71,14 @@ Timer0::Timer0()
 
     // Returns successfully
     this->_lastError                    = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER0);
     return;
 }
 
 Timer0::~Timer0()
 {
     // Returns successfully
+    debugMessage(Error::NONE, DEBUG_TIMER0);
     return;
 }
 
@@ -84,6 +89,9 @@ Timer0::~Timer0()
 //     ///////////////////     CONFIGURATION     ////////////////////     //
 bool_t Timer0::init(Mode mode_p, ClockSource clockSource_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer0::init(Mode, ClockSource)", DEBUG_TIMER0);
+
     // Local variables
     uint8_t auxTccr0A = TCCR0A;
     uint8_t auxTccr0B = TCCR0B;
@@ -110,11 +118,15 @@ bool_t Timer0::init(Mode mode_p, ClockSource clockSource_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER0);
     return true;
 }
 
 bool_t Timer0::setMode(Mode mode_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer0::setMode(Mode)", DEBUG_TIMER0);
+
     // Local variables
     uint8_t auxTccr0A = TCCR0A;
     uint8_t auxTccr0B = TCCR0B;
@@ -132,15 +144,19 @@ bool_t Timer0::setMode(Mode mode_p)
     TCCR0B          = auxTccr0B;
 
     // Update class members
-    this->_mode             = mode_p;
+    this->_mode     = mode_p;
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER0);
     return true;
 }
 
 bool_t Timer0::setClockSource(ClockSource clockSource_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer0::setClockSource(ClockSource)", DEBUG_TIMER0);
+
     // Local variables
     uint8_t auxTccr0B = TCCR0B;
 
@@ -156,11 +172,15 @@ bool_t Timer0::setClockSource(ClockSource clockSource_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER0);
     return true;
 }
 
 bool_t Timer0::setOutputMode(OutputMode compA_p, OutputMode compB_p)
 {
+    // Mark passage for debugging purpose
+    debugMark("Timer0::setOutputMode(OutputMode, OutputMode)", DEBUG_TIMER0);
+
     // Local variables
     uint8_t auxTccr0A = TCCR0A;
 
@@ -175,6 +195,7 @@ bool_t Timer0::setOutputMode(OutputMode compA_p, OutputMode compB_p)
 
     // Returns successfully
     this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, DEBUG_TIMER0);
     return true;
 }
 
@@ -226,16 +247,28 @@ weakened void timer0OverflowCallback(void)
 // Interrupt handlers
 // =============================================================================
 
+//!
+//! \brief          TIMER0 Compare A Match interrupt service routine
+//! \details        TIMER0 Compare A Match interrupt service routine.
+//!
 ISR(TIMER0_COMPA_vect)
 {
     timer0CompareACallback();
 }
 
+//!
+//! \brief          TIMER0 Compare B Match interrupt service routine
+//! \details        TIMER0 Compare B Match interrupt service routine.
+//!
 ISR(TIMER0_COMPB_vect)
 {
     timer0CompareBCallback();
 }
 
+//!
+//! \brief          TIMER0 Overflow interrupt service routine
+//! \details        TIMER0 Overflow interrupt service routine.
+//!
 ISR(TIMER0_OVF_vect)
 {
     timer0OverflowCallback();

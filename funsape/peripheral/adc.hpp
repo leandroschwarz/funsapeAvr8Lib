@@ -1,33 +1,40 @@
 //!
-//! \file           funsapeAvrAdc.hpp
+//! \file           adc.hpp
 //! \brief          Analog-to-Digital Converter peripheral control for the FunSAPE AVR8 Library
-//! \details        TODO
-//! \author         Leandro Schwarz
-//! \version        22.0
-//! \date           2022-12-02
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        Analog-to-Digital Converter peripheral module control for
+//!                     the FunSAPE AVR8 Library
+//! \todo           Todo list
 //!
 
 // =============================================================================
 // Include guard (START)
 // =============================================================================
 
-#ifndef __FUNSAPE_AVR_ADC_HPP
-#define __FUNSAPE_AVR_ADC_HPP                           220
+#ifndef __ADC_HPP
+#define __ADC_HPP                               2304
 
 // =============================================================================
 // Dependencies
 // =============================================================================
 
 //     /////////////////     GLOBAL DEFINITIONS FILE    /////////////////     //
-#if __has_include("../funsapeAvrGlobalDefines.hpp")
-#   include "../funsapeAvrGlobalDefines.hpp"
-#   if !defined(__FUNSAPE_AVR_GLOBAL_DEFINES_HPP)
-#       error "Global definitions file is corrupted!"
-#   elif __FUNSAPE_AVR_GLOBAL_DEFINES_HPP != __FUNSAPE_AVR_ADC_HPP
-#       error "Version mismatch between file header and global definitions file!"
-#   endif
-#else
-#   error "Global definitions file is missing!"
+#include "../globalDefines.hpp"
+#if !defined(__GLOBAL_DEFINES_HPP)
+#   error "Global definitions file is corrupted!"
+#elif __GLOBAL_DEFINES_HPP != __ADC_HPP
+#   error "Version mismatch between file header and global definitions file!"
+#endif
+
+//     //////////////////     LIBRARY DEPENDENCIES     //////////////////     //
+#include "../util/debug.hpp"
+#if !defined(__DEBUG_HPP)
+#   error "Header file (debug.hpp) is corrupted!"
+#elif __DEBUG_HPP != __ADC_HPP
+#   error "Version mismatch between header file and library dependency (debug.hpp)!"
 #endif
 
 // =============================================================================
@@ -52,22 +59,37 @@
 // Interrupt callback functions
 // =============================================================================
 
+//!
+//! \brief          ADC conversion complete callback function
+//! \details        This function is called when the ADC interrupt is treated.
+//!                     It is a weak function that can be overwritten by user
+//!                     code.
+//!
 void adcConversionCompleteCallback(void);
 
 // =============================================================================
 // Adc Class
 // =============================================================================
 
+//!
+//! \brief          Adc class
+//! \details        Adc class
+//!
 class Adc
 {
     // -------------------------------------------------------------------------
     // New data types ----------------------------------------------------------
 public:
+
     //     //////////////////     ADC Clock Source    ///////////////////     //
     //!
-    //! \enum           ClockSource
-    //!     \details    Clock prescaler options associated with ADC.
-    //!     \warning    The value associate with the symbolic names may change between builds and might not reflect the register/bits real values. In order to ensure compatibility between builds, always refer to the SYMBOLIC NAME, instead of the VALUE.
+    //! \brief      Clock source enumeration
+    //! \details    Clock prescaler options associated with ADC.
+    //! \warning    The value associate with the symbolic names may change
+    //!                 between builds and might not reflect the register/bits
+    //!                 real values. In order to ensure compatibility between
+    //!                 builds, always refer to the SYMBOLIC NAME, instead its
+    //!                 VALUE.
     //!
     enum class Prescaler : uint8_t {
         DISABLED                        = 0,    //!< Disables clock, Adc is off
@@ -79,11 +101,16 @@ public:
         PRESCALER_64                    = 6,    //!< Adc clock frequency will be CPU clock divided by 64
         PRESCALER_128                   = 7     //!< Adc clock frequency will be CPU clock divided by 128
     };
+
     //     //////////////     ADC Full Scale Reference    ///////////////     //
     //!
-    //! \enum           Reference
-    //!     \details    Full scale reference source.
-    //!     \warning    The value associate with the symbolic names may change between builds and might not reflect the register/bits real values. In order to ensure compatibility between builds, always refer to the SYMBOLIC NAME, instead of the VALUE.
+    //! \brief      Reference enumeration
+    //! \details    Full scale reference source.
+    //! \warning    The value associate with the symbolic names may change
+    //!                 between builds and might not reflect the register/bits
+    //!                 real values. In order to ensure compatibility between
+    //!                 builds, always refer to the SYMBOLIC NAME, instead its
+    //!                 VALUE.
     //!
     enum class Reference : uint8_t {
         EXTERNAL                        = 0,    //!< Adc full scale reference is the voltage at the AVREF pin.
@@ -91,11 +118,16 @@ public:
         // RESERVED                     = 2,
         INTERNAL                        = 3     //!< Adc full scale reference is the internal 1.1 V bandgap generator.
     };
+
     //     ///////////////     ADC Channel Selection     ////////////////     //
     //!
-    //! \enum           Channel
-    //!     \details    Channel source selection.
-    //!     \warning    The value associate with the symbolic names may change between builds and might not reflect the register/bits real values. In order to ensure compatibility between builds, always refer to the SYMBOLIC NAME, instead of the VALUE.
+    //! \brief      Channel enumeration
+    //! \details    Channel source selection.
+    //! \warning    The value associate with the symbolic names may change
+    //!                 between builds and might not reflect the register/bits
+    //!                 real values. In order to ensure compatibility between
+    //!                 builds, always refer to the SYMBOLIC NAME, instead its
+    //!                 VALUE.
     //!
     enum class Channel : uint8_t {
         CHANNEL_0                       = 0,    //!< Select the ADC channel 0.
@@ -115,11 +147,16 @@ public:
         BAND_GAP                        = 14,   //!< Select the internal bandgap generator.
         GND                             = 15    //!< Select the GND.
     };
+
     //     /////////////////     ADC Operation Mode    //////////////////     //
     //!
-    //! \enum           Mode
-    //!     \details    Operation mode associated with the ADC.
-    //!     \warning    The value associate with the symbolic names may change between builds and might not reflect the register/bits real values. In order to ensure compatibility between builds, always refer to the SYMBOLIC NAME, instead of the VALUE.
+    //! \brief      Mode enumeration
+    //! \details    Operation mode associated with the ADC.
+    //! \warning    The value associate with the symbolic names may change
+    //!                 between builds and might not reflect the register/bits
+    //!                 real values. In order to ensure compatibility between
+    //!                 builds, always refer to the SYMBOLIC NAME, instead its
+    //!                 VALUE.
     //!
     enum class Mode {
         AUTO_CONTINUOUS                 = 0,    //!< ADC in automatic mode, triggered automatically at the end of the conversion.
@@ -132,21 +169,32 @@ public:
         AUTO_TIMER1_CAPTURE             = 7,    //!< ADC in automatic mode, triggered by Timer1 Input Capture Match.
         SINGLE_CONVERSION               = 15    //!< ADC in sigle mode, triggered by software.
     };
+
     //     //////////////     ADC Result Presentation     ///////////////     //
     //!
-    //! \enum           DataAdjust
-    //!     \details    Presentation mode of the ADC result.
-    //!     \warning    The value associate with the symbolic names may change between builds and might not reflect the register/bits real values. In order to ensure compatibility between builds, always refer to the SYMBOLIC NAME, instead of the VALUE.
+    //! \brief      Data adjust enumeration
+    //! \details    Presentation mode of the ADC result.
+    //! \warning    The value associate with the symbolic names may change
+    //!                 between builds and might not reflect the register/bits
+    //!                 real values. In order to ensure compatibility between
+    //!                 builds, always refer to the SYMBOLIC NAME, instead its
+    //!                 VALUE.
     //!
     enum class DataAdjust : cbool_t {
         RIGHT                           = 0,    //!< Adjust right. Significant bits are ADC[9...0]
         LEFT                            = 1     //!< Adjust left. Significant bits are ADC[15...6]
     };
+
     //     ///////////////////     Digital Input     ////////////////////     //
     //!
-    //! \enum           DigitalInput
-    //!     \details    Digital inputs to be enabled/disabled. The values can be ORed (|) to mark multiple inputs.
-    //!     \warning    The value associate with the symbolic names may change between builds and might not reflect the register/bits real values. In order to ensure compatibility between builds, always refer to the SYMBOLIC NAME, instead of the VALUE.
+    //! \brief      Digital input enumeration
+    //! \details    Digital inputs to be enabled/disabled. The values can be
+    //!                 'ORed' (|) to select multiple inputs.
+    //! \warning    The value associate with the symbolic names may change
+    //!                 between builds and might not reflect the register/bits
+    //!                 real values. In order to ensure compatibility between
+    //!                 builds, always refer to the SYMBOLIC NAME, instead its
+    //!                 VALUE.
     //!
     enum class DigitalInput : uint8_t {
         INPUT_0                         = (1 << 0),     //!< Digital input 0
@@ -162,9 +210,19 @@ public:
     // -------------------------------------------------------------------------
     // Constructors ------------------------------------------------------------
 public:
+
+    //!
+    //! \brief      Adc class constructor
+    //! \details    Creates an Adc object
+    //!
     Adc(
             void
     );
+
+    //!
+    //! \brief      Adc class destructor
+    //! \details    Destroys an Adc object
+    //!
     ~Adc(
             void
     );
@@ -173,62 +231,178 @@ public:
     // Methods -----------------------------------------------------------------
 public:
     //     ///////////////////     CONFIGURATION     ////////////////////     //
+
+    //!
+    //! \brief          Initializes an Adc object
+    //! \details        This function initializes an Adc object, according to
+    //!                     provided operation mode, reference source and clock
+    //!                     prescaler.
+    //! \param          mode_p          Operation mode
+    //! \param          reference_p     Reference source
+    //! \param          prescale_p      Clock prescaler value
+    //! \return         bool_t          True on success / False on failure
+    //!
     bool_t init(
             Mode mode_p,
             Reference reference_p,
             Prescaler prescale_p
     );
+
+    //!
+    //! \brief      Sets data adjust result
+    //! \details    Sets data adjust result.
+    //! \param      dataAdjust_p        Data adjust option
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t setDataAdjust(
             DataAdjust dataAdjust_p
     );
+
+    //!
+    //! \brief      Sets operation mode
+    //! \details    Sets operation mode.
+    //! \param      mode_p              Operation mode
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t setMode(
             Mode mode_p
     );
+
+    //!
+    //! \brief      Sets clock prescaler
+    //! \details    Sets clock prescaler.
+    //! \param      prescale_p          Clock prescaler
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t setPrescaler(
             Prescaler prescale_p
     );
+
+    //!
+    //! \brief      Sets reference source
+    //! \details    Sets reference source.
+    //! \param      reference_p         Reference source
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t setReference(
             Reference reference_p
     );
 
     //     //////////////////     CHANNEL CONTROL     ///////////////////     //
+
+    //!
+    //! \brief      Disables digital inputs
+    //! \details    Disables digital inputs to save power.
+    //! \param      flagInputs_p        Input flags mask to de disabled
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t disableDigitalInput(
             DigitalInput flagInputs_p
     );
+
+    //!
+    //! \brief      Enables digital inputs
+    //! \details    Enables digital inputs.
+    //! \param      flagInputs_p        Input flags mask to de enabled
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t enableDigitalInput(
             DigitalInput flagInputs_p
     );
+
+    //!
+    //! \brief      Sets channel
+    //! \details    Sets the channel to be converted
+    //! \param      channel_p           Channel to be converted
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t setChannel(
             Channel channel_p
     );
 
     //     /////////////////     INTERRUPT CONTROL     //////////////////     //
+
+    //!
+    //! \brief      Activates interrupt
+    //! \details    Activates interrupt.
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t activateInterrupt(
             void
     );
+
+    //!
+    //! \brief      Clears interrupt request
+    //! \details    Clears interrupt request
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t clearInterruptRequest(
             void
     );
+
+    //!
+    //! \brief      Deactivates interrupt
+    //! \details    Deactivates interrupt
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t deactivateInterrupt(
             void
     );
 
     //     /////////////     MASTER CONTROL AND STATUS     //////////////     //
+
+    //!
+    //! \brief      Turns ADC module on
+    //! \details    Turns ADC module on.
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t enable(
             void
     );
+
+    //!
+    //! \brief      Turns ADC module off
+    //! \details    Turns ADC module off.
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t disable(
             void
     );
+
+    //!
+    //! \brief      Returns last error
+    //! \details    Returns the status of the last operation.
+    //! \return     Error               Code of the last error
+    //!
     Error getLastError(
             void
     );
-    bool_t isBusy(
-            void
-    );
+
+    //!
+    //! \brief      Checks if ADC module is busy
+    //! \details    Checks if ADC module is busy.
+    //! \return     bool_t              True if module is busy / False otherwise
+    //!
+    bool_t inlined isBusy(void) {
+        return isBitSet(ADCSRA, ADSC);
+    }
+
+    //!
+    //! \brief      Triggers a new convertion
+    //! \details    Triggers a new convertion.
+    //! \return     bool_t              True on success / False on failure
+    //!
     bool_t startConversion(
             void
     );
+
+    //!
+    //! \brief      Waits the end of current conversion
+    //! \details    This function continually pools for the ADC conversion
+    //!                 status. The system will be halted while the conversion
+    //!                 is in process.
+    //! \return     bool_t              True when conversion is finished / False on failure
+    //!
     bool_t waitUntilConversionFinish(
             void
     );
@@ -251,12 +425,26 @@ private:
 // Inlined class functions
 // =============================================================================
 
-inlined Adc::DigitalInput operator|(Adc::DigitalInput a, Adc::DigitalInput b)
+//!
+//! \brief          Bitwise-or operator overloading
+//! \details        Bitwise-or operator overloading for DigitalInput enumeration.
+//! \param          a           Param description
+//! \param          b           Param description
+//! \return         Adc::DigitalInput   DigitalInput flags 'ORed'
+//!
+Adc::DigitalInput inlined operator|(Adc::DigitalInput a, Adc::DigitalInput b)
 {
     return static_cast<Adc::DigitalInput>(static_cast<cuint8_t>(a) | static_cast<cuint8_t>(b));
 }
 
-inlined Adc::DigitalInput &operator|=(Adc::DigitalInput &a, Adc::DigitalInput b)
+//!
+//! \brief          Bitwise-or attribution operator overloading
+//! \details        Bitwise-or attribution operator overloading for DigitalInput enumeration.
+//! \param          a           Param description
+//! \param          b           Param description
+//! \return         Adc::DigitalInput&  DigitalInput flags 'ORed'
+//!
+Adc::DigitalInput inlined &operator|=(Adc::DigitalInput &a, Adc::DigitalInput b)
 {
     return a = static_cast<Adc::DigitalInput>(static_cast<uint8_t>(a) | static_cast<cuint8_t>(b));
 }
@@ -265,13 +453,17 @@ inlined Adc::DigitalInput &operator|=(Adc::DigitalInput &a, Adc::DigitalInput b)
 // External global variables
 // =============================================================================
 
+//!
+//! \brief          ADC peripheral handler object
+//! \details        ADC peripheral handler object
+//!
 extern Adc adc;
 
 // =============================================================================
 // Include guard (END)
 // =============================================================================
 
-#endif  // __FUNSAPE_AVR_ADC_HPP
+#endif  // __ADC_HPP
 
 // =============================================================================
 // END OF FILE

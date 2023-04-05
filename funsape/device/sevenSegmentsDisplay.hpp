@@ -1,37 +1,34 @@
-/* =============================================================================
- * Project:         FunSAPE AVR8 Integrated Library
- * File:            funsapeAvrSevenSegmentsDisplay.hpp
- * Module:          Seven segments display controller
- * Author:          Leandro Schwarz
- * Version:         22.0
- * Last edition:    2022-11-28
- * Purpose:         Seven segments display controller with support to both
- *                      common anode and common cathode displays. The following
- *                      special characters were also implemented: dash, H, J, L
- *                      n, p, S, U, y, display off.
- * ========================================================================== */
+//!
+//! \file           sevenSegmentsDisplay.hpp
+//! \brief          Seven segments display controller
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        Seven segments display controller with support to both
+//!                     common anode and common cathode displays. The following
+//!                     special characters were also implemented: dash, H, J, L
+//!                     n, p, S, U, y, display off.
+//! \todo           Todo list
+//!
 
 // =============================================================================
 // Include guard (START)
 // =============================================================================
 
-#ifndef __FUNSAPE_AVR_SEVEN_SEGMENTS_DISPLAY_HPP
-#define __FUNSAPE_AVR_SEVEN_SEGMENTS_DISPLAY_HPP        220
+#ifndef __SEVEN_SEGMENTS_DISPLAY_HPP
+#define __SEVEN_SEGMENTS_DISPLAY_HPP            2304
 
 // =============================================================================
 // Dependencies
 // =============================================================================
 
 //     /////////////////     GLOBAL DEFINITIONS FILE    /////////////////     //
-#if __has_include("../funsapeAvrGlobalDefines.hpp")
-#   include "../funsapeAvrGlobalDefines.hpp"
-#   if !defined(__FUNSAPE_AVR_GLOBAL_DEFINES_HPP)
-#       error "Global definitions file is corrupted!"
-#   elif __FUNSAPE_AVR_GLOBAL_DEFINES_HPP != __FUNSAPE_AVR_SEVEN_SEGMENTS_DISPLAY_HPP
-#       error "Version mismatch between file header and global definitions file!"
-#   endif
-#else
-#   error "Global definitions file is missing!"
+#include "../globalDefines.hpp"
+#if !defined(__GLOBAL_DEFINES_HPP)
+#   error "Global definitions file is corrupted!"
+#elif __GLOBAL_DEFINES_HPP != __SEVEN_SEGMENTS_DISPLAY_HPP
+#   error "Version mismatch between file header and global definitions file!"
 #endif
 
 // =============================================================================
@@ -50,6 +47,10 @@
 // New data types
 // =============================================================================
 
+//!
+//! \brief          Seven segments code enumeration
+//! \details        Enumeration to set the digit value
+//!
 enum class SevenSegmentsCode : uint8_t {
     HEX_0           = 0,
     HEX_1           = 1,
@@ -91,9 +92,14 @@ enum class SevenSegmentsCode : uint8_t {
     OFF             = 0xFF
 };
 
+//!
+//! \brief          Display hardware configuration
+//! \details        This enumeration defines anode or cathode common display
+//!                     types
+//!
 enum class SevenSegmentsDisplayType : cbool_t {
-    COMMON_ANODE    = false,
-    COMMON_CATHODE  = true
+    COMMON_ANODE    = false,            //!< Common anode displays; negative logic
+    COMMON_CATHODE  = true              //!< Common cathode displays; positive logic
 };
 
 // =============================================================================
@@ -106,11 +112,32 @@ enum class SevenSegmentsDisplayType : cbool_t {
 // Public functions declarations
 // =============================================================================
 
+//!
+//! \brief          Converts a value to segments code
+//! \details        This function receives a numeric value and decodes it to
+//!                     seven segments code, according to given display type,
+//!                     with decimal point support.
+//! \param          numericValue_p      Numeric value to be converted
+//! \param          point_p             Decimal point status
+//! \param          displayType_p       Display type, defaults to COMMON_ANODE
+//! \return         uint8_t             Returns segments code in 0bPGFEDCBA order
+//!
 uint8_t convertToSevenSegments(
-        uint8_t numericValue_p,
+        cuint8_t numericValue_p,
         cbool_t point_p,
         SevenSegmentsDisplayType displayType_p = SevenSegmentsDisplayType::COMMON_ANODE
 );
+
+//!
+//! \brief          Converts a value to segments code
+//! \details        This function receives a coded value and decodes it to
+//!                     seven segments code, according to given display type,
+//!                     with decimal point support.
+//! \param          numericValue_p      Numeric value to be converted
+//! \param          point_p             Decimal point status
+//! \param          displayType_p       Display type, defaults to COMMON_ANODE
+//! \return         uint8_t             Returns segments code in 0bPGFEDCBA order
+//!
 uint8_t convertToSevenSegments(
         SevenSegmentsCode numericCode_p,
         cbool_t point_p,
@@ -121,7 +148,7 @@ uint8_t convertToSevenSegments(
 // Include guard (END)
 // =============================================================================
 
-#endif  // __FUNSAPE_AVR_SEVEN_SEGMENTS_DISPLAY_HPP
+#endif  // __SEVEN_SEGMENTS_DISPLAY_HPP
 
 // =============================================================================
 // END OF FILE

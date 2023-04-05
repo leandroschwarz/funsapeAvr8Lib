@@ -4,12 +4,16 @@ build/
 # Makefile files
 Makefile
 makefile-*
+*.mk
 gmsl
 __gmsl
 
 # VS Code files and folders
 .vscode/
 *.code-workspace
+
+# Test files
+# main.cpp
 
 # Proteus files
 Backup*

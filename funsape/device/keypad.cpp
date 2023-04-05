@@ -1,30 +1,24 @@
-/* =============================================================================
- * Project:         FunSAPE AVR8 Integrated Library
- * File:            funsapeAvrKeypad.cpp
- * Module:          Matrix keypad controller
- * Author:          Leandro Schwarz
- * Version:         22.0
- * Last edition:    2022-11-28
- * Purpose:         Seven segments multiplexed display controller with support
- *                      to variable number of digits (2 to 8). The library
- *                      supports both common anode and common cathode displays,
- *                      decimal point, and the special characters defined in
- *                      funsapeAvrSevenSegments.hpp.
- * ========================================================================== */
+//!
+//! \file           keypad.cpp
+//! \brief          Matrix keypad controller for the FunSAPE AVR8 Library
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2023-04-05
+//! \version        23.04
+//! \copyright      license
+//! \details        Matrix keypad controller with support to 4x3, 4x4 and 5x3
+//!                     keypads and configurable debounce time.
+//! \todo           Todo list
+//!
 
 // =============================================================================
 // System file dependencies
 // =============================================================================
 
-#if __has_include("funsapeAvrKeypad.hpp")
-#   include "funsapeAvrKeypad.hpp"
-#   if !defined(__FUNSAPE_AVR_KEYPAD_HPP)
-#       error "Header file is corrupted!"
-#   elif __FUNSAPE_AVR_KEYPAD_HPP != 220
-#       error "Version mismatch between source and header files!"
-#   endif
-#else
-#   error "Header file is missing!"
+#include "keypad.hpp"
+#if !defined(__KEYPAD_HPP)
+#   error "Header file is corrupted!"
+#elif __KEYPAD_HPP != 2304
+#   error "Version mismatch between source and header files!"
 #endif
 
 // =============================================================================
@@ -89,7 +83,7 @@ Keypad::~Keypad(void)
     debugMark("Keypad::~Keypad(void)", DEBUG_KEYPAD);
 
     // Deallocate memory
-    if (isPointerValid(this->_keyValue)) {
+    if(isPointerValid(this->_keyValue)) {
         free(this->_keyValue);
     }
 
@@ -109,27 +103,27 @@ bool_t Keypad::init(cuint8_t debounceTime_p)
     debugMark("Keypad::init(cuint8_t)", DEBUG_KEYPAD);
 
     // Check for errors - PORTS NOT SET
-    if (!this->_isPortsSet) {
+    if(!this->_isPortsSet) {
         // Returns error
         this->_lastError = Error::GPIO_PORT_NOT_SET;
         debugMessage(Error::GPIO_PORT_NOT_SET, DEBUG_KEYPAD);
         return false;
     }
     // Check for errors - KEY VALUES NOT SET
-    if (!this->_isKeyValuesSet) {
+    if(!this->_isKeyValuesSet) {
         // Returns error
         this->_lastError = Error::KEY_VALUES_NOT_SET;
         debugMessage(Error::KEY_VALUES_NOT_SET, DEBUG_KEYPAD);
         return false;
     }
     // Checks for erros - I/O PIN INDEX INVALID
-    if (!isGpioPinIndexValid(this->_columnsFirst + this->_columnsMax)) {
+    if(!isGpioPinIndexValid(this->_columnsFirst + this->_columnsMax)) {
         // Returns error
         this->_lastError = Error::KEYPAD_LINES_PIN_INDEX_INVALID;
         debugMessage(Error::KEYPAD_LINES_PIN_INDEX_INVALID, DEBUG_KEYPAD);
         return false;
     }
-    if (!isGpioPinIndexValid(this->_linesFirst + this->_linesMax)) {
+    if(!isGpioPinIndexValid(this->_linesFirst + this->_linesMax)) {
         // Returns error
         this->_lastError = Error::KEYPAD_COLUMNS_PIN_INDEX_INVALID;
         debugMessage(Error::KEYPAD_COLUMNS_PIN_INDEX_INVALID, DEBUG_KEYPAD);
@@ -137,7 +131,7 @@ bool_t Keypad::init(cuint8_t debounceTime_p)
     }
 
     // Configures GPIOs
-    switch (this->_type) {
+    switch(this->_type) {
     case Type::KEYPAD_4X4:
         clrMaskOffset(*(this->_linesDdr), 0x0F, this->_linesFirst);
         setMaskOffset(*(this->_linesPort), 0x0F, this->_linesFirst);
@@ -190,13 +184,13 @@ bool_t Keypad::setPorts(ioRegAddress_t linesRegAddress_p, ioPinIndex_t linesFirs
     this->_isPortsSet           = false;
 
     // Check for errors
-    if (!isGpioAddressValid(linesRegAddress_p)) {
+    if(!isGpioAddressValid(linesRegAddress_p)) {
         // Returns error
         this->_lastError = Error::KEYPAD_LINES_GPIO_PORT_INVALID;
         debugMessage(Error::KEYPAD_LINES_GPIO_PORT_INVALID, DEBUG_KEYPAD);
         return false;
     }
-    if (!isGpioAddressValid(columnsRegAddress_p)) {
+    if(!isGpioAddressValid(columnsRegAddress_p)) {
         // Returns error
         this->_lastError = Error::KEYPAD_COLUMNS_GPIO_PORT_INVALID;
         debugMessage(Error::KEYPAD_COLUMNS_GPIO_PORT_INVALID, DEBUG_KEYPAD);
@@ -228,7 +222,7 @@ bool_t Keypad::setKeyValues(Type type_p, ...)
     this->_isKeyValuesSet = false;
 
     // Keypad type
-    switch (type_p) {
+    switch(type_p) {
     case Type::KEYPAD_4X4:
         this->_linesMax = 3;
         this->_columnsMax = 3;
@@ -253,7 +247,7 @@ bool_t Keypad::setKeyValues(Type type_p, ...)
 
     // Memory allocation
     this->_keyValue = (uint8_t *)realloc(this->_keyValue, (this->_linesMax + 1) * (this->_columnsMax + 1));
-    if (!isPointerValid(this->_keyValue)) {
+    if(!isPointerValid(this->_keyValue)) {
         // Returns error
         this->_lastError = Error::MEMORY_ALLOCATION;
         debugMessage(Error::MEMORY_ALLOCATION, DEBUG_KEYPAD);
@@ -264,14 +258,14 @@ bool_t Keypad::setKeyValues(Type type_p, ...)
     do {
         va_list auxArgs;
         va_start(auxArgs, type_p);
-        for (uint8_t i = 0; i < (this->_linesMax + 1); i++) {
-            for (uint8_t j  = 0; j < (this->_columnsMax + 1); j++) {
+        for(uint8_t i = 0; i < (this->_linesMax + 1); i++) {
+            for(uint8_t j  = 0; j < (this->_columnsMax + 1); j++) {
                 this->_keyValue[((this->_linesMax + 1) *  i) + j] = (uint8_t)va_arg(auxArgs, int16_t);
             }
         }
         va_end(auxArgs);
         this->_isKeyValuesSet = true;
-    } while (0);
+    } while(0);
 
     // Returns successfully
     this->_lastError = Error::NONE;
@@ -286,25 +280,25 @@ bool_t Keypad::readKeyPressed(uint8_t *keyPressedValue_p)
     uint8_t auxKey = 0xFF;
 
     // Checks for errors
-    if (!this->_isInitialized) {
+    if(!this->_isInitialized) {
         this->_lastError = Error::NOT_INITIALIZED;
         debugMessage(Error::NOT_INITIALIZED, DEBUG_KEYPAD);
         return false;
     }
-    if (!isPointerValid(keyPressedValue_p)) {
+    if(!isPointerValid(keyPressedValue_p)) {
         this->_lastError = Error::ARGUMENT_POINTER_NULL;
         debugMessage(Error::ARGUMENT_POINTER_NULL, DEBUG_KEYPAD);
         return false;
     }
 
-    for (uint8_t i = 0; i <= this->_columnsMax; i++) {                  // For each column
+    for(uint8_t i = 0; i <= this->_columnsMax; i++) {                   // For each column
         clrBit(*(this->_columnsPort), (i + this->_columnsFirst));       // Clear one column
         __builtin_avr_delay_cycles(5);                                  // Wait for syncronization
         uint8_t aux8 = *(this->_linesPin) >> this->_linesFirst;
-        for (uint8_t j = 0; j <= this->_linesMax; j++) {                        // For each line
-            if (isBitClr(aux8, j)) {                                    // Tests if the key is pressed
+        for(uint8_t j = 0; j <= this->_linesMax; j++) {                         // For each line
+            if(isBitClr(aux8, j)) {                                     // Tests if the key is pressed
                 auxKey = this->_keyValue[((this->_linesMax + 1) * j) + i];      // Decodes the key using the table
-                for (uint8_t k = 0; k < this->_debounceTime; k++) {
+                for(uint8_t k = 0; k < this->_debounceTime; k++) {
                     _delay_ms(1);                                       // Debounce time
                 }
             }
