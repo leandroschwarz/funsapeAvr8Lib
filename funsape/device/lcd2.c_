@@ -1,0 +1,160 @@
+
+typedef enum lcdInstructions_t {
+	LCD_CLEAR_DISPLAY			= 0x01,
+	LCD_RETURN_HOME				= 0x02,
+	LCD_ENTRY_MODE_SET			= 0x04,
+	LCD_DISPLAY_CONTROL			= 0x08,
+	LCD_MOVE_CURSOR_OR_DISPLAY	= 0x10,
+	LCD_FUNCTION_SET			= 0x20,
+	LCD_SET_CGRAM_ADDRESS		= 0x40,
+	LCD_SET_DDRAM_ADDRESS		= 0x80
+} lcdInstructions_t;
+
+typedef enum lcdEntryModeSetOptions_t {
+	LCD_ENTRY_MODE_SET_INCREMENT	= 0x02,
+	LCD_ENTRY_MODE_SET_DECREMENT	= 0x00,
+	LCD_ENTRY_MODE_SET_SHIFT		= 0x01,
+	LCD_ENTRY_MODE_SET_OVERWRITE	= 0x00
+} lcdEntryModeSetOptions_t;
+
+typedef enum lcdDisplayControlOptions_t {
+	LCD_DISPLAY_CONTROL_DISPLAY_ON			= 0x04,
+	LCD_DISPLAY_CONTROL_DISPLAY_OFF			= 0x00,
+	LCD_DISPLAY_CONTROL_CURSOR_ON			= 0x02,
+	LCD_DISPLAY_CONTROL_CURSOR_OFF			= 0x00,
+	LCD_DISPLAY_CONTROL_CURSOR_BLINK_ON		= 0x01,
+	LCD_DISPLAY_CONTROL_CURSOR_BLINK_OFF	= 0x00
+} lcdDisplayControlOptions_t;
+
+typedef enum lcdMoveCursorOrDisplayOptions_t {
+	LCD_MOVE_CURSOR_OR_DISPLAY_SHIFT_DISPLAY	= 0x80,
+	LCD_MOVE_CURSOR_OR_DISPLAY_MOVE_CURSOR		= 0x00,
+	LCD_MOVE_CURSOR_OR_DISPLAY_RIGHT			= 0x40,
+	LCD_MOVE_CURSOR_OR_DISPLAY_LEFT				= 0x00
+} lcdMoveCursorOrDisplayOptions_t;
+
+typedef enum lcdFunctionSetOptions_t {
+	LCD_FUNCTION_SET_8_BITS_INTERFACE	= 0x10,
+	LCD_FUNCTION_SET_4_BITS_INTERFACE	= 0x00,
+	LCD_FUNCTION_SET_2_LINES			= 0x08,
+	LCD_FUNCTION_SET_1_LINE				= 0x00,
+	LCD_FUNCTION_SET_5x10_FONT			= 0x04,
+	LCD_FUNCTION_SET_5x8_FONT			= 0x00
+} lcdFunctionSetOptions_t;
+
+
+lcd_t * defaultDisplay = NULL;
+
+void lcdDisplayShift(lcd_t * lcd, direction_t dir)
+{
+
+
+	return;
+}
+
+void lcdInit(lcd_t * lcd, lcdSize_t size, lcdFont_t font, bool_t interface4Bits, bool_t useBusyFlag)
+{
+	uint8_t command = 0;
+
+	// Updates some struct variables
+	lcd->useBusyFlag = useBusyFlag;
+	lcd->use4LinesData = interface4Bits;
+	lcd->busyInitialized = FALSE;
+	lcd->interfaceInitialized = FALSE;
+	lcd->font = LCD_FONT_5X8;
+
+	// I/O initialization
+	if(interface4Bits) {
+		clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);
+		setMask(*(lcd->dataDDR), 0x0F, lcd->dataFirst);
+	} else {
+		*(lcd->dataPORT) = 0x00;
+		*(lcd->dataDDR) = 0xFF;
+	}
+	clrBit(*(lcd->controlPORT), lcd->controlE);
+	setBit(*(lcd->controlDDR), lcd->controlE);
+	clrBit(*(lcd->controlPORT), lcd->controlRS);
+	setBit(*(lcd->controlDDR), lcd->controlRS);
+	if(useBusyFlag) {
+		clrBit(*(lcd->controlPORT), lcd->controlRW);
+		setBit(*(lcd->controlDDR), lcd->controlRW);
+	}
+	// Reset the controller, must be sent 3 times
+	_delay_ms(15);
+	if(interface4Bits) {
+		lcdFunctionSet8Bits(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+		_delay_ms(5);
+		lcdFunctionSet8Bits(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+		_delay_us(100);
+		lcdFunctionSet8Bits(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+	} else {
+		lcdWriteCommand(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+		_delay_ms(5);
+		lcdWriteCommand(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+		_delay_us(100);
+		lcdWriteCommand(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+	}
+	_delay_us(100);
+
+	// Configures the LCD to 4-bits interface
+	if(interface4Bits) {
+		lcdFunctionSet8Bits(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_4_BITS_INTERFACE);
+		_delay_us(100);
+	}
+
+	// Function set
+	command = LCD_FUNCTION_SET;
+	command |= (interface4Bits) ? LCD_FUNCTION_SET_4_BITS_INTERFACE : LCD_FUNCTION_SET_8_BITS_INTERFACE;
+	command |= (font == LCD_FONT_5X8) ? LCD_FUNCTION_SET_5x8_FONT : LCD_FUNCTION_SET_5x10_FONT;
+	lcd->font = font;
+	command |= (size < 200) ? LCD_FUNCTION_SET_1_LINE : LCD_FUNCTION_SET_2_LINES;
+	lcdWriteCommand(lcd, command);
+	lcd->busyInitialized = TRUE;
+	lcdWriteCommand(lcd, LCD_DISPLAY_CONTROL | LCD_DISPLAY_CONTROL_DISPLAY_OFF);
+	lcdWriteCommand(lcd, LCD_CLEAR_DISPLAY);
+
+	command = LCD_ENTRY_MODE_SET;
+	if(lcd->entryIncDec == LCD_INCREMENT) {
+		command |= LCD_ENTRY_MODE_SET_INCREMENT;
+	} else {
+		command |= LCD_ENTRY_MODE_SET_DECREMENT;
+	}
+	if(lcd->entryShiftDisplay == LCD_DISPLAY_SHIFT) {
+		command |= LCD_ENTRY_MODE_SET_SHIFT;
+	} else {
+		command |= LCD_ENTRY_MODE_SET_OVERWRITE;
+	}
+	lcdWriteCommand(lcd, command);
+
+	lcdWriteCommand(lcd, LCD_DISPLAY_CONTROL | LCD_DISPLAY_CONTROL_DISPLAY_ON);
+
+	// Updates the rest of the struct variables
+	lcd->displayOn = TRUE;
+	lcd->cursorOn = FALSE;
+	lcd->cursorBlink = FALSE;
+	lcd->cursorLine = 0;
+	lcd->cursorColumn = 0;
+	lcd->lines = (size / 100) - 1;
+	lcd->columns = (size % 100) - 1;
+
+	return;
+}
+
+void lcdStdio(lcd_t * lcd)
+{
+
+	return;
+}
+
+void lcdCustomCharacterSet(lcd_t * lcd, uint8_t charAddress, uint8_t * charData)
+}
+
+uint8_t lcdGetColumn(lcd_t * lcd)
+{
+	return lcd->cursorColumn;
+}
+
+uint8_t lcdGetLine(lcd_t * lcd)
+{
+	return lcd->cursorLine;
+}

@@ -1,0 +1,109 @@
+/* -----------------------------------------------------------------------------
+ * Project:			GPDSE AVR8 Library
+ * File:			lcd.h
+ * Module:			Character LCD controller
+ * Authors:			Hazael dos Santos Batista
+ *					Leandro Schwarz
+ * Build:			1
+ * Last edition:	March 18, 2018
+ * Purpose:			Character LCD controller using 8- or 4-bits interface with
+ *					support to busy flag or delay-driven
+ * ---------------------------------------------------------------------------*/
+
+#ifndef __LCD_H
+#define __LCD_H 1
+
+// -----------------------------------------------------------------------------
+// Header files ----------------------------------------------------------------
+
+#include "..\globalDefines.h"
+#if __GLOBAL_DEFINES_H != 1
+#error Error 100 - globalDefines.h - wrong build (globalDefines must be build 1).
+#endif
+#include <stdio.h>
+
+// -----------------------------------------------------------------------------
+// Constant definitions --------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// New data types --------------------------------------------------------------
+
+typedef struct lcd_t {
+    // I/O ports
+    reg_t 	*controlDDR;
+    reg_t 	*controlPORT;
+    reg_t 	*dataDDR;
+    reg_t 	*dataPORT;
+    reg_t 	*dataPIN;
+    uint8_t	dataFirst				: 3;
+    uint8_t	controlE				: 3;
+    uint8_t	controlRS				: 3;
+    uint8_t	controlRW				: 3;
+    // Interface
+    bool_t	use4LinesData			: 1;
+    bool_t	useBusyFlag				: 1;
+    // Display hardware
+    uint8_t	columns					: 6;
+    uint8_t	lines					: 2;
+    uint8_t	font					: 1;
+    // Entry mode set
+    uint8_t	entryIncDec				: 1;
+    uint8_t	entryShiftDisplay		: 1;
+    // Display and cursor configuration
+    bool_t	cursorBlink				: 1;	// 0 off, 1 on
+    uint8_t	cursorColumn			: 6;	// 0 to 39
+    uint8_t	cursorLine				: 2;	// 0 to 3
+    bool_t	cursorOn				: 1;	// 0 off, 1 on
+    bool_t	displayOn				: 1;	// 0 off, 1 on
+    // Initialization
+    bool_t	busyInitialized			: 1;	// 0 off, 1 on
+    bool_t	interfaceInitialized	: 1;	// 0 off, 1 on
+    // Unused bits
+    uint8_t	unusedBits				: 2;
+} lcd_t;
+
+// -----------------------------------------------------------------------------
+// Global variables ------------------------------------------------------------
+
+extern FILE lcdStream;
+extern lcd_t *defaultDisplay;
+
+// -----------------------------------------------------------------------------
+// Macrofunctions --------------------------------------------------------------
+
+#define lcdCreate() (lcd_t){.controlDDR = NULL, .controlPORT = NULL, .dataDDR = NULL, .dataPORT = NULL, .dataPIN = NULL, .dataFirst = 0, .controlE = 0, .controlRS = 0, .controlRW = 0, .use4LinesData = FALSE, .useBusyFlag = FALSE, .columns = 0, .lines = 0, .font = LCD_FONT_5X8, .entryIncDec = LCD_INCREMENT, .entryShiftDisplay = LCD_DISPLAY_OVERWRITE, .cursorBlink = FALSE, .cursorColumn = 0, .cursorLine = 0, .cursorOn = FALSE, .displayOn = FALSE, .busyInitialized = FALSE, .interfaceInitialized = FALSE, .unusedBits = 0}
+
+// -----------------------------------------------------------------------------
+// Public functions declaration ------------------------------------------------
+
+void lcdClearScreen(lcd_t *lcd);
+void lcdCursor(lcd_t *lcd, logic_t state);
+void lcdCursorBlink(lcd_t *lcd, logic_t state);
+void lcdCursorGoTo(lcd_t *lcd, uint8_t line, uint8_t column);
+void lcdCursorHome(lcd_t *lcd);
+void lcdCursorMove(lcd_t *lcd, direction_t dir);
+void lcdCursorMoveFirstLine(lcd_t *lcd);
+void lcdCursorMoveNextLine(lcd_t *lcd);
+void lcdDisplay(lcd_t *lcd, logic_t state);
+void lcdDisplayShift(lcd_t *lcd, direction_t dir);
+void lcdInit(lcd_t *lcd, lcdSize_t size, lcdFont_t font, bool_t interface4Bits, bool_t useBusyFlag);
+void lcdSetControlPort(lcd_t *lcd, reg_t *controlDDR, reg_t *controlPORT, uint8_t controlE, uint8_t controlRS,
+        uint8_t controlRW);
+void lcdSetDataPort(lcd_t *lcd, reg_t *dataDDR, reg_t *dataPORT, reg_t *dataPIN, uint8_t dataFirst);
+void lcdEntryModeSet(lcd_t *lcd, lcdStep_t dir, lcdShiftOverwrite_t mode);
+void lcdStdio(lcd_t *lcd);
+void lcdCustomCharacterSet(lcd_t *lcd, uint8_t charAddress, uint8_t *charData);
+
+// -----------------------------------------------------------------------------
+// Functions for debug purposes ------------------------------------------------
+
+#ifdef __DEBUG_MODE_ON
+#if __DEBUG_MODE_ON == 1
+
+uint8_t lcdGetLine(lcd_t *lcd);
+uint8_t lcdGetColumn(lcd_t *lcd);
+
+#endif
+#endif
+
+#endif

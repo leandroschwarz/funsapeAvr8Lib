@@ -1,0 +1,764 @@
+/* -----------------------------------------------------------------------------
+ * Project:			GPDSE AVR8 Library
+ * File:			lcd.c
+ * Module:			Character LCD controller
+ * Authors:			Hazael dos Santos Batista
+ *					Leandro Schwarz
+ * Build:			1
+ * Last edition:	March 18, 2018
+ * Purpose:			Character LCD controller using 8- or 4-bits interface with
+ *					support to busy flag or delay-driven
+ * ---------------------------------------------------------------------------*/
+
+// -----------------------------------------------------------------------------
+// Header files ----------------------------------------------------------------
+
+#include "lcd.h"
+#if __LCD_H != 1
+	#error Error 101 - Build mismatch on header and source code files (lcd).
+#endif
+
+// -----------------------------------------------------------------------------
+// New data types (use only in this file) --------------------------------------
+
+typedef enum lcdInstructions_t {
+	LCD_CLEAR_DISPLAY			= 0x01,
+	LCD_RETURN_HOME				= 0x02,
+	LCD_ENTRY_MODE_SET			= 0x04,
+	LCD_DISPLAY_CONTROL			= 0x08,
+	LCD_MOVE_CURSOR_OR_DISPLAY	= 0x10,
+	LCD_FUNCTION_SET			= 0x20,
+	LCD_SET_CGRAM_ADDRESS		= 0x40,
+	LCD_SET_DDRAM_ADDRESS		= 0x80
+} lcdInstructions_t;
+
+typedef enum lcdEntryModeSetOptions_t {
+	LCD_ENTRY_MODE_SET_INCREMENT	= 0x02,
+	LCD_ENTRY_MODE_SET_DECREMENT	= 0x00,
+	LCD_ENTRY_MODE_SET_SHIFT		= 0x01,
+	LCD_ENTRY_MODE_SET_OVERWRITE	= 0x00
+} lcdEntryModeSetOptions_t;
+
+typedef enum lcdDisplayControlOptions_t {
+	LCD_DISPLAY_CONTROL_DISPLAY_ON			= 0x04,
+	LCD_DISPLAY_CONTROL_DISPLAY_OFF			= 0x00,
+	LCD_DISPLAY_CONTROL_CURSOR_ON			= 0x02,
+	LCD_DISPLAY_CONTROL_CURSOR_OFF			= 0x00,
+	LCD_DISPLAY_CONTROL_CURSOR_BLINK_ON		= 0x01,
+	LCD_DISPLAY_CONTROL_CURSOR_BLINK_OFF	= 0x00
+} lcdDisplayControlOptions_t;
+
+typedef enum lcdMoveCursorOrDisplayOptions_t {
+	LCD_MOVE_CURSOR_OR_DISPLAY_SHIFT_DISPLAY	= 0x80,
+	LCD_MOVE_CURSOR_OR_DISPLAY_MOVE_CURSOR		= 0x00,
+	LCD_MOVE_CURSOR_OR_DISPLAY_RIGHT			= 0x40,
+	LCD_MOVE_CURSOR_OR_DISPLAY_LEFT				= 0x00
+} lcdMoveCursorOrDisplayOptions_t;
+
+typedef enum lcdFunctionSetOptions_t {
+	LCD_FUNCTION_SET_8_BITS_INTERFACE	= 0x10,
+	LCD_FUNCTION_SET_4_BITS_INTERFACE	= 0x00,
+	LCD_FUNCTION_SET_2_LINES			= 0x08,
+	LCD_FUNCTION_SET_1_LINE				= 0x00,
+	LCD_FUNCTION_SET_5x10_FONT			= 0x04,
+	LCD_FUNCTION_SET_5x8_FONT			= 0x00
+} lcdFunctionSetOptions_t;
+
+// -----------------------------------------------------------------------------
+// Static function declarations ------------------------------------------------
+
+static void lcdFunctionSet8Bits(lcd_t * lcd, uint8_t command);
+static void lcdWaitUntilReady(lcd_t * lcd);
+static void lcdWriteCharacter(lcd_t * lcd, uint8_t character, bool_t ddramChar);
+static void lcdWriteCommand(lcd_t * lcd, uint8_t command);
+static int16_t lcdWriteStd(int8_t c, FILE * stream);
+
+// -----------------------------------------------------------------------------
+// Global variables ------------------------------------------------------------
+
+FILE lcdStream = FDEV_SETUP_STREAM(lcdWriteStd, NULL, _FDEV_SETUP_WRITE);
+lcd_t * defaultDisplay = NULL;
+
+// -----------------------------------------------------------------------------
+// Public function definitions -------------------------------------------------
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdClearScreen
+ * Purpose:		Clears the entire screen and moves cursor to home position
+ * Arguments:	lcd			Pointer to the LCD struct
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdClearScreen(lcd_t * lcd)
+{
+	lcdWriteCommand(lcd, LCD_CLEAR_DISPLAY);
+	lcd->cursorLine = 0;
+	lcd->cursorColumn = 0;
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdCursor
+ * Purpose:		Turns cursor ON/OFF, without changing display or blink option
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				state		ON or OFF (enumerations defined at logic_t)
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdCursor(lcd_t * lcd, logic_t state)
+{
+	uint8_t command;
+
+	lcd->cursorOn = state;
+	command = LCD_DISPLAY_CONTROL;
+	command |= (lcd->displayOn) ? LCD_DISPLAY_CONTROL_DISPLAY_ON : LCD_DISPLAY_CONTROL_DISPLAY_OFF;
+	command |= (lcd->cursorOn) ? LCD_DISPLAY_CONTROL_CURSOR_ON : LCD_DISPLAY_CONTROL_CURSOR_OFF;
+	command |= (lcd->cursorBlink) ? LCD_DISPLAY_CONTROL_CURSOR_BLINK_ON : LCD_DISPLAY_CONTROL_CURSOR_BLINK_OFF;
+	lcdWriteCommand(lcd, command);
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdCursorBlink
+ * Purpose:		Turns cursor blink ON/OFF, without changing display or cursor
+ *				option
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				state		ON or OFF (enumerations defined at logic_t)
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdCursorBlink(lcd_t * lcd, logic_t state)
+{
+	uint8_t command;
+
+	lcd->cursorBlink = state;
+	command = LCD_DISPLAY_CONTROL;
+	command |= (lcd->displayOn) ? LCD_DISPLAY_CONTROL_DISPLAY_ON : LCD_DISPLAY_CONTROL_DISPLAY_OFF;
+	command |= (lcd->cursorOn) ? LCD_DISPLAY_CONTROL_CURSOR_ON : LCD_DISPLAY_CONTROL_CURSOR_OFF;
+	command |= (lcd->cursorBlink) ? LCD_DISPLAY_CONTROL_CURSOR_BLINK_ON : LCD_DISPLAY_CONTROL_CURSOR_BLINK_OFF;
+	lcdWriteCommand(lcd, command);
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdCursorGoTo
+ * Purpose:		Moves the cursor to position
+ * Note:		Origin is considered as position (1, 1)
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				line		line
+ *				column		column
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdCursorGoTo(lcd_t * lcd, uint8_t line, uint8_t column)
+{
+	uint8_t address = 0xFF;
+
+	switch(line) {
+	case 0:		// Go to line 0
+		address = column;
+		break;
+	case 1:		// Go to line 1
+		address = (lcd->lines >= 1) ? (0x40 + column) : 0xFF;
+		break;
+	case 2:		// Go to line 2
+		if((lcd->lines == 3) && (lcd->columns == 11)) {				// Display 12x4
+			address = 0x0C + column;
+		} else if((lcd->lines == 3) && (lcd->columns == 15)) {		// Display 16x4
+			address = 0x10 + column;
+		} else if((lcd->lines == 3) && (lcd->columns == 19)) {		// Display 20x4
+			address = 0x14 + column;
+		}
+		break;
+	case 3:		// Go to line 3
+		if((lcd->lines == 3) && (lcd->columns == 11)) {				// Display 12x4
+			address = 0x4C + column;
+		} else if((lcd->lines == 3) && (lcd->columns == 15)) {		// Display 16x4
+			address = 0x50 + column;
+		} else if((lcd->lines == 3) && (lcd->columns == 19)) {		// Display 20x4
+			address = 0x54 + column;
+		}
+		break;
+	}
+
+	if(address != 0xFF) {
+		lcd->cursorLine = line;
+		lcd->cursorColumn = column;
+		lcdWriteCommand(lcd, (LCD_SET_DDRAM_ADDRESS | address));
+	}
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdCursorHome
+ * Purpose:		Moves cursor to home position
+ * Arguments:	lcd			Pointer to the LCD struct
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdCursorHome(lcd_t * lcd)
+{
+	lcdWriteCommand(lcd, LCD_RETURN_HOME);
+	lcd->cursorLine = 0;
+	lcd->cursorColumn = 0;
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdCursorMove
+ * Purpose:		Moves the cursor one position to the LEFT or RIGHT
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				dir			LEFT or RIGHT (use enumerations defined at
+ *							direction_t)
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdCursorMove(lcd_t * lcd, direction_t dir)
+{
+	uint8_t command = LCD_MOVE_CURSOR_OR_DISPLAY | LCD_MOVE_CURSOR_OR_DISPLAY_MOVE_CURSOR;
+
+	command |= (dir == LEFT) ? LCD_MOVE_CURSOR_OR_DISPLAY_LEFT : LCD_MOVE_CURSOR_OR_DISPLAY_RIGHT;
+	if(dir == LEFT) {
+		lcd->cursorColumn--;
+	} else {
+		lcd->cursorColumn++;
+	}
+	lcdWriteCommand(lcd, command);
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdCursorMoveFirstLine
+ * Purpose:		Moves cursor to the beginning of the first line
+ * Note:		The function just calls lcdCursorHome
+ * Arguments:	lcd			Pointer to the LCD struct
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdCursorMoveFirstLine(lcd_t * lcd)
+{
+	lcdCursorHome(lcd);
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdCursorMoveNextLine
+ * Purpose:		Moves cursor to the beginning of the next line
+ * Note:		The cursor will wrap automatically from the last line to the
+ *				first line
+ * Arguments:	lcd			Pointer to the LCD struct
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdCursorMoveNextLine(lcd_t * lcd)
+{
+	uint8_t currentLine = (lcd->cursorLine + 1);
+
+	currentLine %= (lcd->lines + 1);
+	lcdCursorGoTo(lcd, currentLine, 0);
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdDisplay
+ * Purpose:		Turns display ON/OFF, without changing cursor or blink option
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				state		ON or OFF (enumerations defined at logic_t)
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdDisplay(lcd_t * lcd, logic_t state)
+{
+	uint8_t command;
+
+	lcd->displayOn = state;
+
+	command = LCD_DISPLAY_CONTROL;
+	command |= (lcd->displayOn) ? LCD_DISPLAY_CONTROL_DISPLAY_ON : LCD_DISPLAY_CONTROL_DISPLAY_OFF;
+	command |= (lcd->cursorOn) ? LCD_DISPLAY_CONTROL_CURSOR_ON : LCD_DISPLAY_CONTROL_CURSOR_OFF;
+	command |= (lcd->cursorBlink) ? LCD_DISPLAY_CONTROL_CURSOR_BLINK_ON : LCD_DISPLAY_CONTROL_CURSOR_BLINK_OFF;
+	lcdWriteCommand(lcd, command);
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdDisplayShift
+ * Purpose:		Moves the entire display one position to the LEFT or RIGHT
+ * Note:		The cursor is also moved in the opposite direction. The use of
+ *				this function may cause problems if used before printf() and
+ *				lcdCursorGoTo(). The effects of lcdDisplayShift() are cancelled
+ *				by the lcdCursorHome() and lcdCursorMoveFirstLine() functions.
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				dir			direction to move (use enumerations defined at
+ *							direction_t)
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdDisplayShift(lcd_t * lcd, direction_t dir)
+{
+	uint8_t command = LCD_MOVE_CURSOR_OR_DISPLAY | LCD_MOVE_CURSOR_OR_DISPLAY_SHIFT_DISPLAY;
+
+	command |= (dir == LEFT) ? LCD_MOVE_CURSOR_OR_DISPLAY_LEFT : LCD_MOVE_CURSOR_OR_DISPLAY_RIGHT;
+	if(dir == LEFT) {
+		lcd->cursorColumn--;
+	} else {
+		lcd->cursorColumn++;
+	}
+	lcdWriteCommand(lcd, command);
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdInit
+ * Purpose:		Performs the LCD initialization routine
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				size		Size of the display (use enumerations at lcdSize_t)
+ *				font		Font size (use enumerations at lcdFont_t)
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdInit(lcd_t * lcd, lcdSize_t size, lcdFont_t font, bool_t interface4Bits, bool_t useBusyFlag)
+{
+	uint8_t command = 0;
+
+	// Updates some struct variables
+	lcd->useBusyFlag = useBusyFlag;
+	lcd->use4LinesData = interface4Bits;
+	lcd->busyInitialized = FALSE;
+	lcd->interfaceInitialized = FALSE;
+	lcd->font = LCD_FONT_5X8;
+
+	// I/O initialization
+	if(interface4Bits) {
+		clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);
+		setMask(*(lcd->dataDDR), 0x0F, lcd->dataFirst);
+	} else {
+		*(lcd->dataPORT) = 0x00;
+		*(lcd->dataDDR) = 0xFF;
+	}
+	clrBit(*(lcd->controlPORT), lcd->controlE);
+	setBit(*(lcd->controlDDR), lcd->controlE);
+	clrBit(*(lcd->controlPORT), lcd->controlRS);
+	setBit(*(lcd->controlDDR), lcd->controlRS);
+	if(useBusyFlag) {
+		clrBit(*(lcd->controlPORT), lcd->controlRW);
+		setBit(*(lcd->controlDDR), lcd->controlRW);
+	}
+	// Reset the controller, must be sent 3 times
+	_delay_ms(15);
+	if(interface4Bits) {
+		lcdFunctionSet8Bits(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+		_delay_ms(5);
+		lcdFunctionSet8Bits(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+		_delay_us(100);
+		lcdFunctionSet8Bits(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+	} else {
+		lcdWriteCommand(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+		_delay_ms(5);
+		lcdWriteCommand(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+		_delay_us(100);
+		lcdWriteCommand(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_8_BITS_INTERFACE);
+	}
+	_delay_us(100);
+
+	// Configures the LCD to 4-bits interface
+	if(interface4Bits) {
+		lcdFunctionSet8Bits(lcd, LCD_FUNCTION_SET | LCD_FUNCTION_SET_4_BITS_INTERFACE);
+		_delay_us(100);
+	}
+
+	// Function set
+	command = LCD_FUNCTION_SET;
+	command |= (interface4Bits) ? LCD_FUNCTION_SET_4_BITS_INTERFACE : LCD_FUNCTION_SET_8_BITS_INTERFACE;
+	command |= (font == LCD_FONT_5X8) ? LCD_FUNCTION_SET_5x8_FONT : LCD_FUNCTION_SET_5x10_FONT;
+	lcd->font = font;
+	command |= (size < 200) ? LCD_FUNCTION_SET_1_LINE : LCD_FUNCTION_SET_2_LINES;
+	lcdWriteCommand(lcd, command);
+	lcd->busyInitialized = TRUE;
+	lcdWriteCommand(lcd, LCD_DISPLAY_CONTROL | LCD_DISPLAY_CONTROL_DISPLAY_OFF);
+	lcdWriteCommand(lcd, LCD_CLEAR_DISPLAY);
+
+	command = LCD_ENTRY_MODE_SET;
+	if(lcd->entryIncDec == LCD_INCREMENT) {
+		command |= LCD_ENTRY_MODE_SET_INCREMENT;
+	} else {
+		command |= LCD_ENTRY_MODE_SET_DECREMENT;
+	}
+	if(lcd->entryShiftDisplay == LCD_DISPLAY_SHIFT) {
+		command |= LCD_ENTRY_MODE_SET_SHIFT;
+	} else {
+		command |= LCD_ENTRY_MODE_SET_OVERWRITE;
+	}
+	lcdWriteCommand(lcd, command);
+
+	lcdWriteCommand(lcd, LCD_DISPLAY_CONTROL | LCD_DISPLAY_CONTROL_DISPLAY_ON);
+
+	// Updates the rest of the struct variables
+	lcd->displayOn = TRUE;
+	lcd->cursorOn = FALSE;
+	lcd->cursorBlink = FALSE;
+	lcd->cursorLine = 0;
+	lcd->cursorColumn = 0;
+	lcd->lines = (size / 100) - 1;
+	lcd->columns = (size % 100) - 1;
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdSetControlPort
+ * Purpose:		Configures the LCD I/O ports for the control bus
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				controlDDR	Pointer to I/O Data Direction Register
+ *				controlPORT	Pointer to I/O Port Output Register
+ *				controlE	Position of pin E at the control register
+ *				controlRS	Position of pin RS at the control register
+ *				controlRW	Position of pin RW at the control register
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdSetControlPort(lcd_t * lcd, reg_t * controlDDR, reg_t * controlPORT, uint8_t controlE, uint8_t controlRS, uint8_t controlRW)
+{
+	lcd->controlDDR = controlDDR;
+	lcd->controlPORT = controlPORT;
+	lcd->controlE = controlE;
+	lcd->controlRS = controlRS;
+	lcd->controlRW = controlRW;
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdSetDataPort
+ * Purpose:		Configures the LCD I/O ports for the data bus
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				dataDDR		Pointer to I/O Data Direction Register
+ *				dataPORT	Pointer to I/O Port Output Register
+ *				dataPIN		Pointer to I/O Port Input Register
+ *				dataFirst	Position of the first bit of the LCD data nibble
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdSetDataPort(lcd_t * lcd, reg_t * dataDDR, reg_t * dataPORT, reg_t * dataPIN, uint8_t dataFirst)
+{
+	lcd->dataDDR = dataDDR;
+	lcd->dataPORT = dataPORT;
+	lcd->dataPIN = dataPIN;
+	lcd->dataFirst = dataFirst;
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdSetEntryMode
+ * Purpose:		Configures how the display will behave when a character is
+ *				written
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				dir			write direction (enumerations defined at
+ *							lcdStep_t)
+ *				mode		insert/overwrite (enumerations defined at
+ *							lcdShiftOverwrite_t)
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdEntryModeSet(lcd_t * lcd, lcdStep_t dir, lcdShiftOverwrite_t mode)
+{
+	uint8_t command = LCD_ENTRY_MODE_SET;
+
+	if(dir != LCD_INCDEC_NO_CHANGE) {
+		lcd->entryIncDec = (dir & 0x01);
+	}
+	if(mode != LCD_DISPLAY_NO_CHANGE) {
+		lcd->entryShiftDisplay = (mode & 0x01);
+	}
+
+	command |= (lcd->entryIncDec == LCD_INCREMENT) ? LCD_ENTRY_MODE_SET_INCREMENT : LCD_ENTRY_MODE_SET_DECREMENT;
+	command |= (lcd->entryShiftDisplay == LCD_DISPLAY_SHIFT) ? LCD_ENTRY_MODE_SET_SHIFT : LCD_ENTRY_MODE_SET_OVERWRITE;
+	lcdWriteCommand(lcd, command);
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdStdio
+ * Purpose:		Associate the LCD to the default output for printf function
+ * Arguments:	lcd			Pointer to the LCD struct
+ * Returns:		-
+ * -------------------------------------------------------------------------- */
+
+void lcdStdio(lcd_t * lcd)
+{
+	stdin = stdout = stderr = &lcdStream;
+	defaultDisplay = lcd;
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdCustomCharacterSet
+ * Purpose:		Stores an entire character in CGRAM
+ * Arguments:	lcd				Pointer to the LCD struct
+ *				charAddress		Character address
+ *				charData		Character data
+ * Returns:		-
+ * Note:		The charData argument must be a vector of 8 bytes for a 5x8 font
+ *				display and 10 bytes for a 5x10 font display
+ * -------------------------------------------------------------------------- */
+
+void lcdCustomCharacterSet(lcd_t * lcd, uint8_t charAddress, uint8_t * charData)
+{
+	uint8_t i = 0;
+
+	if(lcd->font == LCD_FONT_5X8) {
+		if(charAddress > 7) {
+			return;
+		}
+		lcdWriteCommand(lcd, LCD_SET_CGRAM_ADDRESS | (charAddress * 8));
+		for(i = 0; i < 8; i++) {
+			lcdWriteCharacter(lcd, charData[i], FALSE);
+		}
+	} else {
+		if(charAddress > 3) {
+			return;
+		}
+		lcdWriteCommand(lcd, LCD_SET_CGRAM_ADDRESS | (charAddress * 10));
+		for(i = 0; i < 10; i++) {
+			lcdWriteCharacter(lcd, charData[i], FALSE);
+		}
+	}
+
+	return;
+}
+
+// -----------------------------------------------------------------------------
+// Static function definitions -------------------------------------------------
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdFunctionSet8Bits
+ * Purpose:		Sends a command to the LCD in 8 bits data interface
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				command		Command to be sent to LCD
+ * Returns:		-
+ * Note:		This function must not be used outside this file
+ * -------------------------------------------------------------------------- */
+
+void lcdFunctionSet8Bits(lcd_t * lcd, uint8_t command)
+{
+	if(lcd->useBusyFlag) {
+		clrBit(*(lcd->controlPORT), lcd->controlRW);	// LCD in write mode
+	}
+	clrBit(*(lcd->controlPORT), lcd->controlRS);		// LCD in command mode
+	clrBit(*(lcd->controlPORT), lcd->controlE);			// Makes sure enable is LOW
+	clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);	// Writes data
+	*(lcd->dataPORT) |= ((command >> 4) << lcd->dataFirst);
+	setBit(*(lcd->controlPORT), lcd->controlE);			// Enable pulse start
+	_delay_us(1);
+	clrBit(*(lcd->controlPORT), lcd->controlE);			// Enable pulse end
+	_delay_us(1);
+	if((!lcd->useBusyFlag) || (!lcd->busyInitialized)) {
+		_delay_us(40);
+	}
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdWaitUntilReady
+ * Purpose:		Checks busy flag until LCD is ready to receive commands.
+ * Arguments:	lcd			Pointer to the LCD struct
+ * Returns:		-
+ * Note:		This function must not be used outside this file
+ * -------------------------------------------------------------------------- */
+
+void lcdWaitUntilReady(lcd_t * lcd)
+{
+	uint8_t busyFlag = 0;
+
+	if(lcd->use4LinesData) {
+		clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);
+		clrMask(*(lcd->dataDDR), 0x0F, lcd->dataFirst);
+	} else {
+		*(lcd->dataPORT) = 0x00;
+		*(lcd->dataDDR) = 0x00;
+	}
+	clrBit(*(lcd->controlPORT), lcd->controlRS);	// LCD in command mode
+	setBit(*(lcd->controlPORT), lcd->controlRW);	// LCD in write mode
+	clrBit(*(lcd->controlPORT), lcd->controlE);		// Makes sure enable is LOW
+
+	do {
+		busyFlag = 0;
+		setBit(*(lcd->controlPORT), lcd->controlE);	// Enable pulse start
+		_delay_us(1);
+		busyFlag = *(lcd->dataPIN);
+		if(lcd->use4LinesData) {
+			busyFlag &= (0x08 << lcd->dataFirst);
+		} else {
+			busyFlag &= 0x80;
+		}
+		clrBit(*(lcd->controlPORT), lcd->controlE);	// Enable pulse end
+		_delay_us(1);
+		if(lcd->use4LinesData) {
+			setBit(*(lcd->controlPORT), lcd->controlE);		// Enable pulse start
+			_delay_us(1);
+			clrBit(*(lcd->controlPORT), lcd->controlE);		// Enable pulse end
+			_delay_us(1);
+		}
+	} while(busyFlag);
+
+	clrBit(*(lcd->controlPORT), lcd->controlRW);	// LCD in write mode
+	if(lcd->use4LinesData) {
+		clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);
+		setMask(*(lcd->dataDDR), 0x0F, lcd->dataFirst);
+	} else {
+		*(lcd->dataPORT) = 0x00;
+		*(lcd->dataDDR) = 0xFF;
+	}
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdWriteCharacter
+ * Purpose:		Sends a character to be written at the LCD
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				character	Character to be sent to LCD
+ * Returns:		-
+ * Note:		This function must not be used outside this file
+ * -------------------------------------------------------------------------- */
+
+void lcdWriteCharacter(lcd_t * lcd, uint8_t character, bool_t ddramChar)
+{
+	if((lcd->cursorColumn < 40) || (!ddramChar)) {
+		if(lcd->useBusyFlag) {
+			lcdWaitUntilReady(lcd);
+			clrBit(*(lcd->controlPORT), lcd->controlRW);	// LCD in write mode
+		}
+		setBit(*(lcd->controlPORT), lcd->controlRS);	// LCD in command mode
+		clrBit(*(lcd->controlPORT), lcd->controlE);		// Makes sure enable is LOW
+		if(lcd->use4LinesData) {
+			clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);	// Writes data (higher nibble)
+			*(lcd->dataPORT) |= ((character >> 4) << lcd->dataFirst);
+			setBit(*(lcd->controlPORT), lcd->controlE);			// Enable pulse start
+			_delay_us(1);
+			clrBit(*(lcd->controlPORT), lcd->controlE);			// Enable pulse end
+			_delay_us(1);
+			clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);	// Writes data (lower nibble)
+			*(lcd->dataPORT) |= ((character & 0x0F) << lcd->dataFirst);
+		} else {
+			*(lcd->dataPORT) = character;					// Writes data
+		}
+		setBit(*(lcd->controlPORT), lcd->controlE);		// Enable pulse start
+		_delay_us(1);
+		clrBit(*(lcd->controlPORT), lcd->controlE);		// Enable pulse end
+		if(!lcd->useBusyFlag) {
+			_delay_us(40);
+		}
+		if(ddramChar) {
+			lcd->cursorColumn++;
+		}
+	}
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdWriteCommand
+ * Purpose:		Sends a command to the LCD
+ * Arguments:	lcd			Pointer to the LCD struct
+ *				command		Command to be sent to LCD
+ * Returns:		-
+ * Note:		This function must not be used outside this file
+ * -------------------------------------------------------------------------- */
+
+void lcdWriteCommand(lcd_t * lcd, uint8_t command)
+{
+	if(lcd->useBusyFlag) {
+		if(lcd->busyInitialized) {
+			lcdWaitUntilReady(lcd);
+		}
+		clrBit(*(lcd->controlPORT), lcd->controlRW);	// LCD in write mode
+	}
+	clrBit(*(lcd->controlPORT), lcd->controlRS);	// LCD in command mode
+	clrBit(*(lcd->controlPORT), lcd->controlE);		// Makes sure enable is LOW
+	if(lcd->use4LinesData) {
+		clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);	// Writes data (higher nibble)
+		*(lcd->dataPORT) |= ((command >> 4) << lcd->dataFirst);
+		setBit(*(lcd->controlPORT), lcd->controlE);			// Enable pulse start
+		_delay_us(1);
+		clrBit(*(lcd->controlPORT), lcd->controlE);			// Enable pulse end
+		_delay_us(1);
+		clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);	// Writes data (lower nibble)
+		*(lcd->dataPORT) |= ((command & 0x0F) << lcd->dataFirst);
+	} else {
+		*(lcd->dataPORT) = command;						// Writes data
+	}
+	setBit(*(lcd->controlPORT), lcd->controlE);		// Enable pulse start
+	_delay_us(1);
+	clrBit(*(lcd->controlPORT), lcd->controlE);		// Enable pulse end
+	_delay_us(1);
+	if(!lcd->useBusyFlag) {
+		if((command == LCD_CLEAR_DISPLAY) || (command == LCD_RETURN_HOME)) {
+			_delay_ms(2);
+		} else {
+			_delay_us(40);
+		}
+	}
+
+	return;
+}
+
+/* -----------------------------------------------------------------------------
+ * Function:	lcdWriteStd
+ * Purpose:		This function is called by the printf() function to write a
+ *				character at the display pointed by defaultDisplay.
+ * Arguments:	character	Character to be sent to LCD
+ *				stream		Pointer to a FILE stream
+ * Returns:		0 (This function always returns 0)
+ * Note:		This function must not be used outside this file
+ * -------------------------------------------------------------------------- */
+
+int16_t lcdWriteStd(int8_t character, FILE * stream)
+{
+	uint8_t columns = defaultDisplay->columns + 1;
+	uint8_t i = 0;
+
+	if(character == '\n') {
+		for(i = defaultDisplay->cursorColumn; i < columns; i++) {
+			lcdWriteCharacter(defaultDisplay, ' ', TRUE);
+		}
+		lcdCursorMoveNextLine(defaultDisplay);
+	} else {
+		lcdWriteCharacter(defaultDisplay, character, TRUE);
+	}
+
+	return 0;
+}
+
+// -----------------------------------------------------------------------------
+// Debug function definitions - EXCLUDE BEFORE RELEASE -------------------------
+
+#ifdef __DEBUG_MODE_ON
+#if __DEBUG_MODE_ON == 1
+
+uint8_t lcdGetColumn(lcd_t * lcd)
+{
+	return lcd->cursorColumn;
+}
+
+uint8_t lcdGetLine(lcd_t * lcd)
+{
+	return lcd->cursorLine;
+}
+
+#endif
+#endif
