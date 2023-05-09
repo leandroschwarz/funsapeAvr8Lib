@@ -186,8 +186,8 @@ bool_t Timer2::setOutputMode(OutputMode compA_p, OutputMode compB_p)
 
     // Configure outputs
     clrMaskOffset(auxTccr2A, constOutputModeAMask, constOutputModeAOffset);
-    setMaskOffset(auxTccr2A, ((uint8_t)compB_p), constOutputModeBOffset);
-    clrMaskOffset(auxTccr2A, constOutputModeAMask, constOutputModeBOffset);
+    setMaskOffset(auxTccr2A, ((uint8_t)compA_p), constOutputModeAOffset);
+    clrMaskOffset(auxTccr2A, constOutputModeBMask, constOutputModeBOffset);
     setMaskOffset(auxTccr2A, ((uint8_t)compB_p), constOutputModeBOffset);
 
     // Update registers
