@@ -102,6 +102,10 @@ private:
 // External global variables
 // =============================================================================
 
+//!
+//! \brief          Brief description
+//! \details        Long description
+//!
 extern Debug debug;
 
 // =============================================================================

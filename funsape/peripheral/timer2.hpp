@@ -157,10 +157,15 @@ public:
         INVERTING_MODE                  = 3,    //!< OC2x will produce a inverted PWM signal
     };
 
+private:
+    // NONE
+
+protected:
+    // NONE
+
     // -------------------------------------------------------------------------
     // Constructors ------------------------------------------------------------
 public:
-
     //!
     //! \brief      Timer2 class constructor
     //! \details    Creates an Timer2 object

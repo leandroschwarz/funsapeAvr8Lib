@@ -216,7 +216,7 @@ enum class Error : cuint16_t {
     NOT_INITIALIZED                                     = 0x0004,   // Not initialized
     // BUSY                                                = 0x0005,   // TODO: Describe parameter
     // DEVICE_NOT_SUPPORTED                                = 0x0006,   // Device is not currently supported
-    // FEATURE_NOT_SUPPORTED                               = 0x0007,   // Unsupported feature or configuration
+    FEATURE_NOT_SUPPORTED                               = 0x0007,   // Unsupported feature or configuration
     // FUNCTION_POINTER_NULL                               = 0x0008,   // TODO: Describe parameter
     // INSTANCE_INVALID                                    = 0x0009,   // Invalid instance
     // LOCKED                                              = 0x000A,   // Accessed a locked device
@@ -227,7 +227,7 @@ enum class Error : cuint16_t {
     // WRITE_PROTECTED                                     = 0x000F,   // Tried to write a write protected device
 
     // Function arguments related error codes
-    // ARGUMENT_CANNOT_BE_ZERO                             = 0x0010,   // TODO: Describe parameter
+    ARGUMENT_CANNOT_BE_ZERO                             = 0x0010,   // TODO: Describe parameter
     ARGUMENT_POINTER_NULL                               = 0x0011,   // NULL pointer was passed as an argument to function
     ARGUMENT_VALUE_INVALID                              = 0x0012,   // TODO: Describe parameter
     // ARGUMENTS_MISMATCH                                  = 0x0013,   // A function was called with dubious argument values
@@ -250,8 +250,8 @@ enum class Error : cuint16_t {
     // BUFFER_NOT_ENOUGH_ELEMENTS                          = 0x0022,   // Not enough space in buffer to perform operation
     // BUFFER_NOT_ENOUGH_SPACE                             = 0x0023,   // Not enough space in buffer to perform operation
     // BUFFER_POINTER_NULL                                 = 0x0024,   // Buffer size was set to zero
-    // BUFFER_SIZE_TOO_LARGE                               = 0x0025,   // Buffer size was set to a large value
-    // BUFFER_SIZE_TOO_SMALL                               = 0x0026,   // Buffer size was set to a very small value
+    BUFFER_SIZE_TOO_LARGE                               = 0x0025,   // Buffer size was set to a large value
+    BUFFER_SIZE_TOO_SMALL                               = 0x0026,   // Buffer size was set to a very small value
     // BUFFER_SIZE_ZERO                                    = 0x0027,   // Buffer size was set to zero
     // BUFFER_GENERIC_ERROR_8                              = 0x0028,   // Generic error (use only on temporary basis)
     // BUFFER_GENERIC_ERROR_9                              = 0x0029,   // Generic error (use only on temporary basis)
@@ -263,10 +263,10 @@ enum class Error : cuint16_t {
     // BUFFER_GENERIC_ERROR_15                             = 0x002F,   // Generic error (use only on temporary basis)
 
     // Clock configuration related error codes
-    // CLOCK_PRESCALER_CHANGE_FAILED                       = 0x0030,   // Clock prescaler change failed
-    // CLOCK_PRESCALER_NOT_SUPPORTED                       = 0x0031,   // Clock prescaler configuration unsupported
-    // CLOCK_SPEED_TOO_HIGH                                = 0x0032,   // TODO: Describe parameter
-    // CLOCK_SPEED_TOO_LOW                                 = 0x0033,   // TODO: Describe parameter
+    CLOCK_PRESCALER_CHANGE_FAILED                       = 0x0030,   // Clock prescaler change failed
+    CLOCK_PRESCALER_NOT_SUPPORTED                       = 0x0031,   // Clock prescaler configuration unsupported
+    CLOCK_SPEED_TOO_HIGH                                = 0x0032,   // TODO: Describe parameter
+    CLOCK_SPEED_TOO_LOW                                 = 0x0033,   // TODO: Describe parameter
     // CLOCK_GENERIC_ERROR_4                               = 0x0034,   // Generic error (use only on temporary basis)
     // CLOCK_GENERIC_ERROR_5                               = 0x0035,   // Generic error (use only on temporary basis)
     // CLOCK_GENERIC_ERROR_6                               = 0x0036,   // Generic error (use only on temporary basis)
@@ -281,10 +281,10 @@ enum class Error : cuint16_t {
     // CLOCK_GENERIC_ERROR_15                              = 0x003F,   // Generic error (use only on temporary basis)
 
     // Communication related error codes
-    // COMMUNICATION_FAILED                                = 0x0040,   // TODO: Describe parameter
-    // COMMUNICATION_NO_DEVICE_SELECTED                    = 0x0041,   // TODO: Describe parameter
+    COMMUNICATION_FAILED                                = 0x0040,   // TODO: Describe parameter
+    COMMUNICATION_NO_DEVICE_SELECTED                    = 0x0041,   // TODO: Describe parameter
     // COMMUNICATION_PORT_NOT_SET                          = 0x0042,   // TODO: Describe parameter
-    // COMMUNICATION_TIMEOUT                               = 0x0043,   // The operation timed out
+    COMMUNICATION_TIMEOUT                               = 0x0043,   // The operation timed out
     // COMMUNICATION_DEVICE_ID_MATCH_FAILED                = 0x0044,   // TODO: Describe parameter
     // CHECKSUM_ERROR                                      = 0x0045,   // TODO: Describe parameter
     // FRAME_ERROR                                         = 0x0046,   // TODO: Describe parameter
@@ -299,25 +299,25 @@ enum class Error : cuint16_t {
     // COMMUNICATION_GENERIC_ERROR_15                      = 0x004F,   // Generic error (use only on temporary basis)
 
     // DateTime class related error codes
-    // DATETIME_DATE_NOT_INITIALIZED                       = 0x0050,   // TODO: Describe parameter
-    // DATETIME_HOUR_INVALID                               = 0x0051,   // TODO: Describe parameter
-    // DATETIME_MILLISECOND_INVALID                        = 0x0052,   // TODO: Describe parameter
-    // DATETIME_MINUTE_INVALID                             = 0x0053,   // TODO: Describe parameter
-    // DATETIME_MONTH_DAY_INVALID                          = 0x0054,   // TODO: Describe parameter
-    // DATETIME_MONTH_INVALID                              = 0x0055,   // TODO: Describe parameter
-    // DATETIME_SECOND_INVALID                             = 0x0056,   // TODO: Describe parameter
-    // DATETIME_TIME_NOT_INITIALIZED                       = 0x0057,   // TODO: Describe parameter
-    // DATETIME_TIMEZONE_INVALID                           = 0x0058,   // TODO: Describe parameter
-    // DATETIME_YEAR_INVALID                               = 0x0059,   // TODO: Describe parameter
-    // DATETIME_DATE_INVALID                               = 0x005A,   // TODO: Describe parameter
-    // DATETIME_TIME_INVALID                               = 0x005B,   // TODO: Describe parameter
-    // DATETIME_GENERIC_ERROR_13                           = 0x005C,   // Generic error (use only on temporary basis)
-    // DATETIME_GENERIC_ERROR_14                           = 0x005D,   // Generic error (use only on temporary basis)
-    // DATETIME_GENERIC_ERROR_15                           = 0x005F,   // Generic error (use only on temporary basis)
+    DATE_NOT_INITIALIZED                                = 0x0050,   // TODO: Describe parameter
+    // HOUR_INVALID                                        = 0x0051,   // TODO: Describe parameter
+    // MILLISECOND_INVALID                                 = 0x0052,   // TODO: Describe parameter
+    // MINUTE_INVALID                                      = 0x0053,   // TODO: Describe parameter
+    // MONTH_DAY_INVALID                                   = 0x0054,   // TODO: Describe parameter
+    // MONTH_INVALID                                       = 0x0055,   // TODO: Describe parameter
+    // SECOND_INVALID                                      = 0x0056,   // TODO: Describe parameter
+    TIME_NOT_INITIALIZED                                = 0x0057,   // TODO: Describe parameter
+    // TIMEZONE_INVALID                                    = 0x0058,   // TODO: Describe parameter
+    // YEAR_INVALID                                        = 0x0059,   // TODO: Describe parameter
+    DATE_INVALID                                        = 0x005A,   // TODO: Describe parameter
+    TIME_INVALID                                        = 0x005B,   // TODO: Describe parameter
+    // GENERIC_ERROR_13                                    = 0x005C,   // Generic error (use only on temporary basis)
+    // GENERIC_ERROR_14                                    = 0x005D,   // Generic error (use only on temporary basis)
+    // GENERIC_ERROR_15                                    = 0x005F,   // Generic error (use only on temporary basis)
 
     // Handler related error codes
-    // HANDLER_NOT_SUPPORTED                               = 0x0060,   // TODO: Describe parameter
-    // HANDLER_POINTER_NULL                                = 0x0061,   // TODO: Describe parameter
+    BUS_HANDLER_NOT_SUPPORTED                           = 0x0060,   // TODO: Describe parameter
+    BUS_HANDLER_POINTER_NULL                            = 0x0061,   // TODO: Describe parameter
     // HANDLER_GENERIC_ERROR_2                             = 0x0062,   // Generic error (use only on temporary basis)
     // HANDLER_GENERIC_ERROR_3                             = 0x0063,   // Generic error (use only on temporary basis)
     // HANDLER_GENERIC_ERROR_4                             = 0x0064,   // Generic error (use only on temporary basis)
