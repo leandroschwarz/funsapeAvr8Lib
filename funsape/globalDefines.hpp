@@ -407,13 +407,13 @@ enum class Error : cuint16_t {
     // TWI_GENERIC_ERROR_15                                = 0x00AF,   // Generic error (use only on temporary basis)
 
     // USART related error codes
-    // USART_BAUD_RATE_NOT_SUPPORTED                       = 0x00B0,   // TODO: Describe parameter
+    USART_BAUD_RATE_NOT_SUPPORTED                       = 0x00B0,   // TODO: Describe parameter
     // USART_CONFIGURATION_PARAMETER_WRONG                 = 0x00B1,   // TODO: Describe parameter
-    // USART_DATA_BITS_NOT_SUPPORTED                       = 0x00B2,   // TODO: Describe parameter
-    // USART_FRAME_FORMAT_NOT_SUPPORTED                    = 0x00B3,   // TODO: Describe parameter
-    // USART_PARITY_NOT_SUPPORTED                          = 0x00B4,   // TODO: Describe parameter
-    // USART_STOP_BIT_NOT_SUPPORTED                        = 0x00B5,   // TODO: Describe parameter
-    // USART_GENERIC_ERROR_6                               = 0x00B6,   // Generic error (use only on temporary basis)
+    USART_DATA_SIZE_NOT_SUPPORTED                       = 0x00B2,   // TODO: Describe parameter
+    USART_FRAME_FORMAT_NOT_SUPPORTED                    = 0x00B3,   // TODO: Describe parameter
+    USART_PARITY_NOT_SUPPORTED                          = 0x00B4,   // TODO: Describe parameter
+    USART_STOP_BIT_NOT_SUPPORTED                        = 0x00B5,   // TODO: Describe parameter
+    USART_MODE_NOT_SUPPORTED                            = 0x00B6,   // TODO: Describe parameter
     // USART_GENERIC_ERROR_7                               = 0x00B7,   // Generic error (use only on temporary basis)
     // USART_GENERIC_ERROR_8                               = 0x00B8,   // Generic error (use only on temporary basis)
     // USART_GENERIC_ERROR_9                               = 0x00B9,   // Generic error (use only on temporary basis)

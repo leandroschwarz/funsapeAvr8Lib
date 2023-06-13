@@ -13,7 +13,7 @@ __gmsl
 *.code-workspace
 
 # Test files
-# main.cpp
+main.cpp
 
 # Proteus files
 Backup*

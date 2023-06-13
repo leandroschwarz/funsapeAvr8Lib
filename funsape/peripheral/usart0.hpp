@@ -36,6 +36,10 @@
 #   error "Version mismatch between header file and library dependency (debug.hpp)!"
 #endif
 
+#include "../util/systemStatus.hpp"
+
+extern FILE usartStream;
+
 // =============================================================================
 // Undefining previous definitions
 // =============================================================================
@@ -107,12 +111,14 @@ public:
     //!                 the VALUE.
     //!
     enum class Mode : uint8_t {
-        ASYNCHRONOUS                    = 0,    //!< Peripheral in UART without double speed mode.
-        ASYNCHRONOUS_DOUBLE_SPEED       = 1,    //!< Peripheral in UART with double speed mode.
-        SYNCHRONOUS_XCK_FALLING         = 2,    //!< Peripheral in USART mode on falling edge.
-        SYNCHRONOUS_XCK_RISING          = 3,    //!< Peripheral in USART mode on rising edge.
-        MASTER_SPI_LEADING              = 4,    //!< Peripheral in master SPI mode with leading edge.
-        MASTER_SPI_TRAILING             = 5,    //!< Peripheral in master SPI mode with trailing edge.
+        ASYNCHRONOUS                            = 0,    //!< Peripheral in UART without double speed mode.
+        ASYNCHRONOUS_DOUBLE_SPEED               = 1,    //!< Peripheral in UART with double speed mode.
+        SYNCHRONOUS_TX_RISING_RX_FALLING        = 2,    //!< Peripheral in USART mode on falling edge.
+        SYNCHRONOUS_TX_FALLING_RX_RISING        = 3,    //!< Peripheral in USART mode on rising edge.
+        MASTER_SPI_MODE_0                       = 4,    //!< Peripheral in master SPI mode 0.
+        MASTER_SPI_MODE_1                       = 5,    //!< Peripheral in master SPI mode 1.
+        MASTER_SPI_MODE_2                       = 6,    //!< Peripheral in master SPI mode 2.
+        MASTER_SPI_MODE_3                       = 7,    //!< Peripheral in master SPI mode 3.
     };
 
     //     ///////////////    USART0 Reception Error     ////////////////     //
@@ -129,8 +135,15 @@ public:
         NONE                            = 0,            //!< No reception errors occurred
         FRAME_ERROR                     = (1 << 0),     //!< Frame format invalid
         PARITY_ERROR                    = (1 << 1),     //!< Parity check failed
-        DATA_OVERRUN_ERROR              = (1 << 2)      //!< Data lost
+        DATA_OVERRUN_ERROR              = (1 << 2),     //!< Data lost
+        ALL                             = (1 << 0) | (1 << 1) || (1 << 2)
     };
+
+    friend inlined ReceptionError operator|(ReceptionError a, ReceptionError b);
+    friend inlined ReceptionError &operator|=(ReceptionError &a, ReceptionError b);
+    friend inlined ReceptionError operator&(ReceptionError a, ReceptionError b);
+    friend inlined ReceptionError &operator&=(ReceptionError &a, ReceptionError b);
+    friend inlined ReceptionError operator~(ReceptionError a);
 
     //     /////////////////    USART0 Parity Mode     //////////////////     //
     //!
@@ -228,16 +241,45 @@ public:
         FRAME_FORMAT_7_E_2        = 0b01111010
     };
 
+    //     //////////////////    USART0 Baud Rate     ///////////////////     //
+    //!
+    //! \brief      USART0 Baud Rate enumeration
+    //! \details    Baud rate speed associated with the USART0.
+    //! \warning    The value associate with the symbolic names may change
+    //!                 between builds and might not reflect the register/bits
+    //!                 real values. In order to ensure compatibility between
+    //!                 builds, always refer to the SYMBOLIC NAME, instead of
+    //!                 the VALUE.
+    //!
+    enum class BaudRate : uint32_t {
+        BAUD_RATE_600                   = 600UL,
+        BAUD_RATE_1200                  = 1200UL,
+        BAUD_RATE_1800                  = 1800UL,
+        BAUD_RATE_2400                  = 2400UL,
+        BAUD_RATE_4800                  = 4800UL,
+        BAUD_RATE_9600                  = 9600UL,
+        BAUD_RATE_14400                 = 14400UL,
+        BAUD_RATE_19200                 = 19200UL,
+        BAUD_RATE_28800                 = 28800UL,
+        BAUD_RATE_38400                 = 38400UL,
+        BAUD_RATE_56000                 = 56000UL,
+        BAUD_RATE_57600                 = 57600UL,
+        BAUD_RATE_115200                = 115200UL,
+        BAUD_RATE_128000                = 128000UL,
+        BAUD_RATE_230400                = 230400UL,
+        BAUD_RATE_256000                = 256000UL
+    };
     // -------------------------------------------------------------------------
     // Constructors ------------------------------------------------------------
 public:
-
     //!
     //! \brief      Usart0 class constructor
     //! \details    Creates an Usart0 object
     //!
     Usart0(
-            void
+            BaudRate baudRate_p = BaudRate::BAUD_RATE_9600,
+            Mode mode_p = Mode::ASYNCHRONOUS,
+            FrameFormat format = FrameFormat::FRAME_FORMAT_8_N_1
     );
 
     //!
@@ -266,58 +308,54 @@ public:
     //! \brief      Disables USART receiver
     //! \details    Disables USART receiver
     //!
-    void inlined disableReceiver(void) {
-        clrBit(UCSR0B, RXEN0);
-        return;
-    }
+    void inlined disableReceiver(void);
 
     //!
     //! \brief      Disables USART transmitter
     //! \details    Disables USART transmitter
     //!
-    void inlined disableTransmitter(void) {
-        clrBit(UCSR0B, TXEN0);
-        return;
-    }
+    void inlined disableTransmitter(void);
 
     //!
     //! \brief      Enables USART receiver
     //! \details    Enables USART receiver
     //!
-    void inlined enableReceiver(void) {
-        setBit(UCSR0B, RXEN0);
-        return;
-    }
+    void inlined enableReceiver(void);
 
     //!
     //! \brief      Enables USART transmitter
     //! \details    Enables USART transmitter
     //!
-    void inlined enableTransmitter(void) {
-        setBit(UCSR0B, TXEN0);
-        return;
-    }
+    void inlined enableTransmitter(void);
 
     //!
     //! \brief          Sets data size
     //! \details        Sets data size.
     //! \param          dataSize_p      Data size
     //!
-    void setDataSize(const DataSize dataSize_p) {
+    bool_t setDataSize(
+            const DataSize dataSize_p
+    );
 
-        // Reset data members
-        this->_isInitialized = false;
+    bool_t setMode(
+            const Mode mode_p
+    );
 
-        if(isBitSet((uint8_t)dataSize_p, 2)) {
-            setBit(UCSR0B, UCSZ02);
-        } else {
-            clrBit(UCSR0B, UCSZ02);
-        }
-        clrMaskOffset(UCSR0C, 0x03, UCSZ00);
-        setMaskOffset(UCSR0C, (0x03 & (uint8_t)dataSize_p), UCSZ00);
+    bool_t setStopBits(
+            const StopBits stopBits_p
+    );
 
-        return;
-    }
+    bool_t setParity(
+            const Parity parity_p
+    );
+
+    bool_t setBaudRate(
+            const BaudRate baudRate_p
+    );
+
+    bool_t setFrameFormat(
+            const FrameFormat frameFormat_p
+    );
 
     //     ///////////////////////     STATUS    ////////////////////////     //
 
@@ -326,27 +364,21 @@ public:
     //! \details    Verifies reception status.
     //! \return     bool_t              True on reception ended / False otherwise
     //!
-    bool_t inlined isReceptionComplete(void) {
-        return isBitSet(UCSR0A, RXC0);
-    }
+    bool_t inlined isReceptionComplete(void);
 
     //!
     //! \brief      Verifies transmission buffer status
     //! \details    Verifies transmission buffer status.
     //! \return     bool_t              True on buffer empty / False otherwise
     //!
-    bool_t inlined isTransmissionBufferEmpty(void) {
-        return isBitSet(UCSR0A, UDRE0);
-    }
+    bool_t inlined isTransmissionBufferEmpty(void);
 
     //!
     //! \brief      Verifies transmission status
     //! \details    Verifies transmission status.
     //! \return     bool_t              True on transmission ended / False otherwise
     //!
-    bool_t inlined isTransmissionComplete(void) {
-        return isBitSet(UCSR0A, TXC0);
-    }
+    bool_t inlined isTransmissionComplete(void);
 
     //!
     //! \brief      Get status of the last reception
@@ -364,58 +396,59 @@ public:
     //! \brief      Activates Reception Complete interrupt
     //! \details    Activates Reception Complete interrupt.
     //!
-    void inlined activateReceptionCompleteInterrupt(void) {
-        setBit(UCSR0B, RXCIE0);
-        return;
-    }
+    void inlined activateReceptionCompleteInterrupt(void);
 
     //!
     //! \brief      Activates Transmission Buffer Empty interrupt
     //! \details    Activates Transmission Buffer Empty interrupt.
     //!
-    void inlined activateTransmissionBufferEmptyInterrupt(void) {
-        setBit(UCSR0B, UDRIE0);
-        return;
-    }
+    void inlined activateTransmissionBufferEmptyInterrupt(void);
 
     //!
     //! \brief      Activates Transmission Complete interrupt
     //! \details    Activates Transmission Complete interrupt.
     //!
-    void inlined activateTransmissionCompleteInterrupt(void) {
-        setBit(UCSR0B, TXCIE0);
-        return;
-    }
+    void inlined activateTransmissionCompleteInterrupt(void);
 
     //!
     //! \brief      Deactivates Reception Complete interrupt
     //! \details    Deactivates Reception Complete interrupt
     //!
-    void inlined deactivateReceptionCompleteInterrupt(void) {
-        clrBit(UCSR0B, RXCIE0);
-        return;
-    }
+    void inlined deactivateReceptionCompleteInterrupt(void);
 
     //!
     //! \brief      Deactivates Transmission Buffer Empty interrupt
     //! \details    Deactivates Transmission Buffer Empty interrupt.
     //!
-    void inlined deactivateTransmissionBufferEmptyInterrupt(void) {
-        clrBit(UCSR0B, UDRIE0);
-        return;
-    }
+    void inlined deactivateTransmissionBufferEmptyInterrupt(void) ;
 
     //!
     //! \brief      Deactivates Transmission Complete interrupt
     //! \details    Deactivates Transmission Complete interrupt.
     //!
-    void inlined deactivateTransmissionCompleteInterrupt(void) {
-        clrBit(UCSR0B, TXCIE0);
-        return;
-    }
+    void inlined deactivateTransmissionCompleteInterrupt(void);
+
+    //!
+    //! \brief      Redirects standard i/o streams
+    //! \details    Redirects standard i/o streams.
+    //!
+    void inlined stdio(void);
 
     // UCSRA    U2X0
     // UCSRA    MPCM0
+
+    bool_t sendData(cuint16_t data_p);
+    bool_t receiveData(uint16_t *data_p);
+    void flushReceptionBuffer(void);
+    char receiveDataStd(FILE *stream_p);
+    int16_t sendDataStd(char data_p, FILE *stream_p);
+
+
+private:
+    char _receiveDataStd(FILE *stream_p);
+    void _clearDataOverrunError(void);
+    void _clearFrameError(void);
+    void _clearParityError(void);
 
     // -------------------------------------------------------------------------
     // Properties --------------------------------------------------------------
@@ -435,13 +468,97 @@ private:
     Error   _lastError;
 
     //     ////////////////////     CONFIGURATION    ////////////////////     //
-    uint8_t _dataBitsCount                              : 3;
-    Mode    _mode;
+    DataSize        _dataSize;
+    Mode            _mode;
+    BaudRate        _baudRate;
+    Parity          _parity;
+    StopBits        _stopBits;
 }; // class Usart0
 
 // =============================================================================
-// class Inlined functions
+// Class inlined functions
 // =============================================================================
+
+void inlined Usart0::disableReceiver(void)
+{
+    clrBit(UCSR0B, RXEN0);
+    return;
+}
+
+void inlined Usart0::disableTransmitter(void)
+{
+    clrBit(UCSR0B, TXEN0);
+    return;
+}
+
+void inlined Usart0::enableReceiver(void)
+{
+    setBit(UCSR0B, RXEN0);
+    return;
+}
+
+void inlined Usart0::enableTransmitter(void)
+{
+    setBit(UCSR0B, TXEN0);
+    return;
+}
+
+bool_t inlined Usart0::isReceptionComplete(void)
+{
+    return isBitSet(UCSR0A, RXC0);
+}
+
+bool_t inlined Usart0::isTransmissionBufferEmpty(void)
+{
+    return isBitSet(UCSR0A, UDRE0);
+}
+
+bool_t inlined Usart0::isTransmissionComplete(void)
+{
+    return isBitSet(UCSR0A, TXC0);
+}
+
+void inlined Usart0::activateReceptionCompleteInterrupt(void)
+{
+    setBit(UCSR0B, RXCIE0);
+    return;
+}
+
+void inlined Usart0::activateTransmissionBufferEmptyInterrupt(void)
+{
+    setBit(UCSR0B, UDRIE0);
+    return;
+}
+
+void inlined Usart0::activateTransmissionCompleteInterrupt(void)
+{
+    setBit(UCSR0B, TXCIE0);
+    return;
+}
+
+void inlined Usart0::deactivateReceptionCompleteInterrupt(void)
+{
+    clrBit(UCSR0B, RXCIE0);
+    return;
+}
+
+void inlined Usart0::deactivateTransmissionBufferEmptyInterrupt(void)
+{
+    clrBit(UCSR0B, UDRIE0);
+    return;
+}
+
+void inlined Usart0::deactivateTransmissionCompleteInterrupt(void)
+{
+    clrBit(UCSR0B, TXCIE0);
+    return;
+}
+
+void inlined Usart0::stdio(void)
+{
+    stdin = stdout = stderr = &usartStream;
+    return;
+}
 
 Usart0::ReceptionError inlined operator|(Usart0::ReceptionError a, Usart0::ReceptionError b)
 {
@@ -461,6 +578,11 @@ Usart0::ReceptionError inlined operator&(Usart0::ReceptionError a, Usart0::Recep
 Usart0::ReceptionError inlined &operator&=(Usart0::ReceptionError &a, Usart0::ReceptionError b)
 {
     return a = static_cast<Usart0::ReceptionError>(static_cast<uint8_t>(a) & static_cast<cuint8_t>(b));
+}
+
+Usart0::ReceptionError inlined operator~(Usart0::ReceptionError a)
+{
+    return static_cast<Usart0::ReceptionError>(static_cast<int>(Usart0::ReceptionError::ALL) ^ static_cast<int>(a));
 }
 
 // =============================================================================
