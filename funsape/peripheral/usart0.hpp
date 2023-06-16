@@ -136,7 +136,7 @@ public:
         FRAME_ERROR                     = (1 << 0),     //!< Frame format invalid
         PARITY_ERROR                    = (1 << 1),     //!< Parity check failed
         DATA_OVERRUN_ERROR              = (1 << 2),     //!< Data lost
-        ALL                             = (1 << 0) | (1 << 1) || (1 << 2)
+        ALL                             = (1 << 0) | (1 << 1) | (1 << 2)
     };
 
     friend inlined ReceptionError operator|(ReceptionError a, ReceptionError b);
