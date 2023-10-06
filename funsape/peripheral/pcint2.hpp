@@ -225,6 +225,27 @@ void inlined Pcint2::deactivateInterrupt(void)
     return;
 }
 
+//     //////////////////     OPERATOR OVERLOADING     //////////////////     //
+inlined Pcint2::Pin operator|(Pcint2::Pin a, Pcint2::Pin b)
+{
+    return static_cast<Pcint2::Pin>(static_cast<uint8_t>(a) | static_cast<uint8_t>(b));
+}
+
+inlined Pcint2::Pin &operator|=(Pcint2::Pin &a, Pcint2::Pin b)
+{
+    return a = static_cast<Pcint2::Pin>(static_cast<uint8_t>(a) | static_cast<uint8_t>(b));
+}
+
+inlined Pcint2::Pin operator&(Pcint2::Pin a, Pcint2::Pin b)
+{
+    return static_cast<Pcint2::Pin>(static_cast<uint8_t>(a) & static_cast<uint8_t>(b));
+}
+
+inlined Pcint2::Pin &operator&=(Pcint2::Pin &a, Pcint2::Pin b)
+{
+    return a = static_cast<Pcint2::Pin>(static_cast<uint8_t>(a) & static_cast<uint8_t>(b));
+}
+
 // =============================================================================
 // External global variables
 // =============================================================================

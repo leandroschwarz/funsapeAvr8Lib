@@ -165,7 +165,7 @@ enum class Axis : cuint8_t {
 
 inlined Axis operator|(Axis a, Axis b)
 {
-    return static_cast<Axis>(static_cast<cint8_t>(a) | static_cast<uint8_t>(b));
+    return static_cast<Axis>(static_cast<uint8_t>(a) | static_cast<uint8_t>(b));
 }
 
 inlined Axis &operator|=(Axis &a, Axis b)
