@@ -245,7 +245,7 @@ bool_t Hd44780::init(const Size size_p, const Font font_p)
 bool_t Hd44780::setControlPort(const GpioPin *controlE_p, const GpioPin *controlRs_p, const GpioPin *controlRw_p)
 {
     // Mark passage for debugging purpose
-    debugMark("Hd44780::controlPortSet(const GpioPin *, const GpioPin *, const GpioPin *)",
+    debugMark("Hd44780::setControlPort(const GpioPin *, const GpioPin *, const GpioPin *)",
             Debug::CodeIndex::Hd44780_MODULE);
 
     // Updates data members
@@ -304,7 +304,7 @@ bool_t Hd44780::setControlPort(const GpioPin *controlE_p, const GpioPin *control
 bool_t Hd44780::setDataPort(const GpioBus *dataBus_p)
 {
     // Mark passage for debugging purpose
-    debugMark("Hd44780::dataPortSet(GpioBus *)", Debug::CodeIndex::Hd44780_MODULE);
+    debugMark("Hd44780::setDataPort(GpioBus *)", Debug::CodeIndex::Hd44780_MODULE);
 
     // Updates data members
     this->_isDataPortSet                = false;
@@ -550,10 +550,10 @@ bool_t Hd44780::cursorMoveNextLine(void)
     return true;
 }
 
-bool_t Hd44780::displayStateSet(const DisplayState displayState_p)
+bool_t Hd44780::setDisplayState(const DisplayState displayState_p)
 {
     // Mark passage for debugging purpose
-    debugMark("Hd44780::displayStateSet(const DisplayState)", Debug::CodeIndex::Hd44780_MODULE);
+    debugMark("Hd44780::setDisplayState(const DisplayState)", Debug::CodeIndex::Hd44780_MODULE);
 
     // Check for errors
     if(!this->_isInterfaceInitialized) {
@@ -625,10 +625,10 @@ bool_t Hd44780::displayShift(const Direction direction_p)
     return true;
 }
 
-bool_t Hd44780::entryModeSet(const Step incDec_p, const DisplayMode mode_p)
+bool_t Hd44780::setEntryMode(const Step incDec_p, const DisplayMode mode_p)
 {
     // Mark passage for debugging purpose
-    debugMark("Hd44780::entryModeSet(const Step, const DisplayMode)", Debug::CodeIndex::Hd44780_MODULE);
+    debugMark("Hd44780::setEntryMode(const Step, const DisplayMode)", Debug::CodeIndex::Hd44780_MODULE);
 
     // Check for errors
     if(!this->_isInterfaceInitialized) {
@@ -658,7 +658,7 @@ bool_t Hd44780::entryModeSet(const Step incDec_p, const DisplayMode mode_p)
 bool_t Hd44780::stdio(void)
 {
     // Mark passage for debugging purpose
-    debugMark("Hd44780::init(Size, Font, bool_t, bool_t)", Debug::CodeIndex::Hd44780_MODULE);
+    debugMark("Hd44780::stdio(void)", Debug::CodeIndex::Hd44780_MODULE);
 
     stdin = stdout = stderr             = &lcdStream;
     defaultDisplay                      = this;
@@ -669,10 +669,10 @@ bool_t Hd44780::stdio(void)
     return true;
 }
 
-bool_t Hd44780::customCharacterSet(cuint8_t charAddress_p, cuint8_t *charData_p)
+bool_t Hd44780::setCustomCharacter(cuint8_t charAddress_p, cuint8_t *charData_p)
 {
     // Mark passage for debugging purpose
-    debugMark("Hd44780::customCharacterSet(cuint8_t, cuint8_t *)", Debug::CodeIndex::Hd44780_MODULE);
+    debugMark("Hd44780::setCustomCharacter(cuint8_t, cuint8_t *)", Debug::CodeIndex::Hd44780_MODULE);
 
     // Check for errors
     if(!this->_isInterfaceInitialized) {
@@ -698,6 +698,61 @@ bool_t Hd44780::customCharacterSet(cuint8_t charAddress_p, cuint8_t *charData_p)
         for(uint8_t i = 0; i < 10; i++) {
             this->_writeCharacter(charData_p[i], false);
         }
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::Hd44780_MODULE);
+    return true;
+}
+
+bool_t Hd44780::print(cchar_t character_p)
+{
+    // Mark passage for debugging purpose
+    debugMark("Hd44780::print(cchar_t)", Debug::CodeIndex::Hd44780_MODULE);
+
+    // Check for errors
+    if(!this->_isInterfaceInitialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::Hd44780_MODULE);
+        return false;
+    }
+
+    if(character_p == '\n') {
+        for(uint8_t i = this->_cursorColumn; i < (this->_columns + 1); i++) {
+            this->_writeCharacter(' ', true);
+        }
+        this->cursorMoveNextLine();
+    } else {
+        this->_writeCharacter(character_p, true);
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::Hd44780_MODULE);
+    return true;
+}
+
+bool_t Hd44780::print(cchar_t *string_p)
+{
+    // Mark passage for debugging purpose
+    debugMark("Hd44780::print(cchar_t *)", Debug::CodeIndex::Hd44780_MODULE);
+
+    // Local variables
+    uint8_t i = 0;
+
+    // Check for errors
+    if(!this->_isInterfaceInitialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::Hd44780_MODULE);
+        return false;
+    }
+
+    while(string_p[i]) {
+        this->print(string_p[i]);
+        i++;
     }
 
     // Returns successfully
@@ -858,17 +913,21 @@ bool_t Hd44780::_writeCharacter(uint8_t character_p, bool_t ddramChar_p)
 
 static int lcdWriteStd(char character, FILE *stream)
 {
+    /*
     uint8_t columns                     = defaultDisplay->_columns + 1;
     uint8_t i                           = 0;
 
     if(character == '\n') {
         for(i = defaultDisplay->_cursorColumn; i < columns; i++) {
-            defaultDisplay->_writeCharacter(' ', true);
+            defaultDisplay->print(' ');
         }
         defaultDisplay->cursorMoveNextLine();
     } else {
-        defaultDisplay->_writeCharacter(character, true);
+        defaultDisplay->print(character);
     }
+    */
+
+    defaultDisplay->print(character);
 
     return 0;
 }

@@ -336,7 +336,7 @@ public:
     //! \param      displayState_p      Param description
     //! \return     bool_t              Return info
     //!
-    bool_t displayStateSet(
+    bool_t setDisplayState(
             const DisplayState displayState_p
     );
 
@@ -357,7 +357,7 @@ public:
     //! \param      mode_p                  Param description
     //! \return     bool_t                  Return info
     //!
-    bool_t entryModeSet(
+    bool_t setEntryMode(
             const Step incDec_p,
             const DisplayMode mode_p
     );
@@ -378,9 +378,29 @@ public:
     //! \param      charData_p              Param description
     //! \return     bool_t                  Return info
     //!
-    bool_t customCharacterSet(
+    bool_t setCustomCharacter(
             cuint8_t charAddress_p,
             cuint8_t *charData_p
+    );
+
+    //!
+    //! \brief      Brief description
+    //! \details    Long description
+    //! \param      character_p             Param description
+    //! \return     bool_t              Return info
+    //!
+    bool_t print(
+            cchar_t character_p
+    );
+
+    //!
+    //! \brief      Brief description
+    //! \details    Long description
+    //! \param      string_p         Param description
+    //! \return     bool_t              Return info
+    //!
+    bool_t print(
+            cchar_t *string_p
     );
 
     //!
