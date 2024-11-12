@@ -254,7 +254,7 @@ public:
     //! \param      controlRw_p             Param description
     //! \return     bool_t                  Return info
     //!
-    bool_t controlPortSet(
+    bool_t setControlPort(
             const GpioPin *controlE_p,
             const GpioPin *controlRs_p,
             const GpioPin *controlRw_p          = nullptr
@@ -266,7 +266,7 @@ public:
     //! \param      dataBus_p               Param description
     //! \return     bool_t                  Return info
     //!
-    bool_t dataPortSet(
+    bool_t setDataPort(
             const GpioBus *dataBus_p
     );
 

@@ -242,7 +242,7 @@ bool_t Hd44780::init(const Size size_p, const Font font_p)
 // -------------------------------------------------------------------------
 // Methods -----------------------------------------------------------------
 
-bool_t Hd44780::controlPortSet(const GpioPin *controlE_p, const GpioPin *controlRs_p, const GpioPin *controlRw_p)
+bool_t Hd44780::setControlPort(const GpioPin *controlE_p, const GpioPin *controlRs_p, const GpioPin *controlRw_p)
 {
     // Mark passage for debugging purpose
     debugMark("Hd44780::controlPortSet(const GpioPin *, const GpioPin *, const GpioPin *)",
@@ -301,7 +301,7 @@ bool_t Hd44780::controlPortSet(const GpioPin *controlE_p, const GpioPin *control
     return true;
 }
 
-bool_t Hd44780::dataPortSet(const GpioBus *dataBus_p)
+bool_t Hd44780::setDataPort(const GpioBus *dataBus_p)
 {
     // Mark passage for debugging purpose
     debugMark("Hd44780::dataPortSet(GpioBus *)", Debug::CodeIndex::Hd44780_MODULE);
@@ -766,6 +766,8 @@ bool_t Hd44780::_writeCommand(uint8_t command_p)
     if(!this->_useBusyFlag) {
         if((command_p == LCD_CLEAR_DISPLAY) || (command_p == LCD_RETURN_HOME)) {
             delayMs(2);
+        } else {
+            delayUs(40);
         }
     }
 
