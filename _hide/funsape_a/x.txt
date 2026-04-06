@@ -1,0 +1,50 @@
+#ifdef NOT_USED_MUST_BE_DELETED
+
+//     ////////////////////     I/O PIN HANDLING     ////////////////////     //
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start subgroup "Global_Definitions/Pin_Handling"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup     Pin_Handling
+ * @details        Performs basic bitwise operations in an I/O pin.
+ * @{
+*/
+
+#define clrIoPin(portAddress, portPin)        do{clrBit(*(getGpioPortAddress(portAddress)), portPin);} while(0)
+#define cplIoPin(portAddress, portPin)        do{cplBit(*(getGpioPortAddress(portAddress)), portPin);} while(0)
+#define setIoPin(portAddress, portPin)        do{setBit(*(getGpioPortAddress(portAddress)), portPin);} while(0)
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End subgroup "Pin_Handling" in "Global_Definitions"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @}
+*/
+
+#endif
+#ifdef NOT_USED_MUST_BE_DELETED
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start subgroup "Global_Definitions/String_Handling"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      String_Handling
+ * @details         Performs general handling on @c char and @c strings.
+ * @{
+*/
+
+//     //////////////////////     STRINGIFYING    ///////////////////////     //
+
+#define stringifyName(constant)         #constant
+
+#define stringifyValue(constant)        stringifyName(constant)
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End subgroup "Global_Definitions/String_Handling"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @}
+*/
+
+#endif

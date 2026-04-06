@@ -1,0 +1,7 @@
+
+Error 1 - Header file (headerFile.hpp) is missing or corrupted!
+Error 2 - Build mismatch between file (someFile.x) and global definitions file (globalDefines.hpp)!
+Error 3 - Microcontroller already defined!
+Error 4 - Microcontroller not defined!
+Error 5 - Build mismatch between file (someFile.x) and library dependency (someFile.hpp)!
+Error 6 - Build mismatch between header file (someFile.hpp) and source file (someFile.cpp)!

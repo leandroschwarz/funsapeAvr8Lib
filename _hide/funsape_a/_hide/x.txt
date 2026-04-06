@@ -1,0 +1,174 @@
+
+/*
+
+class FloatingPoint
+{
+    // Constructor
+public:
+    FloatingPoint(char *asciiSequence);
+    FloatingPoint(float floatNumber);
+    FloatingPoint();
+    ~FloatingPoint();
+
+
+    FloatingPoint operator+(const FloatingPoint &b) {
+        FloatingPoint aux;
+        box.length = this->length + b.length;
+        box.breadth = this->breadth + b.breadth;
+        box.height = this->height + b.height;
+        return box;
+    }
+
+
+
+    // Methods
+public:
+    void set(char *asciiSequence);
+    void set(float floatNumber);
+
+    // Properties
+private:
+    uint64_t    _value;
+    int8_t      _power                  : 7;
+    bool        _negative               : 1;
+};
+
+
+    typedef struct nmeaFloat_s {
+    } nmeaFloat_s;
+
+    typedef struct nmeaDate_s {
+        uint8_t     day                     : 5;    // 1 to 31, 0 to undefined
+        uint8_t     month                   : 4;    // 1 to 12, 0 to undefined
+        uint8_t     year                    : 7;    // 0 to 99
+    } nmeaDate_s;
+
+    typedef struct nmeaTime_s {
+        uint8_t     hours                   : 5;    // 0 to 23
+        uint8_t     minutes                 : 6;    // 0 to 59
+        uint8_t     seconds                 : 6;    // 0 to 59
+        uint16_t    miliseconds             : 10;   // 0 to 999
+    } nmeaTime_s;
+
+    typedef struct nmeaLatitude_s {
+        uint8_t     degrees                 : 7;    // 0 to 90
+        uint8_t     minutes                 : 6;    // 0 to 59
+        uint16_t    minutesDecimal          : 16;   // 0 to 99999
+        bool        eastWest                : 1;    // 0 = East, 1 = West
+    } nmeaLatitude_s;
+
+    typedef struct nmeaMagDeclination_s {
+        uint16_t    degrees                 : 9;    // 0 to 360
+        uint16_t    degreesDecimal          : 10;   // 0 to 999
+        bool        eastWest                : 1;    // 0 = East, 1 = West
+    } nmeaMagDeclination_s;
+
+    typedef struct nmeaLongitude_s {
+        uint8_t     degrees                 : 8;    // 0 to 180
+        uint8_t     minutesInteger          : 6;    // 0 to 59
+        uint16_t    minutesDecimal          : 16;   // 0 to 99999
+        bool        northSouth              : 1;    // 0 = North, 1 = South
+    } nmeaLongitude_s;
+
+    typedef struct nmeaSatInfo_s {
+        int         nr;
+        int         elevation;
+        int         azimuth;
+        int         snr;
+    } nmeaSatInfo_s;
+
+    typedef enum nmeaModeFaa_e : char {
+        MINMEA_FAA_MODE_AUTONOMOUS          = 'A',
+        MINMEA_FAA_MODE_DIFFERENTIAL        = 'D',
+        MINMEA_FAA_MODE_ESTIMATED           = 'E',
+        MINMEA_FAA_MODE_MANUAL              = 'M',
+        MINMEA_FAA_MODE_SIMULATED           = 'S',
+        MINMEA_FAA_MODE_NOT_VALID           = 'N',
+        MINMEA_FAA_MODE_PRECISE             = 'P',
+    } nmeaModeFaa_e;
+
+// typedef struct timespec {
+//  time_t tv_sec;
+//  long tv_nsec;
+// };
+
+    typedef struct nmeaSentenceRmc_s {
+        nmeaFloat_s             course;
+        nmeaDate_s              date;
+        nmeaLatitude_s          latitude;
+        nmeaLongitude_s         longitude;
+        nmeaFloat_s             speed;
+        nmeaTime_s              time;
+        bool                    valid;
+        nmeaMagDeclination_s    magDeclination;
+    } nmeaSentenceRmc_s;
+
+    typedef struct nmeaSentenceGga_s {
+        nmeaDate_s          date;
+        nmeaTime_s          time;
+        nmeaLatitude_s      latitude;
+        nmeaLongitude_s     longitude;
+        int                 fix_quality;
+        int                 satellites_tracked;
+        nmeaFloat_s         hdop;
+        nmeaFloat_s         altitude;
+        char                altitude_units;
+        nmeaFloat_s         height;
+        char                height_units;
+        nmeaFloat_s         dgps_age;
+    } nmeaSentenceGga_s;
+
+    typedef struct nmeaSentenceGll_s {
+        nmeaLatitude_s      latitude;
+        nmeaLongitude_s     longitude;
+        nmeaTime_s          time;
+        char                status;
+        char                mode;
+    } nmeaSentenceGll_s;
+
+    typedef struct nmeaSentenceGst_s {
+        nmeaTime_s      time;
+        nmeaFloat_s     rms_deviation;
+        nmeaFloat_s     semi_major_deviation;
+        nmeaFloat_s     semi_minor_deviation;
+        nmeaFloat_s     semi_major_orientation;
+        nmeaFloat_s     latitude_error_deviation;
+        nmeaFloat_s     longitude_error_deviation;
+        nmeaFloat_s     altitude_error_deviation;
+    } nmeaSentenceGst_s;
+
+    typedef struct nmeaSentenceGsa_s {
+        char            mode;
+        int             fix_type;
+        int             sats[12];
+        nmeaFloat_s     pdop;
+        nmeaFloat_s     hdop;
+        nmeaFloat_s     vdop;
+    } nmeaSentenceGsa_s;
+
+    typedef struct nmeaSentenceGsv_s {
+        int             total_msgs;
+        int             msg_nr;
+        int             total_sats;
+        nmeaSatInfo_s   sats[4];
+    } nmeaSentenceGsv_s;
+
+    typedef struct nmeaSentenceVtg_s {
+        nmeaFloat_s     true_track_degrees;
+        nmeaFloat_s     magnetic_track_degrees;
+        nmeaFloat_s     speed_knots;
+        nmeaFloat_s     speed_kph;
+        nmeaModeFaa_e   faa_mode;
+    } nmeaSentenceVtg_s;
+
+    typedef struct nmeaSentenceZda_s {
+        nmeaTime_s      time;
+        nmeaDate_s      date;
+        int             hour_offset;
+        int             minute_offset;
+    } nmeaSentenceZda_s;
+
+    typedef uint8_t parserAtState_m;
+
+
+*/

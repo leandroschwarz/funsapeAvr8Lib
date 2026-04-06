@@ -1,0 +1,362 @@
+/**
+ *******************************************************************************
+ * @file            sevenSegmentsMuxDisplay.cpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           Seven Segments Multiplexed Display module interface for the
+ *                      FunSAPE++ AVR8 Library.
+ * @details         Seven segments multiplexed display controller with support
+ *                      to variable number of digits (2 to 8). The library
+ *                      supports both common anode and common cathode displays,
+ *                      decimal point, and the special characters defined in
+ *                      @ref sevenSegmentsMuxDisplay.hpp.
+ * @date            2025-02-14
+ * @version         25.02
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No itens in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// System file dependencies
+// =============================================================================
+
+#include "sevenSegmentsMuxDisplay.hpp"
+#if !defined(__SEVEN_SEGMENTS_MUX_DISPLAY_HPP)
+#    error Error 1 - Header file (sevenSegmentsMuxDisplay.hpp) is missing or corrupted!
+#elif __SEVEN_SEGMENTS_MUX_DISPLAY_HPP != 2502
+#    error Error 6 - Build mismatch between header file (sevenSegmentsMuxDisplay.hpp) and source file (sevenSegmentsMuxDisplay.cpp)!
+#endif
+
+// =============================================================================
+// File exclusive - Constants
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - Macro-functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class constructors
+// =============================================================================
+
+SevenSegmentsMuxDisplay::SevenSegmentsMuxDisplay(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("SevenSegmentsMuxDisplay::SevenSegmentsMuxDisplay(void)"),
+            Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+
+    // Reset data members
+    this->_gpioControlBus               = nullptr;
+    this->_gpioDataBus                  = nullptr;
+    this->_isInitialized                = false;
+    this->_isPortsSet                   = false;
+    this->_controlActiveLevel           = LogicLevel::HIGH;
+    this->_digitIndex                   = 0;
+    this->_digitMax                     = 0;
+    this->_digitPoint                   = 0;
+    for(uint8_t i = 0; i < 8; i++) {
+        this->_digitValue[i]            = (uint8_t)SevenSegmentsCode::OFF;
+    }
+    this->_displayType                  = SevenSegmentsDisplayType::COMMON_ANODE;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+    return;
+}
+
+SevenSegmentsMuxDisplay::~SevenSegmentsMuxDisplay(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("SevenSegmentsMuxDisplay::~SevenSegmentsMuxDisplay(void)"),
+            Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+
+    // Returns successfully
+    debugMessage(Error::NONE, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+    return;
+}
+
+// =============================================================================
+// Class own methods - Public
+// =============================================================================
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+bool_t SevenSegmentsMuxDisplay::init(const SevenSegmentsDisplayType displayType_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("SevenSegmentsMuxDisplay::init(const SevenSegmentsDisplayType)"),
+            Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+
+    // Resets data members
+    this->_isInitialized                = false;
+
+    // Check for errors
+    if(!this->_isPortsSet) {
+        // Returns error
+        this->_lastError = Error::GPIO_PORT_NOT_SET;
+        debugMessage(Error::GPIO_PORT_NOT_SET, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+        return false;
+    }
+
+    // I/O initialization (Data Bus)
+    if(this->_displayType == SevenSegmentsDisplayType::COMMON_ANODE) {
+        this->_gpioDataBus->set();
+    } else {
+        this->_gpioDataBus->clr();
+    }
+    this->_gpioDataBus->setMode(GpioBus::Mode::OUTPUT_PUSH_PULL);
+
+    // I/O initialization (Control Bus)
+    if(this->_controlActiveLevel == LogicLevel::HIGH) {
+        this->_gpioControlBus->clr();
+    } else {
+        this->_gpioControlBus->set();
+    }
+    this->_gpioControlBus->setMode(GpioBus::Mode::OUTPUT_PUSH_PULL);
+
+    // Updates data members
+    this->_displayType                  = displayType_p;
+    this->_isInitialized                = true;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+    return true;
+}
+
+bool_t SevenSegmentsMuxDisplay::setPorts(GpioBus *gpioData_p, GpioBus *gpioControl_p, const LogicLevel controlOnLevel_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("SevenSegmentsMuxDisplay::setPorts(GpioBus *, GpioBus *, const LogicLevel)"),
+            Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+
+    // Local variables
+    uint8_t aux8                        = 0;
+
+    // Resets data members
+    this->_controlActiveLevel           = LogicLevel::HIGH;
+    this->_digitIndex                   = 0;
+    this->_digitMax                     = 0;
+    this->_gpioControlBus               = nullptr;
+    this->_gpioDataBus                  = nullptr;
+    this->_isInitialized                = false;
+    this->_isPortsSet                   = false;
+
+    // Check for errors
+    if(!isPointerValid(gpioData_p)) {
+        // Returns error
+        debugMessage(Error::GPIO_PORT_INVALID, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+        this->_lastError = Error::GPIO_PORT_INVALID;
+        return false;
+    }
+    if(gpioData_p->getBusSize() != 8) {
+        // Returns error
+        debugMessage(Error::GPIO_BUS_SIZE_INVALID, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+        this->_lastError = Error::GPIO_BUS_SIZE_INVALID;
+        return false;
+    }
+    if(!isPointerValid(gpioControl_p)) {
+        // Returns error
+        debugMessage(Error::GPIO_PORT_INVALID, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+        this->_lastError = Error::GPIO_PORT_INVALID;
+        return false;
+    }
+    aux8 = gpioControl_p->getBusSize();
+    if((aux8 < 2) || (aux8 > 8)) {
+        // Returns error
+        debugMessage(Error::GPIO_BUS_SIZE_INVALID, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+        this->_lastError = Error::GPIO_BUS_SIZE_INVALID;
+        return false;
+    }
+
+    // Updates data members
+    this->_gpioControlBus               = gpioControl_p;
+    this->_gpioDataBus                  = gpioData_p;
+    this->_controlActiveLevel           = controlOnLevel_p;
+    this->_isPortsSet                   = true;
+    this->_digitMax                     = aux8 - 1;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+    return true;
+}
+
+bool_t SevenSegmentsMuxDisplay::showNextDigit(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("SevenSegmentsMuxDisplay::showNextDigit(void)"), Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+
+    // Checks for errors
+    if(!this->_isInitialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+        return false;
+    }
+
+    // Turns current digit OFF
+    if(this->_displayType == SevenSegmentsDisplayType::COMMON_ANODE) {
+        this->_gpioDataBus->set();
+    } else {
+        this->_gpioDataBus->clr();
+    }
+
+    // Turns all displays off
+    if(this->_controlActiveLevel == LogicLevel::HIGH) {
+        this->_gpioControlBus->clr();
+    } else {
+        this->_gpioControlBus->set();
+    }
+
+    // Evaluates next digit
+    this->_digitIndex = (this->_digitIndex == this->_digitMax) ? 0 : (this->_digitIndex + 1);
+
+    // Send data to port
+    uint8_t aux8 = convertToSevenSegments(
+                    this->_digitValue[this->_digitIndex],
+                    (bool_t)(this->_digitPoint & (1 << this->_digitIndex)),
+                    this->_displayType
+            );
+    this->_gpioDataBus->write(aux8);
+    // Turns digit on
+    if(this->_controlActiveLevel == LogicLevel::HIGH) {
+        this->_gpioControlBus->set(this->_digitIndex);
+    } else {
+        this->_gpioControlBus->clr(this->_digitIndex);
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+    return true;
+}
+
+bool_t SevenSegmentsMuxDisplay::updateDigitValues(cuint8_t *digitValues_p, cbool_t *digitPoints_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("SevenSegmentsMuxDisplay::updateDigitValues(cuint8_t *, cbool_t *)"),
+            Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+
+    // Local variables
+    uint8_t aux8 = 0;
+
+    // Check for errors
+    if(!isPointerValid(digitValues_p)) {
+        // Returns error
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        return false;
+    }
+
+    // Updates data members
+    for(uint8_t i = 0; i < (this->_digitMax + 1); i++) {
+        this->_digitValue[i] = digitValues_p[i];
+        aux8 |= (digitPoints_p[i]) ? (1 << i) : 0;
+    }
+    if(isPointerValid(digitPoints_p)) {
+        this->_digitPoint = aux8;
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::SEVEN_SEGMENTS_MUX_DISPLAY_MODULE);
+    return true;
+}
+
+// =============================================================================
+// Class private methods
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class protected methods
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// General public functions definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt handlers
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// END OF FILE
+// =============================================================================

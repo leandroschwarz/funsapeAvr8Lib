@@ -1,0 +1,217 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/funsapeLibGlobalDefines.hpp"
+#include "funsape/peripheral/funsapeLibAdc.hpp"
+#include "funsape/peripheral/funsapeLibGpioBus.hpp"
+#include "funsape/peripheral/funsapeLibGpioPin.hpp"
+#include "funsape/peripheral/funsapeLibTimer0.hpp"
+#include "funsape/device/funsapeLibSevenSegmentsMuxDisplay.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+typedef union {
+    struct {
+        bool_t      newDataReady                : 1;
+        bool_t      changesDisplayDigit         : 1;
+        uint16_t    rawTemperature              : 10;
+        uint8_t     unusedFlags                 : 4;
+    };
+    uint16_t allFlags;
+} systemFlags_t;
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+static void dieWithError(uint8_t errorCode_p);
+
+void inlined ledTurnOn(void);
+void inlined ledTurnOff(void);
+void inlined ledToggle(void);
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+GpioPin led;                                    // On-board LED
+volatile systemFlags_t systemFlags;
+SevenSegmentsMuxDisplay display;
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // -------------------------------------------------------------------------
+    // Local variables ---------------------------------------------------------
+
+    GpioBus                 gpioDisplayData;
+    GpioBus                 gpioDisplayControl;
+    uint8_t displayDigit[4] = {0};
+    bool_t displayPoint[4] = {false, false, true, false};
+
+    systemFlags.allFlags = 0;
+
+    // -------------------------------------------------------------------------
+    // On-board LED configuration ----------------------------------------------
+
+    led.init(&DDRB, GpioPin::PinIndex::P5);
+    led.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // -------------------------------------------------------------------------
+    // Seven Segments Mux display configuration --------------------------------
+
+    // GPIO configuration
+    if(!gpioDisplayData.init(&DDRD, GpioBus::PinIndex::P0, 8)) {
+        dieWithError(1);
+    }
+    if(!gpioDisplayControl.init(&DDRB, GpioBus::PinIndex::P0, 4)) {
+        dieWithError(2);
+    }
+    // Display hardware linkage
+    if(!display.setPorts(&gpioDisplayData, &gpioDisplayControl, LogicLevel::LOW)) {
+        dieWithError(3);
+    }
+    // Display initialization
+    if(!display.init(SevenSegmentsMuxDisplay::Digits::DIGITS_4, SevenSegmentsDisplayType::COMMON_ANODE)) {
+        dieWithError(4);
+    }
+    // Display update value
+    if(!display.updateDigitValues(displayDigit, displayPoint)) {
+        dieWithError(5);
+    }
+
+    // -------------------------------------------------------------------------
+    // ADC configuration -------------------------------------------------------
+
+    adc.init(Adc::Mode::AUTO_TIMER0_COMPA, Adc::Reference::INTERNAL, Adc::Prescaler::PRESCALER_128);
+    adc.setChannel(Adc::Channel::CHANNEL_0);
+    // adc.clearInterruptRequest();
+    adc.activateInterrupt();
+    adc.enable();
+
+    // -------------------------------------------------------------------------
+    // Timer0 configuration ----------------------------------------------------
+
+    timer0.setCounterValue(0);
+    timer0.setCompareAValue(157);
+    timer0.clearCompareAInterruptRequest();
+    timer0.activateCompareAInterrupt();
+    timer0.init(Timer0::Mode::CTC_OCRA, Timer0::ClockSource::PRESCALER_1024);
+
+    sei();
+
+    // -------------------------------------------------------------------------
+    // Main loop ---------------------------------------------------------------
+
+    while(1) {
+
+        if(systemFlags.newDataReady) {
+            led.toggle();
+
+            uint32_t aux32 = 0;
+
+            aux32 = (uint32_t)systemFlags.rawTemperature;
+            aux32 *= 1375;
+            aux32 /= 128;
+
+            displayDigit[0] = aux32 % 10;
+            aux32 /= 10;
+            displayDigit[1] = aux32 % 10;
+            aux32 /= 10;
+            displayDigit[2] = aux32 % 10;
+            aux32 /= 10;
+            displayDigit[3] = aux32 % 10;
+            aux32 /= 10;
+            display.updateDigitValues(displayDigit);
+            systemFlags.newDataReady = false;
+        }
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+static void dieWithError(uint8_t errorCode_p)
+{
+    cli();          // Turn off interrupt handling
+    while(true) {
+        for(uint8_t i = 0; i < errorCode_p; i++) {
+            ledTurnOn();
+            delayMs(100);
+            ledTurnOff();
+            delayMs(100);
+        }
+        delayMs(1000);
+    }
+
+    return;
+}
+
+void inlined ledTurnOn(void)
+{
+    led.low();
+    return;
+}
+
+void inlined ledTurnOff(void)
+{
+    led.high();
+    return;
+}
+
+void inlined ledToggle(void)
+{
+    led.toggle();
+    return;
+}
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+void adcConversionCompleteCallback(void)
+{
+    // Get temperature
+    systemFlags.rawTemperature = adc.getValue();
+    systemFlags.newDataReady = true;
+
+    return;
+}
+
+void timer0CompareACallback(void)
+{
+    display.showNextDigit();
+    return;
+}

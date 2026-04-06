@@ -1,0 +1,400 @@
+/**
+ *******************************************************************************
+ * @file            sevenSegmentsMuxDisplay.hpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           Seven Segments Multiplexed Display module interface for the
+ *                      FunSAPE++ AVR8 Library.
+ * @details         Seven segments multiplexed display controller with support
+ *                      to variable number of digits (2 to 8). The library
+ *                      supports both common anode and common cathode displays,
+ *                      decimal point, and the special characters defined in
+ *                      @ref sevenSegmentsMuxDisplay.hpp.
+ * @date            2025-02-14
+ * @version         25.02
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No itens in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// Include guard (START)
+// =============================================================================
+
+#ifndef __SEVEN_SEGMENTS_MUX_DISPLAY_HPP
+#define __SEVEN_SEGMENTS_MUX_DISPLAY_HPP    2502
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+//     /////////////////     GLOBAL DEFINITIONS FILE    /////////////////     //
+
+#include "../globalDefines.hpp"
+#if !defined(__GLOBAL_DEFINES_HPP)
+#   error [sevenSegmentsMuxDisplay.hpp] Error 1 - Header file (globalDefines.hpp) is missing or corrupted!
+#elif __GLOBAL_DEFINES_HPP != __SEVEN_SEGMENTS_MUX_DISPLAY_HPP
+#   error [sevenSegmentsMuxDisplay.hpp] Error 2 - Build mismatch between file (sevenSegmentsMuxDisplay.hpp) and global definitions file (globalDefines.hpp)!
+#endif
+
+//     //////////////////     LIBRARY DEPENDENCIES     //////////////////     //
+
+#include "../util/debug.hpp"
+#if !defined(__DEBUG_HPP)
+#   error [sevenSegmentsMuxDisplay.hpp] Error 1 - Header file (debug.hpp) is missing or corrupted!
+#elif __DEBUG_HPP != __SEVEN_SEGMENTS_MUX_DISPLAY_HPP
+#   error [sevenSegmentsMuxDisplay.hpp] Error 5 - Build mismatch between file (sevenSegmentsMuxDisplay.hpp) and library dependency (debug.hpp)!
+#endif
+
+#include "../peripheral/gpioBus.hpp"
+#ifndef __GPIO_BUS_HPP
+#   error [sevenSegmentsMuxDisplay.hpp] Error 1 - Header file (gpioBus.hpp) is missing or corrupted!
+#elif __GPIO_BUS_HPP != __SEVEN_SEGMENTS_MUX_DISPLAY_HPP
+#   error [sevenSegmentsMuxDisplay.hpp] Error 5 - Build mismatch between file (sevenSegmentsMuxDisplay.hpp) and library dependency (gpioBus.hpp)!
+#endif
+
+#include "sevenSegmentsDisplay.hpp"
+#if !defined(__SEVEN_SEGMENTS_DISPLAY_HPP)
+#   error [sevenSegmentsMuxDisplay.hpp] Error 1 - Header file (sevenSegmentsDisplay.hpp) is missing or corrupted!
+#elif __SEVEN_SEGMENTS_DISPLAY_HPP != __SEVEN_SEGMENTS_MUX_DISPLAY_HPP
+#   error [sevenSegmentsMuxDisplay.hpp] Error 5 - Build mismatch between file (sevenSegmentsMuxDisplay.hpp) and library dependency (sevenSegmentsDisplay.hpp)!
+#endif
+
+//     ///////////////////     STANDARD C LIBRARY     ///////////////////     //
+
+// NONE
+
+//     ////////////////////    AVR LIBRARY FILES     ////////////////////     //
+
+// NONE
+
+//     ///////////////////     STANDARD C LIBRARY     ///////////////////     //
+
+// NONE
+
+//     ////////////////////    AVR LIBRARY FILES     ////////////////////     //
+
+// NONE
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start main group "Devices"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      Devices
+ * @brief           External devices.
+ * @{
+*/
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start subgroup "Devices/Seven_Segments_Mux_Display"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      Seven_Segments_Mux_Display
+ * @brief           Seven Segments Multiplexed Display controller module.
+ * @{
+*/
+
+// =============================================================================
+// Undefining previous definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Classes
+// =============================================================================
+
+/**
+ * @brief           SevenSegmentsMuxDisplay class.
+ * @details         This class can handle multiplexed seven segments displays,
+ *                      from 2 to 8 digits.
+*/
+class SevenSegmentsMuxDisplay
+{
+    // -------------------------------------------------------------------------
+    // New data types ----------------------------------------------------------
+
+public:
+    // NONE
+
+private:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Constructors ------------------------------------------------------------
+
+public:
+    /**
+     * @brief       SevenSegmentsMuxDisplay class constructor.
+     * @details     Creates a SevenSegmentsMuxDisplay object. The object still
+     *                  must be initialized before use.
+     * @see         init(const SevenSegmentsDisplayType).
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    SevenSegmentsMuxDisplay(
+            void
+    );
+
+    /**
+     * @brief       SevenSegmentsMuxDisplay class destructor.
+     * @details     Destroys a SevenSegmentsMuxDisplay object.
+    */
+    ~SevenSegmentsMuxDisplay(
+            void
+    );
+
+private:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Methods - Inherited methods ---------------------------------------------
+
+public:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Methods - class own methods ---------------------------------------------
+
+public:
+    //     /////////////////     CONTROL AND STATUS     /////////////////     //
+
+    /**
+     * @brief       Returns the last error.
+     * @details     Returns the last error.
+     * @return      @ref Error          Error status of the last operation.
+    */
+    Error inlined getLastError(
+            void
+    );
+
+    /**
+     * @brief       Initializes a SevenSegmentsMuxDisplay object.
+     * @details     This function initializes the SevenSegmentsMuxDisplay
+     *                  object, setting the display size and configuration.
+     * @param[in]   displayType_p       Display configuration.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     *
+     * @par Error codes:
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t init(
+            const SevenSegmentsDisplayType displayType_p
+    );
+
+    /**
+     * @brief       Set data and control ports.
+     * @details     This function sets the data and control port registers and
+     *                  pins.
+     * @param[out]  gpioData_p          Pointer to @ref GpioBus controller of
+     *                                      data port.
+     * @param[out]  gpioControl_p       Pointer to @ref GpioBus controller of
+     *                                      control port.
+     * @param[in]   controlOnLevel_p    Display activation @ref LogicLevel logic
+     *                                      level.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     *
+     * @par Error codes:
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t setPorts(
+            GpioBus *gpioData_p,
+            GpioBus *gpioControl_p,
+            const LogicLevel controlOnLevel_p
+    );
+
+    /**
+     * @brief       Shows next digit of the display.
+     * @details     This function turns current digit off and turns on the next
+     *                  digit of the display.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     *
+     * @par Error codes:
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t showNextDigit(
+            void
+    );
+
+    /**
+     * @brief       Updates display digit values.
+     * @details     This function updates the current value to be shown on the
+     *                  display.
+     * @param[in]   digitValues_p       Array of digit values to be shown.
+     * @param[in]   digitPoints_p       Array of points to be turned on.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     *
+     * @par Error codes:
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t updateDigitValues(
+            cuint8_t *digitValues_p,
+            cbool_t *digitPoints_p = nullptr
+    );
+
+private:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Properties --------------------------------------------------------------
+
+private:
+    //     ///////////////////    DEVICE BUS PORT     ///////////////////     //
+
+    GpioBus                             *_gpioControlBus;
+    GpioBus                             *_gpioDataBus;
+
+    //     /////////////////     CONTROL AND STATUS     /////////////////     //
+    bool_t                              _isInitialized          : 1;
+    bool_t                              _isPortsSet             : 1;
+    Error                               _lastError;
+
+    //     ///////////////     HARDWARE CONFIGURATION     ///////////////     //
+    LogicLevel                          _controlActiveLevel     : 1;
+    uint8_t                             _digitIndex             : 3;
+    uint8_t                             _digitMax               : 3;
+    uint8_t                             _digitPoint             : 8;
+    uint8_t                             _digitValue[8];
+    SevenSegmentsDisplayType            _displayType            : 1;
+
+protected:
+    // NONE
+
+}; // class SevenSegmentsMuxDisplay
+
+// =============================================================================
+// Inlined class functions
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+Error inlined SevenSegmentsMuxDisplay::getLastError(void)
+{
+    // Returns last error
+    return this->_lastError;
+}
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// External global variables
+// =============================================================================
+
+// NONE
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End subgroup "Devices/Seven_Segments_Mux_Display"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+* @}
+*/
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End main group "Devices"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @}
+*/
+
+// =============================================================================
+// Include guard (END)
+// =============================================================================
+
+#endif  // __SEVEN_SEGMENTS_MUX_DISPLAY_HPP
+
+// =============================================================================
+// End of file (sevenSegmentsMuxDisplay.hpp)
+// =============================================================================

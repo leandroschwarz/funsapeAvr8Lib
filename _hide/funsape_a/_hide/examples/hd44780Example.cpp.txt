@@ -1,0 +1,169 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/funsapeLibGlobalDefines.hpp"
+#include "funsape/peripheral/funsapeLibGpioPin.hpp"
+#include "funsape/peripheral/funsapeLibGpioBus.hpp"
+#include "funsape/peripheral/funsapeLibUsart0.hpp"
+#include "funsape/device/funsapeLibHd44780.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // -------------------------------------------------------------------------
+    // Local variables ---------------------------------------------------------
+
+    GpioPin gpioLcdRs;                          // LCD control RS pin
+    GpioPin gpioLcdEn;                          // LCD control E pin
+    GpioBus gpioLcdData;                        // LCD data[7:4] pins
+    GpioPin led;                                // On-board LED
+    Hd44780 lcd;                                // LCD object
+    Error lastError             = Error::NONE;  // FunSAPE error code
+    uint16_t counter            = 0;            // Counter variable
+
+    // -------------------------------------------------------------------------
+    // On-board LED configuration ----------------------------------------------
+
+    led.init(&DDRB, GpioPin::PinIndex::P5);
+    led.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // -------------------------------------------------------------------------
+    // UART configuration (9600 8N1) -------------------------------------------
+
+    usart0.init();
+    usart0.enableTransmitter();
+    usart0.stdio();
+    printf("[  OK  ] USART configured!\r");
+
+    // -------------------------------------------------------------------------
+    // LCD configuration -------------------------------------------------------
+
+    // GPIO configuration
+    if(!gpioLcdRs.init(&DDRB, GpioPin::PinIndex::P0)) {
+        lastError = gpioLcdRs.getLastError();
+        printf("[ FAIL ] RS GPIO pin configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    if(!gpioLcdEn.init(&DDRB, GpioPin::PinIndex::P1)) {
+        lastError = gpioLcdEn.getLastError();
+        printf("[ FAIL ] EN GPIO pin configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    if(!gpioLcdData.init(&DDRD, GpioBus::PinIndex::P4, 4)) {
+        lastError = gpioLcdData.getLastError();
+        printf("[ FAIL ] Data GPIO bus configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // LCD hardware linkage
+    if(!lcd.setControlPort(&gpioLcdEn, &gpioLcdRs)) {
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD control pin linkage failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    if(!lcd.setDataPort(&gpioLcdData)) {
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD data bus linkage failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // LCD initialization
+    if(!lcd.init(Hd44780::Size::LCD_16X2, Hd44780::Font::FONT_5X8)) {
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD initialization failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    usart0.stdio();
+    printf("[  OK  ] LCD configured!\r");
+
+    // -------------------------------------------------------------------------
+    // Shows splash screen -----------------------------------------------------
+
+    if(!lcd.clearScreen()) {
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD clear screen failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    lcd.stdio();
+    printf("HD44780 example!\n   2025-02-07   \n");
+    delayMs(2000);
+    if(!lcd.clearScreen()) {
+        usart0.stdio();
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD clear screen failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+
+    // -------------------------------------------------------------------------
+    // Main loop ---------------------------------------------------------------
+
+    while(1) {
+        lcd.stdio();
+        if(!lcd.cursorHome()) {
+            usart0.stdio();
+            lastError = lcd.getLastError();
+            printf("[ FAIL ] LCD clear screen failed! Error=0x%04x\r", (uint16_t)lastError);
+            systemHalt();
+        }
+        printf("Counter = %d\n\n", ++counter);
+        led.toggle();
+        delayMs(500);
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+// NONE

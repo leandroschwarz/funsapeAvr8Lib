@@ -1,0 +1,423 @@
+
+
+
+// // =============================================================================
+// // File exclusive - New data types
+// // =============================================================================
+
+// // -----------------------------------------------------------------------------
+// // MPU9250 register bit position
+// // -----------------------------------------------------------------------------
+
+
+// // -----------------------------------------------------------------------------
+// // MPU9250 register addresses
+// // -----------------------------------------------------------------------------
+
+
+// // =============================================================================
+// // File exclusive - Macro-functions
+// // =============================================================================
+
+// // NONE
+
+// // =============================================================================
+// // Global variables
+// // =============================================================================
+
+// // NONE
+
+// // =============================================================================
+// // Static functions declarations
+// // =============================================================================
+
+// // NONE
+
+// // =============================================================================
+// // Class constructors
+// // =============================================================================
+
+// Mpu9250::Mpu9250(void)
+// {
+// 	// Mark passage for debug
+// 	debugMark("Mpu9250(void)");
+
+// 	// Reset data members
+// 	this->_clearData();
+
+// 	// Returns successfully
+// 	this->_lastError = Error::NONE;
+// 	debugMessage(Error::NONE);
+// 	return;
+// }
+
+// Mpu9250::~Mpu9250(void)									// TODO: Implement this function
+// {
+// 	// Mark passage for debug
+// 	debugMark("~Mpu9250(void)")
+
+// 	// Returns successfully
+// 	return;
+// }
+
+// // =============================================================================
+// // Inherited methods - Public
+// // =============================================================================
+
+// // NONE
+
+// // =============================================================================
+// // Inherited methods - Protected
+// // =============================================================================
+
+// // NONE
+
+// // =============================================================================
+// // Class own methods - Public
+// // =============================================================================
+
+// // -----------------------------------------------------------------------------
+// // INITIALIZATION
+// // -----------------------------------------------------------------------------
+
+// // -----------------------------------------------------------------------------
+// // CHECK STATUS
+// // -----------------------------------------------------------------------------
+
+// Error Mpu9250::getLastError(void)
+// {
+// 	// Returns last error
+// 	return this->_lastError;
+// }
+
+// // -----------------------------------------------------------------------------
+// // DEVICE CONFIGURATION
+// // -----------------------------------------------------------------------------
+
+// bool Mpu9250::configGyro(GyroConfig config_p, GyroFullScale scale_p, Axis axis_p)
+// {
+// 	// Local variables
+// 	uint8_t auxBuff[2];
+// 	uint8_t auxFChoiceB = 0;
+// 	uint8_t auxDlpfCfg = 0;
+// 	uint8_t auxFullScale = 0;
+
+// 	// Mark passage for debug
+// 	debugMark();
+
+// 	// Check for errors
+// 	if(!this->_initialized) {
+// 		// Returns error
+// 		this->_lastError = Error::NOT_INITIALIZED;
+// 		debugMessage(Error::NOT_INITIALIZED);
+// 		return false;
+// 	}
+// 	if(axis_p == Axis::NONE) {
+// 		// Returns error
+// 		this->_lastError = Error::INVALID_AXIS;
+// 		debugMessage(Error::INVALID_AXIS);
+// 		return false;
+// 	}
+
+// 	// Process arguments
+// 	auxDlpfCfg = ((uint8_t)config_p & 0x07) << MPU9250_BIT_CONFIG_GYRO_DLPF_CFG_0;
+// 	auxFChoiceB = (((uint8_t)config_p >> 3) & 0x03) << MPU9250_BIT_GYRO_CONFIG_FCHOICE_B_0;
+// 	auxFullScale = ((uint8_t)scale_p & 0x03) << MPU9250_BIT_GYRO_CONFIG_FS_SEL0;
+// 	this->_gyroDisableX = isBitClr((uint8_t)axis_p, 0);
+// 	this->_gyroDisableY = isBitClr((uint8_t)axis_p, 1);
+// 	this->_gyroDisableZ = isBitClr((uint8_t)axis_p, 2);
+
+// 	// Manipulate registers CONFIG and CONFIG_GYRO
+// 	if(!this->_read(MPU9250_REG_CONFIG, auxBuff, 2)) {
+// 		// Returns error
+// 		debugMessage(this->_lastError);
+// 		return false;
+// 	}
+// 	clrMask(auxBuff[0], 0x07, MPU9250_BIT_CONFIG_GYRO_DLPF_CFG_0);
+// 	clrMask(auxBuff[1], 0x03, MPU9250_BIT_GYRO_CONFIG_FCHOICE_B_0);
+// 	clrMask(auxBuff[1], 0x03, MPU9250_BIT_GYRO_CONFIG_FS_SEL0);
+// 	auxBuff[0] |= auxDlpfCfg;
+// 	auxBuff[1] |= auxFChoiceB | auxFullScale;
+// 	if(!this->_write(MPU9250_REG_CONFIG, auxBuff, 2)) {
+// 		// Returns error
+// 		debugMessage(this->_lastError);
+// 		return false;
+// 	}
+
+// 	// Manipulate registers PWR_MGMT_2
+// 	if(!this->_read(MPU9250_REG_PWR_MGMT_2, auxBuff, 1)) {
+// 		// Returns error
+// 		debugMessage(this->_lastError);
+// 		return false;
+// 	}
+// 	clrBit(auxBuff[0], MPU9250_BIT_PWR_MGMT_2_DIS_XG);
+// 	clrBit(auxBuff[0], MPU9250_BIT_PWR_MGMT_2_DIS_YG);
+// 	clrBit(auxBuff[0], MPU9250_BIT_PWR_MGMT_2_DIS_ZG);
+// 	auxBuff[0] |= (
+// 					(this->_gyroDisableX << MPU9250_BIT_PWR_MGMT_2_DIS_XG) |
+// 					(this->_gyroDisableY << MPU9250_BIT_PWR_MGMT_2_DIS_YG) |
+// 					(this->_gyroDisableX << MPU9250_BIT_PWR_MGMT_2_DIS_ZG));
+// 	if(!this->_write(MPU9250_REG_PWR_MGMT_2, auxBuff, 1)) {
+// 		// Returns error
+// 		debugMessage(this->_lastError);
+// 		return false;
+// 	}
+
+// 	// Returns successfully
+// 	this->_lastError = Error::NONE;
+// 	debugMessage(Error::NONE);
+// 	return true;
+// }
+
+// bool Mpu9250::performSelfTest(Axis accelAxis_p, Axis gyroAxis_p)
+// {
+// 	// Mark passage for debug
+// 	debugMark();
+
+// 	// Returns error
+// 	this->_lastError = Error::UNDER_DEVELOPMENT;
+// 	debugMessage(Error::UNDER_DEVELOPMENT);
+// 	return false;
+// }
+
+// // -----------------------------------------------------------------------------
+// // RAW DATA MANAGEMENT
+// // -----------------------------------------------------------------------------
+
+
+
+// bool Mpu9250::getGyroData(int16_t *gyroBuff_p, Axis axis_p)
+// {
+// 	// Local variables
+// 	uint8_t auxBuff[6];
+// 	int16_t auxInt16 = 0;
+// 	uint8_t index = 0;
+
+// 	// Mark passage for debug
+// 	debugMark();
+
+// 	// Check for errors
+// 	if(!this->_initialized) {
+// 		// Returns error
+// 		this->_lastError = Error::NOT_INITIALIZED;
+// 		debugMessage(Error::NOT_INITIALIZED);
+// 		return false;
+// 	}
+// 	if(axis_p == Axis::NONE) {
+// 		// Returns error
+// 		this->_lastError = Error::INVALID_AXIS;
+// 		debugMessage(Error::INVALID_AXIS);
+// 		return false;
+// 	}
+// 	if(!isPointerValid(gyroBuff_p)) {
+// 		this->_lastError = Error::BUFFER_POINTER_NULL;
+// 		debugMessage(Error::BUFFER_POINTER_NULL);
+// 		return false;
+// 	}
+
+// 	// Read registers
+// 	if(!this->_read(MPU9250_REG_GYRO_DATA_XH, auxBuff, 6)) {
+// 		// Returns error
+// 		debugMessage(this->_lastError);
+// 		return false;
+// 	}
+
+// 	// Process data
+// 	if((axis_p & Axis::X) == Axis::X) {
+// 		auxInt16 = (int16_t)auxBuff[0];
+// 		auxInt16 <<= 8;
+// 		auxInt16 |= (int16_t)auxBuff[1];
+// 		gyroBuff_p[index++] = auxInt16;
+// 	}
+// 	if((axis_p & Axis::Y) == Axis::Y) {
+// 		auxInt16 = (int16_t)auxBuff[2];
+// 		auxInt16 <<= 8;
+// 		auxInt16 |= (int16_t)auxBuff[3];
+// 		gyroBuff_p[index++] = auxInt16;
+// 	}
+// 	if((axis_p & Axis::Z) == Axis::Z) {
+// 		auxInt16 = (int16_t)auxBuff[4];
+// 		auxInt16 <<= 8;
+// 		auxInt16 |= (int16_t)auxBuff[5];
+// 		gyroBuff_p[index++] = auxInt16;
+// 	}
+
+// 	// Returns successfully
+// 	this->_lastError = Error::NONE;
+// 	debugMessage(Error::NONE);
+// 	return true;
+// }
+
+// bool Mpu9250::getGyroOffset(int16_t *gyroBuff_p, Axis axis_p)
+// {
+// 	// Local variables
+// 	uint8_t auxBuff[6];
+// 	int16_t auxInt16 = 0;
+// 	uint8_t index = 0;
+
+// 	// Mark passage for debug
+// 	debugMark();
+
+// 	// Check for errors
+// 	if(!this->_initialized) {
+// 		// Returns error
+// 		this->_lastError = Error::NOT_INITIALIZED;
+// 		debugMessage(Error::NOT_INITIALIZED);
+// 		return false;
+// 	}
+// 	if(axis_p == Axis::NONE) {
+// 		// Returns error
+// 		this->_lastError = Error::INVALID_AXIS;
+// 		debugMessage(Error::INVALID_AXIS);
+// 		return false;
+// 	}
+// 	if(!isPointerValid(gyroBuff_p)) {
+// 		this->_lastError = Error::BUFFER_POINTER_NULL;
+// 		debugMessage(Error::BUFFER_POINTER_NULL);
+// 		return false;
+// 	}
+
+// 	// Read registers
+// 	if(!this->_read(MPU9250_REG_GYRO_OFFSET_XH, auxBuff, 6)) {
+// 		// Returns error
+// 		debugMessage(this->_lastError);
+// 		return false;
+// 	}
+
+// 	// Process data
+// 	if((axis_p & Axis::X) == Axis::X) {
+// 		auxInt16 = (int16_t)auxBuff[0];
+// 		auxInt16 <<= 8;
+// 		auxInt16 |= (int16_t)auxBuff[1];
+// 		gyroBuff_p[index++] = auxInt16;
+// 	}
+// 	if((axis_p & Axis::Y) == Axis::Y) {
+// 		auxInt16 = (int16_t)auxBuff[2];
+// 		auxInt16 <<= 8;
+// 		auxInt16 |= (int16_t)auxBuff[3];
+// 		gyroBuff_p[index++] = auxInt16;
+// 	}
+// 	if((axis_p & Axis::Z) == Axis::Z) {
+// 		auxInt16 = (int16_t)auxBuff[4];
+// 		auxInt16 <<= 8;
+// 		auxInt16 |= (int16_t)auxBuff[5];
+// 		gyroBuff_p[index++] = auxInt16;
+// 	}
+
+// 	// Returns successfully
+// 	this->_lastError = Error::NONE;
+// 	debugMessage(Error::NONE);
+// 	return true;
+// }
+
+// bool Mpu9250::setGyroOffset(int16_t *gyroBuff_p, Axis axis_p)
+// {
+// 	// Mark passage for debug
+// 	debugMark();
+
+// 	// Returns error
+// 	this->_lastError = Error::UNDER_DEVELOPMENT;
+// 	debugMessage(Error::UNDER_DEVELOPMENT);
+// 	return false;
+// }
+
+// // =============================================================================
+// // Class own methods - Private
+// // =============================================================================
+
+// void Mpu9250::_clearData(void)
+// {
+// 	// Mark passage for debug
+// 	debugMark();
+
+// 	//     /////////////////     PERIPHERAL HANDLER     /////////////////     //
+// 	this->_activateDevice				= nullptr;
+// 	this->_deactivateDevice				= nullptr;
+// 	this->_handler						= nullptr;
+// 	this->_i2cAddress					= 0x00;
+// 	this->_useSpi						= false;
+
+// 	//     /////////////////     CONTROL AND STATUS     /////////////////     //
+// 	this->_initialized					= false;
+// 	this->_lastError					= Error::NONE;
+
+// 	//     ////////////////     SENSOR CONFIGURATION     ////////////////     //
+// 	this->_accelDisableX				= false;
+// 	this->_accelDisableY				= false;
+// 	this->_accelDisableZ				= false;
+// 	// this->_sampleRateDivider			= 0;
+// 	this->_gyroDisableX					= false;
+// 	this->_gyroDisableY					= false;
+// 	this->_gyroDisableZ					= false;
+
+// 	// Return successfully
+// 	return;
+// }
+
+// bool Mpu9250::_read(uint8_t regAddr_p, uint8_t *dataBuffer_p, uint16_t bytesToRead_p)
+// {
+// 	// Mark passage for debug
+// 	debugMark();
+
+// 	// Configure communication handler parameters
+// 	if(this->_useSpi) {
+// 		if(!this->_handler->setDevice(this->_activateDevice, this->_deactivateDevice)) {
+// 			// Returns error
+// 			this->_lastError = this->_handler->getLastError();
+// 			debugMessage(this->_lastError);
+// 			return false;
+// 		}
+// 	} else {
+// 		if(!this->_handler->setAddress(this->_i2cAddress, false)) {
+// 			// Returns error
+// 			this->_lastError = this->_handler->getLastError();
+// 			debugMessage(this->_lastError);
+// 			return false;
+// 		}
+// 	}
+
+// 	// Read data from device
+// 	if(!this->_handler->readReg(regAddr_p, dataBuffer_p, bytesToRead_p)) {
+// 		// Returns error
+// 		this->_lastError = this->_handler->getLastError();
+// 		debugMessage(this->_lastError);
+// 		return false;
+// 	}
+
+// 	// Return successfully
+// 	return true;
+// }
+
+// bool Mpu9250::_write(uint8_t regAddr_p, uint8_t *dataBuffer_p, uint16_t bytesToWrite_p)
+// {
+// 	// Mark passage for debug
+// 	debugMark();
+
+// 	// Configure communication handler parameters
+// 	if(this->_useSpi) {
+// 		if(!this->_handler->setDevice(this->_activateDevice, this->_deactivateDevice)) {
+// 			// Returns error
+// 			this->_lastError = this->_handler->getLastError();
+// 			debugMessage(this->_lastError);
+// 			return false;
+// 		}
+// 	} else {
+// 		if(!this->_handler->setAddress(this->_i2cAddress, false)) {
+// 			// Returns error
+// 			this->_lastError = this->_handler->getLastError();
+// 			debugMessage(this->_lastError);
+// 			return false;
+// 		}
+// 	}
+
+// 	// Read data from device
+// 	if(!this->_handler->writeReg(regAddr_p, dataBuffer_p, bytesToWrite_p)) {
+// 		// Returns error
+// 		this->_lastError = this->_handler->getLastError();
+// 		debugMessage(this->_lastError);
+// 		return false;
+// 	}
+
+// 	// Return successfully
+// 	return true;
+// }

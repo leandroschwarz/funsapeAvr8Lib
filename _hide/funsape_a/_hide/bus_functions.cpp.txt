@@ -1,0 +1,53 @@
+
+#include "funsape/funsapeLibGlobalDefines"
+#include "funsape/peripheral/funsapeLibGpioPin.hpp"
+
+// =============================================================================
+// Functions from Bus class, implemented on all other classes ==================
+
+bool_t read(uint8_t *buffData_p, cuint16_t buffSize_p);                         // Bus class
+bool_t read(uint8_t *buffData_p, cuint16_t buffSize_p);                         // Twi class
+
+bool_t write(uint8_t *buffData_p, cuint16_t buffSize_p);                        // Bus class
+bool_t write(uint8_t *buffData_p, cuint16_t buffSize_p);                        // Twi class
+
+bool_t readReg(cuint8_t reg_p, uint8_t *buffData_p, cuint16_t buffSize_p);      // Bus class
+bool_t readReg(cuint8_t reg_p, uint8_t *buffData_p, cuint16_t buffSize_p);      // Twi class
+
+bool_t writeReg(cuint8_t reg_p, cuint8_t *buffData_p, cuint16_t buffSize_p);    // Bus class
+bool_t writeReg(cuint8_t reg_p, cuint8_t *buffData_p, cuint16_t buffSize_p);    // Twi class
+
+Bus::BusType getBusType(void);                                                  // Bus class
+Bus::BusType getBusType(void);                                                  // Twi class
+
+Error getLastError(void);                                                       // Bus class
+Error getLastError(void);                                                       // Twi class
+
+bool_t setDevice(cuint16_t address_p, cbool_t useLongAddress_p);                // Bus class
+bool_t setDevice(cuint16_t address_p, cbool_t useLongAddress_p);                // Twi class
+
+// =============================================================================
+// Functions from Bus class, not implemented yet ===============================
+
+bool_t setDevice(Gpio *csPin_p);                                                // Bus class
+
+bool_t setDevice(void (* actFunc_p)(void), void (* deactFunc_p)(void));         // Bus class
+
+bool_t sendData(cuint8_t *txBuff_p, uint8_t *rxBuff_p, cuint16_t buffSize_p);   // Bus class
+
+bool_t sendData(uint8_t *buffData_p, cuint16_t buffSize_p);                     // Bus class
+
+// =============================================================================
+// Functions from other classes, not in Bus class ==============================
+
+bool_t init(cuint32_t clockSpeed_p = 10'000, cuint8_t bufferSize_p = 30);       // Twi class
+
+bool_t setTimeout(cuint16_t timeout_p);                                         // Twi class
+
+// bool_t sendData(uint8_t dAdd_p, Operation rW_p, uint8_t reg_p, uint8_t *msg_p, uint8_t msgSize_p); // Twi class
+
+void interruptHandler(void);                                                    // Twi class
+
+bool_t _readFromBuffer(uint8_t *msg_p, cuint8_t msgSize_p);                     // Twi class
+bool_t _startTransmission(void);                                                // Twi class
+bool_t _waitWhileIsBusy(void);                                                  // Twi class

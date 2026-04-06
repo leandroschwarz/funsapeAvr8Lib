@@ -1,0 +1,226 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/funsapeLibGlobalDefines.hpp"
+#include "funsape/peripheral/funsapeLibGpioPin.hpp"
+#include "funsape/peripheral/funsapeLibTwi.hpp"
+#include "funsape/peripheral/funsapeLibUsart0.hpp"
+#include "bh1750.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+static void dieWithError(uint8_t errorCode_p);
+
+void inlined ledTurnOn(void);
+void inlined ledTurnOff(void);
+void inlined ledToggle(void);
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+GpioPin led;                                    // On-board LED
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // -------------------------------------------------------------------------
+    // Local variables ---------------------------------------------------------
+
+    Bh1750 luxSensor;                           // Bh1750 object
+    Error lastError             = Error::NONE;  // FunSAPE error code
+
+    // -------------------------------------------------------------------------
+    // On-board LED configuration ----------------------------------------------
+
+    led.init(&DDRB, GpioPin::PinIndex::P5);
+    led.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // -------------------------------------------------------------------------
+    // UART configuration (9600 8N1) -------------------------------------------
+
+    usart0.init();
+    usart0.enableTransmitter();
+    usart0.stdio();
+    printf("[  OK  ] USART configured!\r");
+
+    // -------------------------------------------------------------------------
+    // TWI peripheral configuration --------------------------------------------
+
+    if(!twi.init(10'000)) {
+        lastError = twi.getLastError();
+        printf("[ FAIL ] TWI configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        dieWithError(1);
+    }
+    sei();
+    printf("[  OK  ] TWI configured!\r");
+
+    // -------------------------------------------------------------------------
+    // Bh1750 configuration ----------------------------------------------------
+
+    // BH1750 initialization
+    if(!luxSensor.init(&twi)) {
+        lastError = luxSensor.getLastError();
+        printf("[ FAIL ] BH1750 initialization failed! Error=0x%04x\r", (uint16_t)lastError);
+        dieWithError(2);
+    }
+    printf("[  OK  ] BH1750 initialized!\r");
+    if(!luxSensor.powerOn()) {
+        lastError = luxSensor.getLastError();
+        printf("[ FAIL ] BH1750 set power on mode failed! Error=0x%04x\r", (uint16_t)lastError);
+        dieWithError(3);
+    }
+    printf("[  OK  ] BH1750 in power on mode!\r");
+
+    if(!luxSensor.setMode(Bh1750::Mode::CONTINUOUS_LOW_RES)) {
+        lastError = luxSensor.getLastError();
+        printf("[ FAIL ] BH1750 set operation mode failed! Error=0x%04x\r", (uint16_t)lastError);
+        dieWithError(4);
+    }
+    printf("[  OK  ] BH1750 operation mode set to CONTINUOUS_LOW_RES!\r");
+
+
+    // -------------------------------------------------------------------------
+    // Main loop ---------------------------------------------------------------
+
+    while(1) {
+        if(!luxSensor.setMeasurementTime(31)) {
+            lastError = luxSensor.getLastError();
+            printf("[ FAIL ] BH1750 set measurement time operation failed! Error=0x%04x\r", (uint16_t)lastError);
+            dieWithError(5);
+        }
+        printf("\r[  OK  ] BH1750 measurement time changed to 39!\r");
+
+        for(uint8_t i = 0; i < 10; i++) {
+            delayMs(500);
+            uint16_t luminosity = 0;
+            if(!luxSensor.getData(&luminosity)) {
+                lastError = luxSensor.getLastError();
+                printf("[ FAIL ] BH1750 read operation failed! Error=0x%04x\r", (uint16_t)lastError);
+                dieWithError(6);
+            }
+            printf("[  OK  ] BH1750 luminosity value = %u!\r", luminosity);
+            ledToggle();
+        }
+
+        if(!luxSensor.setMeasurementTime(69)) {
+            lastError = luxSensor.getLastError();
+            printf("[ FAIL ] BH1750 set measurement time operation failed! Error=0x%04x\r", (uint16_t)lastError);
+            dieWithError(5);
+        }
+        printf("\r[  OK  ] BH1750 measurement time changed to 69!\r");
+
+        for(uint8_t i = 0; i < 10; i++) {
+            delayMs(500);
+            uint16_t luminosity = 0;
+            if(!luxSensor.getData(&luminosity)) {
+                lastError = luxSensor.getLastError();
+                printf("[ FAIL ] BH1750 read operation failed! Error=0x%04x\r", (uint16_t)lastError);
+                dieWithError(6);
+            }
+            printf("[  OK  ] BH1750 luminosity value = %u!\r", luminosity);
+            ledToggle();
+        }
+
+        if(!luxSensor.setMeasurementTime(138)) {
+            lastError = luxSensor.getLastError();
+            printf("[ FAIL ] BH1750 set measurement time operation failed! Error=0x%04x\r", (uint16_t)lastError);
+            dieWithError(5);
+        }
+        printf("\r[  OK  ] BH1750 measurement time changed to 138!\r");
+
+        for(uint8_t i = 0; i < 10; i++) {
+            delayMs(500);
+            uint16_t luminosity = 0;
+            if(!luxSensor.getData(&luminosity)) {
+                lastError = luxSensor.getLastError();
+                printf("[ FAIL ] BH1750 read operation failed! Error=0x%04x\r", (uint16_t)lastError);
+                dieWithError(6);
+            }
+            printf("[  OK  ] BH1750 luminosity value = %u!\r", luminosity);
+            ledToggle();
+        }
+
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+static void dieWithError(uint8_t errorCode_p)
+{
+    cli();          // Turn off interrupt handling
+    while(true) {
+        for(uint8_t i = 0; i < errorCode_p; i++) {
+            ledTurnOn();
+            delayMs(100);
+            ledTurnOff();
+            delayMs(100);
+        }
+        delayMs(500);
+    }
+
+    return;
+}
+
+void inlined ledTurnOn(void)
+{
+    led.low();
+    return;
+}
+
+void inlined ledTurnOff(void)
+{
+    led.high();
+    return;
+}
+
+void inlined ledToggle(void)
+{
+    led.toggle();
+    return;
+}
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+// NONE

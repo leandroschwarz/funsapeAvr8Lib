@@ -1,0 +1,197 @@
+/**
+ *******************************************************************************
+ * @file            sevenSegmentsDisplay.cpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           Seven Segments Display module interface for the FunSAPE++
+ *                      AVR8 Library.
+ * @details         This file provides driver interface with the seven segments
+ *                      display with support to both common anode and common
+ *                      cathode displays. The following special characters were
+ *                      also implemented: dash, H, i, j, L, n, O, P, q, r, S, t,
+ *                      U, y, display off.
+ * @date            2025-02-14
+ * @version         25.02
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No itens in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// System file dependencies
+// =============================================================================
+
+#include "sevenSegmentsDisplay.hpp"
+#if !defined(__SEVEN_SEGMENTS_DISPLAY_HPP)
+#    error Error 1 - Header file (sevenSegmentsDisplay.hpp) is missing or corrupted!
+#elif __SEVEN_SEGMENTS_DISPLAY_HPP != 2502
+#    error Error 6 - Build mismatch between header file (sevenSegmentsDisplay.hpp) and source file (sevenSegmentsDisplay.cpp)!
+#endif
+
+// =============================================================================
+// File exclusive - Constants
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - Macro-functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public function definitions
+// =============================================================================
+
+uint8_t convertToSevenSegments(cuint8_t numericValue_p, cbool_t point_p, const SevenSegmentsDisplayType displayType_p)
+{
+    uint8_t auxData = 0;
+
+    switch(numericValue_p) {  //                         0bPGFEDCBA
+    case(uint8_t)SevenSegmentsCode::LETTER_O:
+    case(uint8_t)SevenSegmentsCode::HEX_0:      auxData = 0b00111111;   break;
+    case(uint8_t)SevenSegmentsCode::HEX_1:      auxData = 0b00000110;   break;
+    case(uint8_t)SevenSegmentsCode::HEX_2:      auxData = 0b01011011;   break;
+    case(uint8_t)SevenSegmentsCode::HEX_3:      auxData = 0b01001111;   break;
+    case(uint8_t)SevenSegmentsCode::HEX_4:      auxData = 0b01100110;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_S:
+    case(uint8_t)SevenSegmentsCode::HEX_5:      auxData = 0b01101101;   break;
+    case(uint8_t)SevenSegmentsCode::HEX_6:      auxData = 0b01111101;   break;
+    case(uint8_t)SevenSegmentsCode::HEX_7:      auxData = 0b00000111;   break;
+    case(uint8_t)SevenSegmentsCode::HEX_8:      auxData = 0b01111111;   break;
+    case(uint8_t)SevenSegmentsCode::HEX_9:      auxData = 0b01101111;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_A:
+    case(uint8_t)SevenSegmentsCode::HEX_A:      auxData = 0b01110111;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_B:
+    case(uint8_t)SevenSegmentsCode::HEX_B:      auxData = 0b01111100;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_C:
+    case(uint8_t)SevenSegmentsCode::HEX_C:      auxData = 0b00111001;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_D:
+    case(uint8_t)SevenSegmentsCode::HEX_D:      auxData = 0b01011110;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_E:
+    case(uint8_t)SevenSegmentsCode::HEX_E:      auxData = 0b01111001;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_F:
+    case(uint8_t)SevenSegmentsCode::HEX_F:      auxData = 0b01110001;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_H:   auxData = 0b01110110;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_I:   auxData = 0b00000100;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_J:   auxData = 0b00011110;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_L:   auxData = 0b00111000;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_N:   auxData = 0b01010100;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_P:   auxData = 0b01110011;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_Q:   auxData = 0b01100111;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_R:   auxData = 0b01010000;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_T:   auxData = 0b01111000;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_U:   auxData = 0b00111110;   break;
+    case(uint8_t)SevenSegmentsCode::LETTER_Y:   auxData = 0b01101110;   break;
+    case(uint8_t)SevenSegmentsCode::DASH:       auxData = 0b01000000;   break;
+    case(uint8_t)SevenSegmentsCode::ON:         auxData = 0b11111111;   break;
+    case(uint8_t)SevenSegmentsCode::OFF:        auxData = 0b00000000;   break;
+    default:                                    auxData = 0b00000000;   break;
+    }
+    if(point_p) {
+        setBit(auxData, 7);
+    }
+    auxData = (displayType_p == SevenSegmentsDisplayType::COMMON_CATHODE) ? auxData : (~auxData);
+
+    return auxData;
+}
+
+uint8_t convertToSevenSegments(const SevenSegmentsCode codedValue_p, cbool_t point_p,
+        const SevenSegmentsDisplayType displayType_p)
+{
+    uint8_t aux8 = (uint8_t)codedValue_p;
+
+    return convertToSevenSegments(aux8, point_p, displayType_p);
+}
+
+// =============================================================================
+// Class constructors
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class own methods - Public
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class own methods - Private
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class own methods - Protected
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt handlers
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// End of file (sevenSegmentsDisplay.cpp)
+// =============================================================================

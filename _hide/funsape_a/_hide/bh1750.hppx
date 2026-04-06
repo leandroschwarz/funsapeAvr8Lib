@@ -1,0 +1,241 @@
+//!
+//! \file           bh1750.hpp
+//! \brief          BH1750 Luminosity sensor module interface to Funsape AVR8 Library
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2025-02-12
+//! \version        24.05
+//! \copyright      license
+//! \details        BH1750 Luminosity sensor module interface.
+//! \note           none
+//! \todo           Todo list
+//!
+
+// =============================================================================
+// Include guard (START)
+// =============================================================================
+
+#ifndef __BH1750_HPP
+#define __BH1750_HPP                                    2502
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+//     /////////////////    GLOBAL DEFINITIONS FILE     /////////////////     //
+
+#include "funsape/funsapeLibGlobalDefines.hpp"
+#if !defined(__FUNSAPE_LIB_GLOBAL_DEFINES_HPP)
+#   error "Global definitions file is corrupted!"
+#elif __FUNSAPE_LIB_GLOBAL_DEFINES_HPP != __BH1750_HPP
+#   error "Version mismatch between file header and global definitions file!"
+#endif
+
+//     //////////////////     LIBRARY DEPENDENCIES     //////////////////     //
+
+#include "../util/funsapeLibDebug.hpp"
+#if !defined(__FUNSAPE_LIB_DEBUG_HPP)
+#   error "Header file (funsapeLibDebug.hpp) is corrupted!"
+#elif __FUNSAPE_LIB_DEBUG_HPP != __BH1750_HPP
+#   error "Version mismatch between header file and library dependency (funsapeLibDebug.hpp)!"
+#endif
+
+#include "../util/funsapeLibBus.hpp"
+#if !defined(__FUNSAPE_LIB_BUS_HPP)
+#   error "Header file (funsapeLibBus.hpp) is corrupted!"
+#elif __FUNSAPE_LIB_BUS_HPP != __BH1750_HPP
+#   error "Version mismatch between header file and library dependency (funsapeLibBus.hpp)!"
+#endif
+
+//     ///////////////////     STANDARD C LIBRARY     ///////////////////     //
+
+// NONE
+
+//     ////////////////////    AVR LIBRARY FILES     ////////////////////     //
+
+// NONE
+
+// =============================================================================
+// Undefining previous definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// #define BH1750_DEBUG                    // Uncomment, to enable debug messages
+// #define BH1750_POWER_DOWN 0x00          // No active state
+// #define BH1750_POWER_ON 0x01            // Waiting for measurement command
+// #define BH1750_RESET 0x07               // Reset data register value - not accepted in POWER_DOWN mode
+
+// Default MTreg value
+// #define BH1750_DEFAULT_MTREG 69
+// #define BH1750_MTREG_MIN 31
+// #define BH1750_MTREG_MAX 254
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Classes
+// =============================================================================
+
+//!
+//! \brief          Bh1750 class
+//! \details        Bh1750 class.
+//!
+class Bh1750
+{
+    // -------------------------------------------------------------------------
+    // New data types ----------------------------------------------------------
+public:
+
+    enum class Mode : uint8_t {
+        CONTINUOUS_HIGH_RES             = 0,    // 1 lux resolution (120ms).
+        CONTINUOUS_HIGH_RES_2           = 1,    // 0.5 lux resolution (120ms).
+        CONTINUOUS_LOW_RES              = 2,    // 4 lux resolution (16ms).
+        ONE_TIME_HIGH_RES               = 3,    // 1 lux resolution (120ms).
+        ONE_TIME_HIGH_RES_2             = 4,    // 0.5 lux resolution (120ms).
+        ONE_TIME_LOW_RES                = 5,    // 4 lux resolution (16ms).
+    };
+
+private:
+
+    enum class Command : uint8_t {
+        POWER_DOWN                      = 0x00,
+        POWER_ON                        = 0x01,
+        RESET                           = 0x07,
+        SET_MODE_CONTINUOUS_HIGH_RES    = 0x10,
+        SET_MODE_CONTINUOUS_HIGH_RES_2  = 0x11,
+        SET_MODE_CONTINUOUS_LOW_RES     = 0x13,
+        SET_MODE_ONE_TIME_HIGH_RES      = 0x20,
+        SET_MODE_ONE_TIME_HIGH_RES_2    = 0x21,
+        SET_MODE_ONE_TIME_LOW_RES       = 0x23,
+        SET_MEASUREMENT_TIME_BYTE_HIGH  = 0x40,
+        SET_MEASUREMENT_TIME_BYTE_LOW   = 0x60,
+    };
+
+    // NONE
+
+protected:
+
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Constructors ------------------------------------------------------------
+public:
+    Bh1750(void);
+    ~Bh1750(void);
+
+//     Bh1750(byte addr = 0x23);
+
+private:
+
+    // NONE
+
+protected:
+
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Methods - Inherited methods ---------------------------------------------
+public:
+
+    // NONE
+
+private:
+
+    // NONE
+
+protected:
+
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Methods - Class own methods ---------------------------------------------
+public:
+
+    bool_t init(
+            Bus *busHandler_p,
+            cbool_t useAlternateAddress_p = false
+    );
+    bool_t powerDown(void);
+    bool_t powerOn(void);
+    bool_t reset(void);
+    bool_t setMode(const Bh1750::Mode mode_p);
+    Error getLastError(void);
+
+    bool_t getData(uint16_t *luminosity_p);
+    bool_t setMeasurementTime(cuint8_t time_p);
+
+private:
+
+    // NONE
+
+protected:
+
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Properties --------------------------------------------------------------
+public:
+
+    // NONE
+
+private:
+
+    //     /////////////////     DEVICE BUS HANDLER     /////////////////     //
+
+    Bus             *_busHandler;
+
+    //     /////////////////     CONTROL AND STATUS     /////////////////     //
+
+    uint8_t         _deviceAddress              : 7;
+    bool_t          _initialized                : 1;
+    bool_t          _isPowerDownMode            : 1;
+    uint8_t         _measurementTime;
+    Error           _lastError;
+
+protected:
+
+    // NONE
+
+}; // class Bh1750
+
+// =============================================================================
+// Inlined class functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// External global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Include guard (END)
+// =============================================================================
+
+#endif  // __BH1750_HPP
+
+// =============================================================================
+// END OF FILE - bh1307.hpp
+// =============================================================================

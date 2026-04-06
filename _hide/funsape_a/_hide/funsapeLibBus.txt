@@ -1,0 +1,9 @@
+    bool_t readReg(cuint8_t reg_p, uint8_t *buffData_p, cuint16_t buffSize_p);
+        bool_t sendData(uint8_t *buffData_p, cuint16_t buffSize_p);
+        bool_t sendData(cuint8_t *txBuffData_p, uint8_t *rxBuffData_p, cuint16_t buffSize_p);
+    bool_t writeReg(cuint8_t reg_p, cuint8_t *buffData_p, cuint16_t buffSize_p);
+    bool_t setDevice(cuint16_t address_p, cbool_t useLongAddress_p = false);
+        bool_t setDevice(void (* actFunc_p)(void), void (* deactFunc_p)(void));
+        bool_t setDevice(const Gpio *csPin_p);
+    Bus::BusType getBusType(void);
+        Error getLastError(void);

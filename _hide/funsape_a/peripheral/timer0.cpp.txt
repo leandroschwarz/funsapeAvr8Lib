@@ -1,0 +1,319 @@
+/**
+ *******************************************************************************
+ * @file            timer0.cpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           TIMER0 peripheral control.
+ * @details         This file provides peripheral control for the TIMER0 module
+ *                      for the FunSAPE++ AVR8 Library.
+ * @date            2025-08-08
+ * @version         25.08
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No itens in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// System file dependencies
+// =============================================================================
+
+#include "timer0.hpp"
+#if !defined(__TIMER0_HPP)
+#    error Error 1 - Header file (timer0.hpp) is missing or corrupted!
+#elif __TIMER0_HPP != 2508
+#    error Error 6 - Build mismatch between header file (timer0.hpp) and source file (timer0.cpp)!
+#endif
+
+// =============================================================================
+// File exclusive - Constants
+// =============================================================================
+
+cuint8_t constOutputModeAOffset         = COM0A0;   //!< Output A bit position offset
+cuint8_t constOutputModeAMask           = 0x03;     //!< Output A bit mask
+cuint8_t constOutputModeBOffset         = COM0B0;   //!< Output B bit position offset
+cuint8_t constOutputModeBMask           = 0x03;     //!< Output B bit mask
+cuint8_t constModeOffsetPart1           = WGM00;    //!< Operation mode part 1 bit position offset
+cuint8_t constModeMaskPart1             = 0x03;     //!< Operation mode part 1 bit mask
+cuint8_t constModeOffsetPart2           = WGM02;    //!< Operation mode part 2 bit position offset
+cuint8_t constModeMaskPart2             = 0x01;     //!< Operation mode part 2 bit mask
+cuint8_t constClockSourceOffset         = CS00;     //!< Clock source bit position offset
+cuint8_t constClockSourceMask           = 0x07;     //!< Clock source bit mask
+
+// =============================================================================
+// File exclusive - New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - Macro-functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+Timer0 timer0;
+
+// =============================================================================
+// Static functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class constructors
+// =============================================================================
+
+Timer0::Timer0()
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Timer0::Timer0(void)"), Debug::CodeIndex::TIMER0_MODULE);
+
+    // Reset data members
+    this->_clockSource                  = ClockSource::DISABLED;
+    this->_mode                         = Mode::NORMAL;
+    this->_isInitialized                = false;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::TIMER0_MODULE);
+    return;
+}
+
+Timer0::~Timer0()
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Timer0::~Timer0(void)"), Debug::CodeIndex::TIMER0_MODULE);
+
+    // Returns successfully
+    debugMessage(Error::NONE, Debug::CodeIndex::TIMER0_MODULE);
+    return;
+}
+
+// =============================================================================
+// Class own methods - Public
+// =============================================================================
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+Error Timer0::getLastError(void)
+{
+    // Returns last error
+    return this->_lastError;
+}
+
+bool_t Timer0::init(const Mode mode_p, const ClockSource clockSource_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Timer0::init(const Mode, const ClockSource)"), Debug::CodeIndex::TIMER0_MODULE);
+
+    // Local variables
+    uint8_t auxTccr0A   = TCCR0A;
+    uint8_t auxTccr0B   = TCCR0B;
+    uint8_t aux8        = 0;
+
+    // Configure mode
+    aux8 = (uint8_t)mode_p;
+    clrMaskOffset(auxTccr0A, constModeMaskPart1, constModeOffsetPart1);
+    clrMaskOffset(auxTccr0B, constModeMaskPart2, constModeOffsetPart2);
+    setMaskOffset(auxTccr0A, (aux8 & 0x03), constModeOffsetPart1);
+    setMaskOffset(auxTccr0B, (aux8 >> 2), constModeOffsetPart2);
+    // Configure clock source
+    clrMaskOffset(auxTccr0B, constClockSourceMask, constClockSourceOffset);
+    setMaskOffset(auxTccr0B, ((uint8_t)clockSource_p), constClockSourceOffset);
+
+    // Update registers
+    TCCR0A          = auxTccr0A;
+    TCCR0B          = auxTccr0B;
+
+    // Update class members
+    this->_mode             = mode_p;
+    this->_clockSource      = clockSource_p;
+    this->_isInitialized    = true;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::TIMER0_MODULE);
+    return true;
+}
+
+bool_t Timer0::setClockSource(const ClockSource clockSource_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Timer0::setClockSource(const ClockSource)"), Debug::CodeIndex::TIMER0_MODULE);
+
+    // Local variables
+    uint8_t auxTccr0B = TCCR0B;
+
+    // Configure clock source
+    clrMaskOffset(auxTccr0B, constClockSourceMask, constClockSourceOffset);
+    setMaskOffset(auxTccr0B, ((uint8_t)clockSource_p), constClockSourceOffset);
+
+    // Update registers
+    TCCR0B          = auxTccr0B;
+
+    // Update class members
+    this->_clockSource      = clockSource_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::TIMER0_MODULE);
+    return true;
+}
+
+bool_t Timer0::setMode(const Mode mode_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Timer0::setMode(const Mode)"), Debug::CodeIndex::TIMER0_MODULE);
+
+    // Local variables
+    uint8_t auxTccr0A = TCCR0A;
+    uint8_t auxTccr0B = TCCR0B;
+    uint8_t aux8 = 0;
+
+    // Configure mode
+    aux8 = (uint8_t)mode_p;
+    clrMaskOffset(auxTccr0A, constModeMaskPart1, constModeOffsetPart1);
+    clrMaskOffset(auxTccr0B, constModeMaskPart2, constModeOffsetPart2);
+    setMaskOffset(auxTccr0A, (aux8 & 0x03), constModeOffsetPart1);
+    setMaskOffset(auxTccr0B, (aux8 >> 2), constModeOffsetPart2);
+
+    // Update registers
+    TCCR0A          = auxTccr0A;
+    TCCR0B          = auxTccr0B;
+
+    // Update class members
+    this->_mode     = mode_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::TIMER0_MODULE);
+    return true;
+}
+
+bool_t Timer0::setOutputMode(const OutputMode compA_p, const OutputMode compB_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Timer0::setOutputMode(const OutputMode, const OutputMode)"), Debug::CodeIndex::TIMER0_MODULE);
+
+    // Local variables
+    uint8_t auxTccr0A = TCCR0A;
+
+    // Configure outputs
+    clrMaskOffset(auxTccr0A, constOutputModeAMask, constOutputModeAOffset);
+    setMaskOffset(auxTccr0A, ((uint8_t)compA_p), constOutputModeAOffset);
+    clrMaskOffset(auxTccr0A, constOutputModeBMask, constOutputModeBOffset);
+    setMaskOffset(auxTccr0A, ((uint8_t)compB_p), constOutputModeBOffset);
+
+    // Update registers
+    TCCR0A          = auxTccr0A;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::TIMER0_MODULE);
+    return true;
+}
+
+// =============================================================================
+// Class own methods - Private
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class own methods - Protected
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+void weakened timer0CompareACallback(void)
+{
+    return;
+}
+
+void weakened timer0CompareBCallback(void)
+{
+    return;
+}
+
+void weakened timer0OverflowCallback(void)
+{
+    return;
+}
+
+// =============================================================================
+// Interrupt handlers
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+ISR(TIMER0_COMPA_vect)
+{
+    timer0CompareACallback();
+}
+
+ISR(TIMER0_COMPB_vect)
+{
+    timer0CompareBCallback();
+}
+
+ISR(TIMER0_OVF_vect)
+{
+    timer0OverflowCallback();
+}
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// End of file (timer0.cpp)
+// =============================================================================

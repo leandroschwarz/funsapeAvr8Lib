@@ -1,0 +1,530 @@
+/**
+ *******************************************************************************
+ * @file            nokia5110.cpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           Nokia 5110 display interface for the  FunSAPE++ AVR8
+ *                      Library.
+ * @details         Nokia 5110 display module interface for the  FunSAPE++ AVR8
+ *                      Library.
+ * @date            2025-02-14
+ * @version         25.02
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No items in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// System file dependencies
+// =============================================================================
+
+#include "nokia5110.hpp"
+#if !defined(__NOKIA5110_HPP)
+#    error Error 1 - Header file (nokia5110.hpp) is missing or corrupted!
+#elif __NOKIA5110_HPP != 2502
+#    error Error 6 - Build mismatch between header file (nokia5110.hpp) and source file (nokia5110.cpp)!
+#endif
+
+#include "nokia5110_chars.hpp"
+
+// =============================================================================
+// File exclusive - Constants
+// =============================================================================
+
+#define LCD_CONTRAST 0x40
+
+// =============================================================================
+// File exclusive - New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - Macro-functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class constructors
+// =============================================================================
+
+Nokia5110::Nokia5110(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::Nokia5110(void)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Resets data members
+    this->_gpioBackLightPin             = nullptr;
+    this->_gpioClockPin                 = nullptr;
+    this->_gpioDataPin                  = nullptr;
+    this->_gpioDcPin                    = nullptr;
+    this->_gpioEnablePin                = nullptr;
+    this->_gpioResetPin                 = nullptr;
+    this->_isInitialized                = false;
+    this->_isPortsSet                   = false;
+    this->_cursorX                      = 0;
+    this->_cursorY                      = 0;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return;
+}
+
+Nokia5110::~Nokia5110(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::~Nokia5110(void)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Returns successfully
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return;
+}
+
+// =============================================================================
+// Class own methods - Public
+// =============================================================================
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+bool_t Nokia5110::init(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::init(void)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Resets data members
+    this->_isInitialized                = false;
+
+    // Check for errors
+    if(!this->_isPortsSet) {
+        // Returns error
+        this->_lastError = Error::GPIO_PORT_NOT_SET;
+        debugMessage(Error::GPIO_PORT_NOT_SET, Debug::CodeIndex::NOKIA5110_MODULE);
+        return false;
+    }
+
+    // Set pins as output
+    this->_gpioEnablePin->set();
+    this->_gpioEnablePin->setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+    this->_gpioClockPin->set();
+    this->_gpioClockPin->setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+    this->_gpioDataPin->set();
+    this->_gpioDataPin->setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+    this->_gpioDcPin->set();
+    this->_gpioDcPin->setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+    this->_gpioResetPin->set();
+    this->_gpioResetPin->setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // Resets display
+    delayMs(10);
+    this->_gpioResetPin->clr();
+    delayMs(70);
+    this->_gpioResetPin->set();
+
+    // Initializes display
+    this->_gpioEnablePin->clr();             // Enables controller
+    this->_sendDataCommand(0x21, DataCommand::COMMAND);          // -LCD Extended Commands mode-
+    this->_sendDataCommand(0x13, DataCommand::COMMAND);          // LCD bias mode 1:48
+    this->_sendDataCommand(0x06, DataCommand::COMMAND);          // Set temperature coefficient
+    this->_sendDataCommand(0xC2, DataCommand::COMMAND);          // Default VOP (3.06 + 66 * 0.06 = 7V)
+    this->_sendDataCommand(0x20, DataCommand::COMMAND);          // Standard Commands mode, powered down
+    this->_sendDataCommand(0x09, DataCommand::COMMAND);          // LCD in normal mode
+
+    // Clears LCD RAM
+    this->_sendDataCommand(0x80, DataCommand::COMMAND);
+    this->_sendDataCommand(LCD_CONTRAST, DataCommand::COMMAND);
+    for(uint16_t i = 0; i < 504; i++) {
+        this->_sendDataCommand(0x00, DataCommand::DATA);
+    }
+
+    // Activates LCD
+    this->_sendDataCommand(0x08, DataCommand::COMMAND);
+    this->_sendDataCommand(0x0C, DataCommand::COMMAND);
+
+    // Updates data members
+    this->_isInitialized                = true;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+bool_t Nokia5110::setPorts(GpioPin *gpioClockPin_p, GpioPin *gpioDataPin_p, GpioPin *gpioDcPin_p,
+        GpioPin *gpioResetPin_p, GpioPin *gpioEnablePin_p, GpioPin *gpioBackLightPin_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::setPorts(GpioPin *, GpioPin *, GpioPin *, GpioPin *, GpioPin *, GpioPin *)"),
+            Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Resets data members
+    this->_gpioBackLightPin             = nullptr;
+    this->_gpioClockPin                 = nullptr;
+    this->_gpioDataPin                  = nullptr;
+    this->_gpioDcPin                    = nullptr;
+    this->_gpioEnablePin                = nullptr;
+    this->_gpioResetPin                 = nullptr;
+    this->_isInitialized                = false;
+    this->_isPortsSet                   = false;
+
+    // Check for errors
+    if((!isPointerValid(gpioClockPin_p)) || (!isPointerValid(gpioDataPin_p)) || (!isPointerValid(gpioDcPin_p)) ||
+            (!isPointerValid(gpioEnablePin_p)) || (!isPointerValid(gpioResetPin_p))) {
+        // Returns error
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::NOKIA5110_MODULE);
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        return false;
+    }
+    if((!gpioClockPin_p->isInitialized()) || (!gpioDataPin_p->isInitialized()) || (!gpioDcPin_p->isInitialized()) ||
+            (!gpioEnablePin_p->isInitialized()) || (!gpioResetPin_p->isInitialized())) {
+        // Returns error
+        debugMessage(Error::GPIO_NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+        this->_lastError = Error::GPIO_NOT_INITIALIZED;
+        return false;
+    }
+    if(isPointerValid(gpioResetPin_p)) {
+        if(!gpioResetPin_p->isInitialized()) {
+            // Returns error
+            debugMessage(Error::GPIO_NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+            this->_lastError = Error::GPIO_NOT_INITIALIZED;
+            return false;
+        }
+    }
+
+    // Updates data members
+    this->_gpioBackLightPin             = gpioBackLightPin_p;
+    this->_gpioClockPin                 = gpioClockPin_p;
+    this->_gpioDataPin                  = gpioDataPin_p;
+    this->_gpioDcPin                    = gpioDcPin_p;
+    this->_gpioEnablePin                = gpioEnablePin_p;
+    this->_gpioResetPin                 = gpioResetPin_p;
+    this->_isPortsSet                   = true;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+bool_t Nokia5110::setPower(cbool_t turnOn_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::setPower(cbool_t)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Checks for erros
+    if(!this->_isInitialized) {
+        // Retuns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+        return false;
+    }
+
+    this->_sendDataCommand((turnOn_p ? 0x20 : 0x24), DataCommand::COMMAND);
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+//     /////////////////////////    DISPLAY     /////////////////////////     //
+
+bool_t Nokia5110::clearScreen(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::clearScreen(void)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Checks for erros
+    if(!this->_isInitialized) {
+        // Retuns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+        return false;
+    }
+
+    // Set column and row to 0
+    this->_sendDataCommand(0x80, DataCommand::COMMAND);
+    this->_sendDataCommand(0x40, DataCommand::COMMAND);
+    // Cursor too
+    this->_cursorX = 0;
+    this->_cursorY = 0;
+    // Clear everything (504 bytes = 84cols * 48 rows / 8 bits)
+    for(uint16_t i = 0; i < 504; i++) {
+        this->_screen[i] = 0x00;
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+bool_t Nokia5110::render(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::render(void)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Checks for erros
+    if(!this->_isInitialized) {
+        // Retuns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+        return false;
+    }
+
+    // Set column and row to 0
+    this->_sendDataCommand(0x80, DataCommand::COMMAND);
+    this->_sendDataCommand(0x40, DataCommand::COMMAND);
+
+    // Write screen to display
+    for(uint16_t i = 0; i < 504; i++) {
+        this->_sendDataCommand(this->_screen[i], DataCommand::DATA);
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+bool_t Nokia5110::setCursor(cuint8_t posX_p, cuint8_t posY_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::setCursor(cuint8_t, cuint8_t)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Checks for erros
+    if(!this->_isInitialized) {
+        // Retuns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+        return false;
+    }
+
+    this->_cursorX = posX_p;
+    this->_cursorY = posY_p;
+
+    // Write screen to display
+    for(uint16_t i = 0; i < 504; i++) {
+        this->_sendDataCommand(this->_screen[i], DataCommand::DATA);
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+bool_t Nokia5110::setPixel(cuint8_t posX_p, cuint8_t posY_p, cbool_t isTurnedOn_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::setPixel(cuint8_t, cuint8_t, cbool_t)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Checks for erros
+    if(!this->_isInitialized) {
+        // Retuns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+        return false;
+    }
+
+    uint8_t *aux8 = &(this->_screen[((posY_p / 8) * 84) + posX_p]);
+    if(isTurnedOn_p) {
+        setBit(*aux8, (posY_p % 8));
+    } else {
+        clrBit(*aux8, (posY_p % 8));
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+bool_t Nokia5110::write(cchar_t character_p, cuint8_t scale_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::write(cchar_t, cuint8_t)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Checks for erros
+    if(!this->_isInitialized) {
+        // Retuns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+        return false;
+    }
+
+    this->_writeCharacter(character_p, scale_p);
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+bool_t Nokia5110::write(cchar_t *string_p, cuint8_t scale_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("Nokia5110::write(cchar_t *, cuint8_t)"), Debug::CodeIndex::NOKIA5110_MODULE);
+
+    // Checks for erros
+    if(!this->_isInitialized) {
+        // Retuns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::NOKIA5110_MODULE);
+        return false;
+    }
+
+    while(*string_p) {
+        this->_writeCharacter(*string_p++, scale_p);
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::NOKIA5110_MODULE);
+    return true;
+}
+
+// =============================================================================
+// Class own methods - Private
+// =============================================================================
+
+//     /////////////////     COMMUNICATION PROTOCOL     /////////////////     //
+
+void Nokia5110::_sendDataCommand(cuint8_t value_p, const DataCommand dataCommand_p)
+{
+
+    this->_gpioEnablePin->clr();        // Enables controller
+
+    if(dataCommand_p == DataCommand::DATA) {
+        // We are sending data
+        this->_gpioDcPin->set();
+    } else {
+        // We are sending commands
+        this->_gpioDcPin->clr();
+    }
+
+    // Send bytes
+    for(uint8_t i = 0; i < 8; i++) {
+        // Sets data pin to byte state
+        if(isBitSet(value_p, (7 - i))) {
+            this->_gpioDataPin->set();
+        } else {
+            this->_gpioDataPin->clr();
+        }
+
+        // Clock pulse
+        this->_gpioClockPin->set();
+        this->_gpioClockPin->clr();
+    }
+
+    this->_gpioEnablePin->set();        // Disables controller
+
+    return;
+}
+
+void Nokia5110::_writeCharacter(cchar_t character_p, cuint8_t scale_p)
+{
+    for(uint8_t x = 0; x < 5 * scale_p; x++) {
+        for(uint8_t y = 0; y < 7 * scale_p; y++) {
+            if(pgm_read_byte(&CHARSET[character_p - 32][x / scale_p]) & (1 << y / scale_p)) {
+                this->setPixel(this->_cursorX + x, this->_cursorY + y, true);
+            } else {
+                this->setPixel(this->_cursorX + x, this->_cursorY + y, false);
+            }
+        }
+    }
+
+    this->_cursorX += 5 * scale_p + 1;
+    if(this->_cursorX >= 84) {
+        this->_cursorX = 0;
+        this->_cursorY += 7 * scale_p + 1;
+    }
+    if(this->_cursorY >= 48) {
+        this->_cursorX = 0;
+        this->_cursorY = 0;
+    }
+
+    return;
+}
+
+// =============================================================================
+// Class own methods - Protected
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt handlers
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+// NONE
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// End of file (nokia5110.cpp)
+// =============================================================================

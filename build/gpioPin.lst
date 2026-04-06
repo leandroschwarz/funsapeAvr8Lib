@@ -1,0 +1,504 @@
+GAS LISTING /tmp/ccoaShMe.s 			page 1
+
+
+   1               		.file	"gpioPin.cpp"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.text._ZN7GpioPinC2Ev,"ax",@progbits
+  11               	.global	_ZN7GpioPinC2Ev
+  13               	_ZN7GpioPinC2Ev:
+  14               	.LFB75:
+  15               		.file 1 "funsape/peripheral/gpioPin.cpp"
+   1:funsape/peripheral/gpioPin.cpp **** //!
+   2:funsape/peripheral/gpioPin.cpp **** //! ****************************************************************************
+   3:funsape/peripheral/gpioPin.cpp **** //! @file           gpioPin.cpp
+   4:funsape/peripheral/gpioPin.cpp **** //! @author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+   5:funsape/peripheral/gpioPin.cpp **** //! @brief          GPIO single pin peripheral control.
+   6:funsape/peripheral/gpioPin.cpp **** //! @details        This file provides driver interface with the GPIO module to
+   7:funsape/peripheral/gpioPin.cpp **** //!                     single pin peripheral control for the FunSAPE++ AVR8
+   8:funsape/peripheral/gpioPin.cpp **** //!                     Library.
+   9:funsape/peripheral/gpioPin.cpp **** //! @date           2026-04-01
+  10:funsape/peripheral/gpioPin.cpp **** //! @version        26.04
+  11:funsape/peripheral/gpioPin.cpp **** //! @copyright      MIT License
+  12:funsape/peripheral/gpioPin.cpp **** //! @note           No notes at this time.
+  13:funsape/peripheral/gpioPin.cpp **** //! @todo           No items in todo list yet.
+  14:funsape/peripheral/gpioPin.cpp **** //! @warning        When the user calls GpioPin::clr(), GpioPin::cpl(),
+  15:funsape/peripheral/gpioPin.cpp **** //!                     GpioPin::set(), GpioPin::low(), GpioPin::high() or
+  16:funsape/peripheral/gpioPin.cpp **** //!                     GpioPin::toggle() and the pin is in
+  17:funsape/peripheral/gpioPin.cpp **** //!                     PinMode::INPUT_FLOATING mode or in
+  18:funsape/peripheral/gpioPin.cpp **** //!                     PinMode::INPUT_PULLED_UP mode, the mode is changed which
+  19:funsape/peripheral/gpioPin.cpp **** //!                     could lead to some undefined behavior.
+  20:funsape/peripheral/gpioPin.cpp **** //! ****************************************************************************
+  21:funsape/peripheral/gpioPin.cpp **** //! @attention
+  22:funsape/peripheral/gpioPin.cpp **** //!
+  23:funsape/peripheral/gpioPin.cpp **** //! MIT License
+  24:funsape/peripheral/gpioPin.cpp **** //!
+  25:funsape/peripheral/gpioPin.cpp **** //! Copyright (c) 2026 Leandro Schwarz
+  26:funsape/peripheral/gpioPin.cpp **** //!
+  27:funsape/peripheral/gpioPin.cpp **** //! Permission is hereby granted, free of charge, to any person obtaining a copy
+  28:funsape/peripheral/gpioPin.cpp **** //!     of this software and associated documentation files (the "Software"), to
+  29:funsape/peripheral/gpioPin.cpp **** //!     deal in the Software without restriction, including without limitation
+  30:funsape/peripheral/gpioPin.cpp **** //!     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  31:funsape/peripheral/gpioPin.cpp **** //!     and/or sell copies of the Software, and to permit persons to whom the
+  32:funsape/peripheral/gpioPin.cpp **** //!     Software is furnished to do so, subject to the following conditions:
+  33:funsape/peripheral/gpioPin.cpp **** //!
+  34:funsape/peripheral/gpioPin.cpp **** //! The above copyright notice and this permission notice shall be included in
+  35:funsape/peripheral/gpioPin.cpp **** //!     all copies or substantial portions of the Software.
+  36:funsape/peripheral/gpioPin.cpp **** //!
+  37:funsape/peripheral/gpioPin.cpp **** //! THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  38:funsape/peripheral/gpioPin.cpp **** //!     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  39:funsape/peripheral/gpioPin.cpp **** //!     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  40:funsape/peripheral/gpioPin.cpp **** //!     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+  41:funsape/peripheral/gpioPin.cpp **** //!     OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+  42:funsape/peripheral/gpioPin.cpp **** //!     ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  43:funsape/peripheral/gpioPin.cpp **** //!     OTHER DEALINGS IN THE SOFTWARE.
+GAS LISTING /tmp/ccoaShMe.s 			page 2
+
+
+  44:funsape/peripheral/gpioPin.cpp **** //!
+  45:funsape/peripheral/gpioPin.cpp **** //! ****************************************************************************
+  46:funsape/peripheral/gpioPin.cpp **** //!
+  47:funsape/peripheral/gpioPin.cpp **** 
+  48:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  49:funsape/peripheral/gpioPin.cpp **** // System file dependencies
+  50:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  51:funsape/peripheral/gpioPin.cpp **** 
+  52:funsape/peripheral/gpioPin.cpp **** #include "gpioPin.hpp"
+  53:funsape/peripheral/gpioPin.cpp **** #if !defined(__GPIO_PIN_HPP)
+  54:funsape/peripheral/gpioPin.cpp **** #    error Error 1 - Header file (gpioPin.hpp) is missing or corrupted!
+  55:funsape/peripheral/gpioPin.cpp **** #elif __GPIO_PIN_HPP != 2604
+  56:funsape/peripheral/gpioPin.cpp **** #    error Error 6 - Build mismatch between header file (gpioPin.hpp) and source file (gpioPin.cpp)
+  57:funsape/peripheral/gpioPin.cpp **** #endif
+  58:funsape/peripheral/gpioPin.cpp **** 
+  59:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  60:funsape/peripheral/gpioPin.cpp **** // File exclusive - Constants
+  61:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  62:funsape/peripheral/gpioPin.cpp **** 
+  63:funsape/peripheral/gpioPin.cpp **** // NONE
+  64:funsape/peripheral/gpioPin.cpp **** 
+  65:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  66:funsape/peripheral/gpioPin.cpp **** // File exclusive - New data types
+  67:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  68:funsape/peripheral/gpioPin.cpp **** 
+  69:funsape/peripheral/gpioPin.cpp **** // NONE
+  70:funsape/peripheral/gpioPin.cpp **** 
+  71:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  72:funsape/peripheral/gpioPin.cpp **** // File exclusive - Macro-functions
+  73:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  74:funsape/peripheral/gpioPin.cpp **** 
+  75:funsape/peripheral/gpioPin.cpp **** // NONE
+  76:funsape/peripheral/gpioPin.cpp **** 
+  77:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  78:funsape/peripheral/gpioPin.cpp **** // Global variables
+  79:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  80:funsape/peripheral/gpioPin.cpp **** 
+  81:funsape/peripheral/gpioPin.cpp **** // NONE
+  82:funsape/peripheral/gpioPin.cpp **** 
+  83:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  84:funsape/peripheral/gpioPin.cpp **** // Static functions declarations
+  85:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  86:funsape/peripheral/gpioPin.cpp **** 
+  87:funsape/peripheral/gpioPin.cpp **** // NONE
+  88:funsape/peripheral/gpioPin.cpp **** 
+  89:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  90:funsape/peripheral/gpioPin.cpp **** // Public function definitions
+  91:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  92:funsape/peripheral/gpioPin.cpp **** 
+  93:funsape/peripheral/gpioPin.cpp **** // NONE
+  94:funsape/peripheral/gpioPin.cpp **** 
+  95:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  96:funsape/peripheral/gpioPin.cpp **** // Class constructors
+  97:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+  98:funsape/peripheral/gpioPin.cpp **** 
+  99:funsape/peripheral/gpioPin.cpp **** GpioPin::GpioPin(void) :
+  16               		.loc 1 99 0
+GAS LISTING /tmp/ccoaShMe.s 			page 3
+
+
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+  23 0000 FC01      		movw r30,r24
+  24               	.LBB2:
+ 100:funsape/peripheral/gpioPin.cpp ****     _regDir(nullptr),
+ 101:funsape/peripheral/gpioPin.cpp ****     _regOut(nullptr),
+ 102:funsape/peripheral/gpioPin.cpp ****     _regIn(nullptr),
+ 103:funsape/peripheral/gpioPin.cpp ****     _pinMask(0x00),
+ 104:funsape/peripheral/gpioPin.cpp ****     _isInitialized(false),
+ 105:funsape/peripheral/gpioPin.cpp ****     _lastError(Error::NONE)
+  25               		.loc 1 105 0
+  26 0002 1182      		std Z+1,__zero_reg__
+  27 0004 1082      		st Z,__zero_reg__
+  28 0006 1382      		std Z+3,__zero_reg__
+  29 0008 1282      		std Z+2,__zero_reg__
+  30 000a 1582      		std Z+5,__zero_reg__
+  31 000c 1482      		std Z+4,__zero_reg__
+  32 000e 1682      		std Z+6,__zero_reg__
+  33 0010 8781      		ldd r24,Z+7
+  34               	.LVL1:
+  35 0012 8E7F      		andi r24,lo8(~(1<<0))
+  36 0014 8783      		std Z+7,r24
+  37 0016 1186      		std Z+9,__zero_reg__
+  38 0018 1086      		std Z+8,__zero_reg__
+  39               	/* epilogue start */
+  40               	.LBE2:
+ 106:funsape/peripheral/gpioPin.cpp **** {
+ 107:funsape/peripheral/gpioPin.cpp ****     // Mark passage for debugging purpose
+ 108:funsape/peripheral/gpioPin.cpp ****     debugMark(PSTR("GpioPin::GpioPin(void)"), Debug::CodeIndex::GPIO_BUS_MODULE);
+ 109:funsape/peripheral/gpioPin.cpp **** 
+ 110:funsape/peripheral/gpioPin.cpp ****     // Returns successfully
+ 111:funsape/peripheral/gpioPin.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::GPIO_PIN_MODULE);
+ 112:funsape/peripheral/gpioPin.cpp ****     return;
+ 113:funsape/peripheral/gpioPin.cpp **** }
+  41               		.loc 1 113 0
+  42 001a 0895      		ret
+  43               		.cfi_endproc
+  44               	.LFE75:
+  46               	.global	_ZN7GpioPinC1Ev
+  47               		.set	_ZN7GpioPinC1Ev,_ZN7GpioPinC2Ev
+  48               		.section	.text._ZN7GpioPinD2Ev,"ax",@progbits
+  49               	.global	_ZN7GpioPinD2Ev
+  51               	_ZN7GpioPinD2Ev:
+  52               	.LFB78:
+ 114:funsape/peripheral/gpioPin.cpp **** 
+ 115:funsape/peripheral/gpioPin.cpp **** GpioPin::~GpioPin(void)
+  53               		.loc 1 115 0
+  54               		.cfi_startproc
+  55               	.LVL2:
+  56               	/* prologue: function */
+  57               	/* frame size = 0 */
+  58               	/* stack size = 0 */
+  59               	.L__stack_usage = 0
+GAS LISTING /tmp/ccoaShMe.s 			page 4
+
+
+  60               	/* epilogue start */
+ 116:funsape/peripheral/gpioPin.cpp **** {
+ 117:funsape/peripheral/gpioPin.cpp ****     // Mark passage for debugging purpose
+ 118:funsape/peripheral/gpioPin.cpp ****     debugMark(PSTR("GpioPin::~GpioPin(void)"), Debug::CodeIndex::GPIO_BUS_MODULE);
+ 119:funsape/peripheral/gpioPin.cpp **** 
+ 120:funsape/peripheral/gpioPin.cpp ****     // Returns successfully
+ 121:funsape/peripheral/gpioPin.cpp ****     return;
+ 122:funsape/peripheral/gpioPin.cpp **** }
+  61               		.loc 1 122 0
+  62 0000 0895      		ret
+  63               		.cfi_endproc
+  64               	.LFE78:
+  66               	.global	_ZN7GpioPinD1Ev
+  67               		.set	_ZN7GpioPinD1Ev,_ZN7GpioPinD2Ev
+  68               		.section	.text._ZN7GpioPin4initEPVh8PinIndex,"ax",@progbits
+  69               	.global	_ZN7GpioPin4initEPVh8PinIndex
+  71               	_ZN7GpioPin4initEPVh8PinIndex:
+  72               	.LFB80:
+ 123:funsape/peripheral/gpioPin.cpp **** 
+ 124:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+ 125:funsape/peripheral/gpioPin.cpp **** // Class own methods - Public
+ 126:funsape/peripheral/gpioPin.cpp **** // =============================================================================
+ 127:funsape/peripheral/gpioPin.cpp **** 
+ 128:funsape/peripheral/gpioPin.cpp **** //     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+ 129:funsape/peripheral/gpioPin.cpp **** 
+ 130:funsape/peripheral/gpioPin.cpp **** bool_t GpioPin::init(ioRegAddress_t gpioPortAddress_p, const PinIndex gpioPinIndex_p)
+ 131:funsape/peripheral/gpioPin.cpp **** {
+  73               		.loc 1 131 0
+  74               		.cfi_startproc
+  75               	.LVL3:
+  76               	/* prologue: function */
+  77               	/* frame size = 0 */
+  78               	/* stack size = 0 */
+  79               	.L__stack_usage = 0
+  80 0000 FC01      		movw r30,r24
+  81               	.LVL4:
+ 132:funsape/peripheral/gpioPin.cpp ****     // Mark passage for debugging purpose
+ 133:funsape/peripheral/gpioPin.cpp ****     debugMark(PSTR("GpioPin::init(ioRegAddress_t, const PinIndex)"), Debug::CodeIndex::GPIO_PIN_MOD
+ 134:funsape/peripheral/gpioPin.cpp **** 
+ 135:funsape/peripheral/gpioPin.cpp ****     // Local variables
+ 136:funsape/peripheral/gpioPin.cpp ****     ioRegAddress_t auxDir = nullptr;
+ 137:funsape/peripheral/gpioPin.cpp ****     ioRegAddress_t auxOut = nullptr;
+ 138:funsape/peripheral/gpioPin.cpp **** 
+ 139:funsape/peripheral/gpioPin.cpp ****     // CHECK FOR ERROR - port address invalid
+ 140:funsape/peripheral/gpioPin.cpp ****     if(!isGpioAddressValid(gpioPortAddress_p)) {
+  82               		.loc 1 140 0
+  83 0002 CB01      		movw r24,r22
+  84               	.LVL5:
+  85 0004 8397      		sbiw r24,35
+  86 0006 0997      		sbiw r24,9
+  87 0008 00F4      		brsh .L6
+ 141:funsape/peripheral/gpioPin.cpp ****         // Returns error
+ 142:funsape/peripheral/gpioPin.cpp ****         this->_lastError = Error::GPIO_PORT_INVALID;
+ 143:funsape/peripheral/gpioPin.cpp ****         debugMessage(Error::GPIO_PORT_INVALID, Debug::CodeIndex::GPIO_PIN_MODULE);
+ 144:funsape/peripheral/gpioPin.cpp ****         return false;
+ 145:funsape/peripheral/gpioPin.cpp ****     }
+ 146:funsape/peripheral/gpioPin.cpp **** 
+GAS LISTING /tmp/ccoaShMe.s 			page 5
+
+
+ 147:funsape/peripheral/gpioPin.cpp ****     // Evaluates pin addresses
+ 148:funsape/peripheral/gpioPin.cpp ****     auxDir = getGpioDdrAddress(gpioPortAddress_p);
+  88               		.loc 1 148 0
+  89 000a 9B01      		movw r18,r22
+  90 000c 2052      		subi r18,32
+  91 000e 3109      		sbc r19,__zero_reg__
+  92 0010 ABEA      		ldi r26,lo8(-85)
+  93 0012 BAEA      		ldi r27,lo8(-86)
+  94 0014 0E94 0000 		call __umulhisi3
+  95               	.LVL6:
+  96 0018 9C01      		movw r18,r24
+  97               	.LVL7:
+  98 001a 3695      		lsr r19
+  99 001c 2795      		ror r18
+ 100 001e C901      		movw r24,r18
+ 101 0020 880F      		lsl r24
+ 102 0022 991F      		rol r25
+ 103 0024 820F      		add r24,r18
+ 104 0026 931F      		adc r25,r19
+ 105 0028 BC01      		movw r22,r24
+ 106 002a 6F5D      		subi r22,-33
+ 107 002c 7F4F      		sbci r23,-1
+ 108               	.LVL8:
+ 149:funsape/peripheral/gpioPin.cpp ****     auxOut = getGpioPortAddress(gpioPortAddress_p);
+ 109               		.loc 1 149 0
+ 110 002e 9C01      		movw r18,r24
+ 111 0030 2E5D      		subi r18,-34
+ 112 0032 3F4F      		sbci r19,-1
+ 113               	.LVL9:
+ 150:funsape/peripheral/gpioPin.cpp **** 
+ 151:funsape/peripheral/gpioPin.cpp ****     // Update data members
+ 152:funsape/peripheral/gpioPin.cpp ****     this->_regDir                       = auxDir;
+ 114               		.loc 1 152 0
+ 115 0034 7183      		std Z+1,r23
+ 116 0036 6083      		st Z,r22
+ 153:funsape/peripheral/gpioPin.cpp ****     this->_regOut                       = auxOut;
+ 117               		.loc 1 153 0
+ 118 0038 3383      		std Z+3,r19
+ 119 003a 2283      		std Z+2,r18
+ 154:funsape/peripheral/gpioPin.cpp ****     this->_regIn                        = getGpioPinAddress(gpioPortAddress_p);
+ 120               		.loc 1 154 0
+ 121 003c 8096      		adiw r24,32
+ 122 003e 9583      		std Z+5,r25
+ 123 0040 8483      		std Z+4,r24
+ 155:funsape/peripheral/gpioPin.cpp ****     this->_pinMask                      = (ioPinMask_t)(1 << (uint8_t)gpioPinIndex_p);
+ 124               		.loc 1 155 0
+ 125 0042 81E0      		ldi r24,lo8(1)
+ 126 0044 00C0      		rjmp 2f
+ 127               		1:
+ 128 0046 880F      		lsl r24
+ 129               		2:
+ 130 0048 4A95      		dec r20
+ 131 004a 02F4      		brpl 1b
+ 132 004c 8683      		std Z+6,r24
+ 156:funsape/peripheral/gpioPin.cpp ****     this->_isInitialized                = true;
+ 133               		.loc 1 156 0
+ 134 004e 8781      		ldd r24,Z+7
+GAS LISTING /tmp/ccoaShMe.s 			page 6
+
+
+ 135 0050 8160      		ori r24,lo8(1<<0)
+ 136 0052 8783      		std Z+7,r24
+ 157:funsape/peripheral/gpioPin.cpp **** 
+ 158:funsape/peripheral/gpioPin.cpp ****     // Returns successfully
+ 159:funsape/peripheral/gpioPin.cpp ****     this->_lastError = Error::NONE;
+ 137               		.loc 1 159 0
+ 138 0054 1186      		std Z+9,__zero_reg__
+ 139 0056 1086      		std Z+8,__zero_reg__
+ 160:funsape/peripheral/gpioPin.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::GPIO_PIN_MODULE);
+ 161:funsape/peripheral/gpioPin.cpp ****     return true;
+ 140               		.loc 1 161 0
+ 141 0058 81E0      		ldi r24,lo8(1)
+ 142               	/* epilogue start */
+ 162:funsape/peripheral/gpioPin.cpp **** }
+ 143               		.loc 1 162 0
+ 144 005a 0895      		ret
+ 145               	.LVL10:
+ 146               	.L6:
+ 142:funsape/peripheral/gpioPin.cpp ****         debugMessage(Error::GPIO_PORT_INVALID, Debug::CodeIndex::GPIO_PIN_MODULE);
+ 147               		.loc 1 142 0
+ 148 005c 84E8      		ldi r24,lo8(-124)
+ 149 005e 90E0      		ldi r25,0
+ 150 0060 9187      		std Z+9,r25
+ 151 0062 8087      		std Z+8,r24
+ 144:funsape/peripheral/gpioPin.cpp ****     }
+ 152               		.loc 1 144 0
+ 153 0064 80E0      		ldi r24,0
+ 154 0066 0895      		ret
+ 155               		.cfi_endproc
+ 156               	.LFE80:
+ 158               		.section	.text._ZN7GpioPin7setModeE7PinMode,"ax",@progbits
+ 159               	.global	_ZN7GpioPin7setModeE7PinMode
+ 161               	_ZN7GpioPin7setModeE7PinMode:
+ 162               	.LFB81:
+ 163:funsape/peripheral/gpioPin.cpp **** 
+ 164:funsape/peripheral/gpioPin.cpp **** //     ///////////////////    PIN RELATED METHODS     ///////////////////     //
+ 165:funsape/peripheral/gpioPin.cpp **** 
+ 166:funsape/peripheral/gpioPin.cpp **** bool_t GpioPin::setMode(const PinMode mode_p)
+ 167:funsape/peripheral/gpioPin.cpp **** {
+ 163               		.loc 1 167 0
+ 164               		.cfi_startproc
+ 165               	.LVL11:
+ 166               	/* prologue: function */
+ 167               	/* frame size = 0 */
+ 168               	/* stack size = 0 */
+ 169               	.L__stack_usage = 0
+ 170 0000 FC01      		movw r30,r24
+ 168:funsape/peripheral/gpioPin.cpp ****     // Mark passage for debugging purpose
+ 169:funsape/peripheral/gpioPin.cpp ****     debugMark(PSTR("GpioPin::setMode(const PinMode)"), Debug::CodeIndex::GPIO_PIN_MODULE);
+ 170:funsape/peripheral/gpioPin.cpp **** 
+ 171:funsape/peripheral/gpioPin.cpp ****     // Checks initialization
+ 172:funsape/peripheral/gpioPin.cpp ****     if(!this->_isInitialized) {
+ 171               		.loc 1 172 0
+ 172 0002 9781      		ldd r25,Z+7
+ 173 0004 892F      		mov r24,r25
+ 174 0006 8170      		andi r24,1
+ 175               	.LVL12:
+GAS LISTING /tmp/ccoaShMe.s 			page 7
+
+
+ 176 0008 90FF      		sbrs r25,0
+ 177 000a 00C0      		rjmp .L14
+ 173:funsape/peripheral/gpioPin.cpp ****         // Returns error
+ 174:funsape/peripheral/gpioPin.cpp ****         this->_lastError = Error::NOT_INITIALIZED;
+ 175:funsape/peripheral/gpioPin.cpp ****         debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::GPIO_PIN_MODULE);
+ 176:funsape/peripheral/gpioPin.cpp ****         return false;
+ 177:funsape/peripheral/gpioPin.cpp ****     }
+ 178:funsape/peripheral/gpioPin.cpp **** 
+ 179:funsape/peripheral/gpioPin.cpp ****     // Configure pin
+ 180:funsape/peripheral/gpioPin.cpp ****     switch(mode_p) {
+ 178               		.loc 1 180 0
+ 179 000c 6130      		cpi r22,lo8(1)
+ 180 000e 01F0      		breq .L11
+ 181 0010 00F0      		brlo .L12
+ 182 0012 6230      		cpi r22,lo8(2)
+ 183 0014 01F0      		breq .L13
+ 184               	.L10:
+ 181:funsape/peripheral/gpioPin.cpp ****     case PinMode::INPUT_FLOATING:
+ 182:funsape/peripheral/gpioPin.cpp ****         clrMask(*(this->_regDir), (uint8_t)this->_pinMask);
+ 183:funsape/peripheral/gpioPin.cpp ****         clrMask(*(this->_regOut), (uint8_t)this->_pinMask);
+ 184:funsape/peripheral/gpioPin.cpp ****         break;
+ 185:funsape/peripheral/gpioPin.cpp ****     case PinMode::INPUT_PULLED_UP:
+ 186:funsape/peripheral/gpioPin.cpp ****         clrMask(*(this->_regDir), (uint8_t)this->_pinMask);
+ 187:funsape/peripheral/gpioPin.cpp ****         setMask(*(this->_regOut), (uint8_t)this->_pinMask);
+ 188:funsape/peripheral/gpioPin.cpp ****         break;
+ 189:funsape/peripheral/gpioPin.cpp ****     case PinMode::OUTPUT_PUSH_PULL:
+ 190:funsape/peripheral/gpioPin.cpp ****         setMask(*(this->_regDir), (uint8_t)this->_pinMask);
+ 191:funsape/peripheral/gpioPin.cpp ****         break;
+ 192:funsape/peripheral/gpioPin.cpp ****     }
+ 193:funsape/peripheral/gpioPin.cpp **** 
+ 194:funsape/peripheral/gpioPin.cpp ****     // Returns successfully
+ 195:funsape/peripheral/gpioPin.cpp ****     this->_lastError = Error::NONE;
+ 185               		.loc 1 195 0
+ 186 0016 1186      		std Z+9,__zero_reg__
+ 187 0018 1086      		std Z+8,__zero_reg__
+ 188               	/* epilogue start */
+ 196:funsape/peripheral/gpioPin.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::GPIO_PIN_MODULE);
+ 197:funsape/peripheral/gpioPin.cpp ****     return true;
+ 198:funsape/peripheral/gpioPin.cpp **** }
+ 189               		.loc 1 198 0
+ 190 001a 0895      		ret
+ 191               	.L14:
+ 174:funsape/peripheral/gpioPin.cpp ****         debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::GPIO_PIN_MODULE);
+ 192               		.loc 1 174 0
+ 193 001c 26E0      		ldi r18,lo8(6)
+ 194 001e 30E0      		ldi r19,0
+ 195 0020 3187      		std Z+9,r19
+ 196 0022 2087      		std Z+8,r18
+ 176:funsape/peripheral/gpioPin.cpp ****     }
+ 197               		.loc 1 176 0
+ 198 0024 0895      		ret
+ 199               	.L12:
+ 182:funsape/peripheral/gpioPin.cpp ****         clrMask(*(this->_regOut), (uint8_t)this->_pinMask);
+ 200               		.loc 1 182 0
+ 201 0026 A081      		ld r26,Z
+ 202 0028 B181      		ldd r27,Z+1
+ 203 002a 2C91      		ld r18,X
+GAS LISTING /tmp/ccoaShMe.s 			page 8
+
+
+ 204 002c 9681      		ldd r25,Z+6
+ 205 002e 9095      		com r25
+ 206 0030 9223      		and r25,r18
+ 207 0032 9C93      		st X,r25
+ 183:funsape/peripheral/gpioPin.cpp ****         break;
+ 208               		.loc 1 183 0
+ 209 0034 A281      		ldd r26,Z+2
+ 210 0036 B381      		ldd r27,Z+3
+ 211 0038 2C91      		ld r18,X
+ 212 003a 9681      		ldd r25,Z+6
+ 213 003c 9095      		com r25
+ 214 003e 9223      		and r25,r18
+ 215 0040 9C93      		st X,r25
+ 184:funsape/peripheral/gpioPin.cpp ****     case PinMode::INPUT_PULLED_UP:
+ 216               		.loc 1 184 0
+ 217 0042 00C0      		rjmp .L10
+ 218               	.L11:
+ 186:funsape/peripheral/gpioPin.cpp ****         setMask(*(this->_regOut), (uint8_t)this->_pinMask);
+ 219               		.loc 1 186 0
+ 220 0044 A081      		ld r26,Z
+ 221 0046 B181      		ldd r27,Z+1
+ 222 0048 2C91      		ld r18,X
+ 223 004a 9681      		ldd r25,Z+6
+ 224 004c 9095      		com r25
+ 225 004e 9223      		and r25,r18
+ 226 0050 9C93      		st X,r25
+ 187:funsape/peripheral/gpioPin.cpp ****         break;
+ 227               		.loc 1 187 0
+ 228 0052 A281      		ldd r26,Z+2
+ 229 0054 B381      		ldd r27,Z+3
+ 230 0056 9C91      		ld r25,X
+ 231 0058 2681      		ldd r18,Z+6
+ 232 005a 922B      		or r25,r18
+ 233 005c 9C93      		st X,r25
+ 188:funsape/peripheral/gpioPin.cpp ****     case PinMode::OUTPUT_PUSH_PULL:
+ 234               		.loc 1 188 0
+ 235 005e 00C0      		rjmp .L10
+ 236               	.L13:
+ 190:funsape/peripheral/gpioPin.cpp ****         break;
+ 237               		.loc 1 190 0
+ 238 0060 A081      		ld r26,Z
+ 239 0062 B181      		ldd r27,Z+1
+ 240 0064 9C91      		ld r25,X
+ 241 0066 2681      		ldd r18,Z+6
+ 242 0068 922B      		or r25,r18
+ 243 006a 9C93      		st X,r25
+ 191:funsape/peripheral/gpioPin.cpp ****     }
+ 244               		.loc 1 191 0
+ 245 006c 00C0      		rjmp .L10
+ 246               		.cfi_endproc
+ 247               	.LFE81:
+ 249               		.text
+ 250               	.Letext0:
+ 251               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 252               		.file 3 "funsape/peripheral/../config/atmega328p.hpp"
+ 253               		.file 4 "/usr/lib/avr/include/stdio.h"
+ 254               		.file 5 "funsape/peripheral/../globalDefines.hpp"
+GAS LISTING /tmp/ccoaShMe.s 			page 9
+
+
+ 255               		.file 6 "funsape/peripheral/../util/debug.hpp"
+ 256               		.file 7 "funsape/peripheral/gpioPin.hpp"
+GAS LISTING /tmp/ccoaShMe.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gpioPin.cpp
+     /tmp/ccoaShMe.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccoaShMe.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccoaShMe.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccoaShMe.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccoaShMe.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccoaShMe.s:13     .text._ZN7GpioPinC2Ev:0000000000000000 _ZN7GpioPinC2Ev
+     /tmp/ccoaShMe.s:13     .text._ZN7GpioPinC2Ev:0000000000000000 _ZN7GpioPinC1Ev
+     /tmp/ccoaShMe.s:51     .text._ZN7GpioPinD2Ev:0000000000000000 _ZN7GpioPinD2Ev
+     /tmp/ccoaShMe.s:51     .text._ZN7GpioPinD2Ev:0000000000000000 _ZN7GpioPinD1Ev
+     /tmp/ccoaShMe.s:71     .text._ZN7GpioPin4initEPVh8PinIndex:0000000000000000 _ZN7GpioPin4initEPVh8PinIndex
+     /tmp/ccoaShMe.s:161    .text._ZN7GpioPin7setModeE7PinMode:0000000000000000 _ZN7GpioPin7setModeE7PinMode
+
+UNDEFINED SYMBOLS
+__umulhisi3

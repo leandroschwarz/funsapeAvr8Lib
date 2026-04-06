@@ -1,0 +1,834 @@
+/**
+ *******************************************************************************
+ * @file            dateTime.cpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           Date and Time definitions.
+ * @details         This file provides date and time definitionsfor the
+ *                      FunSAPE++ AVR8 Library.
+ * @date            2025-02-14
+ * @version         25.02
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No itens in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// System file dependencies
+// =============================================================================
+
+#include "dateTime.hpp"
+#if !defined(__DATE_TIME_HPP)
+#    error Error 1 - Header file (dateTime.hpp) is missing or corrupted!
+#elif __DATE_TIME_HPP != 2502
+#    error Error 6 - Build mismatch between header file (dateTime.hpp) and source file (dateTime.cpp)!
+#endif
+
+// =============================================================================
+// File exclusive - Constants
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - Macro-functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class constructors
+// =============================================================================
+
+DateTime::DateTime(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::DateTime(void)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Resets data members
+    this->_clearData();
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return;
+}
+
+DateTime::~DateTime(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::~DateTime(void)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Returns successfully
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return;
+}
+
+// =============================================================================
+// Class own methods - Public
+// =============================================================================
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+bool_t DateTime::isDateSet(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::isDateSet(void)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Returns if date is set
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return this->_dateSet;
+}
+
+bool_t DateTime::isTimeSet(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::isTimeSet(void)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Returns if time is set
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return this->_timeSet;
+}
+
+//     //////////////////     DATE RELATED METHODS //////////////////////     //
+
+bool_t DateTime::getDate(uint16_t *year_p, Month *month_p, uint8_t *day_p, WeekDay *weekDay_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::getDate(uint16_t *, Month *, uint8_t *, WeekDay *)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Checks initialization
+    if(!this->_dateSet) {
+        // Returns error
+        this->_lastError = Error::DATE_NOT_INITIALIZED;
+        debugMessage(Error::DATE_NOT_INITIALIZED, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - pointer null
+    if((!isPointerValid(year_p)) || (!isPointerValid(month_p)) || (!isPointerValid(day_p))) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Retrieve values
+    *day_p      = this->_day;
+    *month_p    = this->_month;
+    *year_p     = this->_year;
+    if(isPointerValid(weekDay_p)) {
+        *weekDay_p = this->_weekDay;
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::getWeekDay(WeekDay *weekDay_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::getWeekDay(WeekDay *)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Checks initialization
+    if(!this->_dateSet) {
+        // Returns error
+        this->_lastError = Error::DATE_NOT_INITIALIZED;
+        debugMessage(Error::DATE_NOT_INITIALIZED, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - pointer null
+    if(!isPointerValid(weekDay_p)) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Retrieve values
+    *weekDay_p = this->_weekDay;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::isLeapYear(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::isLeapYear(void)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Checks initialization
+    if(!this->_dateSet) {
+        // Returns error
+        this->_lastError = Error::DATE_NOT_INITIALIZED;
+        debugMessage(Error::DATE_NOT_INITIALIZED, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Returns result
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return this->_leapYear;
+}
+
+bool_t DateTime::setDate(cuint16_t year_p, const Month month_p, cuint8_t day_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::setDate(cuint16_t, const Month, cuint8_t)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Deinitialize
+    this->_dateSet = false;
+
+    // Check for errors - month day
+    if(!this->_isValidDate(year_p, month_p, day_p)) {
+        // Returns error
+        debugMessage(this->_lastError, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Update data members
+    this->_dateSet = true;
+    this->_year = year_p;
+    this->_leapYear = this->_isLeapYear(year_p);
+    this->_month = month_p;
+    this->_day = day_p;
+    this->_weekDay = this->_evaluateDayOfWeek();
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+//     //////////////////     TIME RELATED METHODS //////////////////////     //
+
+bool_t DateTime::getTime(uint8_t *hours_p, uint8_t *minutes_p, uint8_t *seconds_p, const TimeFormat timeFormat_p,
+        AmPmFlag *amPmFlag_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::getTime(uint8_t *, uint8_t *, uint8_t *, const TimeFormat, AmPmFlag *)"),
+            Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Local variables
+    uint8_t auxHours;
+    AmPmFlag auxAmPmFlag;
+
+    // Checks initialization
+    if(!this->_timeSet) {
+        // Returns error
+        this->_lastError = Error::TIME_NOT_INITIALIZED;
+        debugMessage(Error::TIME_NOT_INITIALIZED, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - pointer null
+    if((!isPointerValid(hours_p)) || (!isPointerValid(minutes_p)) || (!isPointerValid(seconds_p))) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - pointer null
+    if((timeFormat_p == TimeFormat::FORMAT_12_HOURS) && (!isPointerValid(amPmFlag_p))) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Retrieve values
+    auxAmPmFlag = this->_amPmFlag;
+    auxHours = this->_hours;
+
+    // Convert between time formats
+    if(timeFormat_p != this->_timeFormat) {
+        if(!this->_convertTimeFormat(&auxHours, &auxAmPmFlag, this->_timeFormat, timeFormat_p)) {
+            // Returns error
+            debugMessage(this->_lastError, Debug::CodeIndex::DATE_TIME_MODULE);
+            return false;
+        }
+    }
+
+    // Update function arguments
+    if(isPointerValid(amPmFlag_p)) {
+        *amPmFlag_p = auxAmPmFlag;
+    }
+    *hours_p = auxHours;
+    *minutes_p = this->_minutes;
+    *seconds_p = this->_seconds;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::getTime(uint8_t *hours_p, uint8_t *minutes_p, uint8_t *seconds_p, uint16_t *milliseconds_p,
+        const TimeFormat timeFormat_p, AmPmFlag *amPmFlag_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::getTime(uint8_t *, uint8_t *, uint8_t *, uint16_t *, const TimeFormat, AmPmFlag *)"
+            , Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Local variables
+    uint8_t auxHours;
+    AmPmFlag auxAmPmFlag;
+
+    // Checks initialization
+    if(!this->_timeSet) {
+        // Returns error
+        this->_lastError = Error::TIME_NOT_INITIALIZED;
+        debugMessage(Error::TIME_NOT_INITIALIZED, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - pointer null
+    if((!isPointerValid(hours_p)) || (!isPointerValid(minutes_p)) || (!isPointerValid(seconds_p)) ||
+            (!isPointerValid(milliseconds_p))) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - pointer null
+    if((timeFormat_p == TimeFormat::FORMAT_12_HOURS) && (!isPointerValid(amPmFlag_p))) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Retrieve values
+    auxAmPmFlag = this->_amPmFlag;
+    auxHours = this->_hours;
+
+    // Convert between time formats
+    if(timeFormat_p != this->_timeFormat) {
+        if(!this->_convertTimeFormat(&auxHours, &auxAmPmFlag, this->_timeFormat, timeFormat_p)) {
+            // Returns error
+            debugMessage(this->_lastError, Debug::CodeIndex::DATE_TIME_MODULE);
+            return false;
+        }
+    }
+
+    // Update function arguments
+    if(isPointerValid(amPmFlag_p)) {
+        *amPmFlag_p = auxAmPmFlag;
+    }
+    *hours_p        = auxHours;
+    *minutes_p      = this->_minutes;
+    *seconds_p      = this->_seconds;
+    *milliseconds_p = this->_milliseconds;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::getTimeFormat(TimeFormat *timeFormat_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::getTimeFormat(TimeFormat *)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Checks initialization
+    if(!this->_timeSet) {
+        // Returns error
+        this->_lastError = Error::TIME_NOT_INITIALIZED;
+        debugMessage(Error::TIME_NOT_INITIALIZED, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - pointer null
+    if(!isPointerValid(timeFormat_p)) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Retrieve values
+    *timeFormat_p = this->_timeFormat;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::getTimeZone(TimeZone *timeZone_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::getTimeZone(TimeZone *)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // CHECK FOR ERROR - pointer null
+    if(!isPointerValid(timeZone_p)) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Retrieve values
+    *timeZone_p = this->_timeZone;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::setTime(cuint8_t hours_p, cuint8_t minutes_p, cuint8_t seconds_p, const TimeFormat timeFormat_p,
+        const AmPmFlag amPmFlag_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::setTime(cuint8_t, cuint8_t, cuint8_t, const TimeFormat, const AmPmFlag)"),
+            Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Deinitialize
+    this->_timeSet = false;
+
+    // Check for errors - Valid time
+    if(!this->_isValidTime(hours_p, minutes_p, seconds_p, timeFormat_p)) {
+        // Returns error
+        debugMessage(this->_lastError, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Update data members
+    this->_timeSet = true;
+    this->_hours = hours_p;
+    this->_timeFormat = timeFormat_p;
+    this->_amPmFlag = amPmFlag_p;
+    this->_minutes = minutes_p;
+    this->_seconds = seconds_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::setTime(cuint8_t hours_p, cuint8_t minutes_p, cuint8_t seconds_p, cuint16_t milliseconds_p,
+        const TimeFormat timeFormat_p, const AmPmFlag amPmFlag_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::setTime(cuint8_t, cuint8_t, cuint8_t, cuint16_t, const TimeFormat, const AmPmFlag)"
+            , Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Deinitialize
+    this->_timeSet = false;
+
+    // Check for errors - Valid time
+    if(!this->_isValidTime(hours_p, minutes_p, seconds_p, timeFormat_p)) {
+        // Returns error
+        debugMessage(this->_lastError, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Update data members
+    if(milliseconds_p > 999) {
+        this->_milliseconds = 0;
+    } else {
+        this->_milliseconds = milliseconds_p;
+    }
+    this->_hours = hours_p;
+    this->_minutes = minutes_p;
+    this->_seconds = seconds_p;
+    this->_amPmFlag = amPmFlag_p;
+    this->_timeFormat = timeFormat_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::setTimeFormat(const TimeFormat timeFormat_p)
+{
+    // Local variables
+    uint8_t auxHours = this->_hours;
+    AmPmFlag auxAmPmFlag = this->_amPmFlag;
+
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::setTimeFormat(const TimeFormat)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Checks initialization
+    if(!this->_timeSet) {
+        // Returns error
+        this->_lastError = Error::TIME_NOT_INITIALIZED;
+        debugMessage(Error::TIME_NOT_INITIALIZED, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Just exit if conversion is not necessary
+    if(this->_timeFormat == timeFormat_p) {
+        // Returns successfully
+        this->_lastError = Error::NONE;
+        debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Converts time to given format
+    if(!this->_convertTimeFormat(&auxHours, &auxAmPmFlag, this->_timeFormat, timeFormat_p)) {
+        // Returns error
+        debugMessage(this->_lastError, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Updates data members
+    this->_hours = auxHours;
+    this->_amPmFlag = auxAmPmFlag;
+    this->_timeFormat = timeFormat_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::setTimeZone(const TimeZone timeZone_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::setTimeZone(const TimeZone)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Update data members
+    this->_timeZone = timeZone_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+// =============================================================================
+// Class own methods - Private
+// =============================================================================
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+void DateTime::_clearData(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::_clearData(void)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    //     /////////////////    CONTROL AND STATUS     //////////////////     //
+    this->_dateSet                      = false;
+    this->_timeSet                      = false;
+    //     /////////////////     DATE DATA MEMBERS     //////////////////     //
+    this->_day                          = 0;
+    this->_leapYear                     = false;
+    this->_month                        = Month::UNDEFINED;
+    this->_year                         = 0;
+    this->_weekDay                      = WeekDay::UNDEFINED;
+    //     /////////////////     TIME DATA MEMBERS     //////////////////     //
+    this->_amPmFlag                     = AmPmFlag::AM;
+    this->_hours                        = 0;
+    this->_milliseconds                 = 0;
+    this->_minutes                      = 0;
+    this->_seconds                      = 0;
+    this->_timeFormat                   = TimeFormat::FORMAT_24_HOURS;
+    this->_timeZone                     = TimeZone::UNDEFINED;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return;
+}
+
+//     //////////////////     DATE RELATED METHODS //////////////////////     //
+
+DateTime::WeekDay DateTime::_evaluateDayOfWeek(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::_evaluateDayOfWeek(void)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Local variables
+    uint16_t aux16;
+    uint16_t auxYear = this->_year;
+    WeekDay auxWeekDay = WeekDay::UNDEFINED;
+
+    // Week day evaluation
+    auxYear -= (this->_month < 3);
+    aux16 = (auxYear + auxYear / 4 - auxYear / 100 + auxYear / 400 + "-bed=pen+mad."[(uint8_t)(
+                                    this->_month)] + this->_day) % 7;
+    aux16++;
+    auxWeekDay = (WeekDay)aux16;
+
+    // Returns result
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return auxWeekDay;
+}
+
+bool_t DateTime::_isLeapYear(cuint16_t year_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::_isLeapYear(cuint16_t)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Local variables
+    bool_t auxLeapYear = false;
+
+    if(year_p % 400 == 0) {             // Yes - divisible by 400
+        auxLeapYear = true;
+    } else if(year_p % 100 == 0) {      // No - divisible by 100 but not by 400
+        auxLeapYear = false;
+    } else if(year_p % 4 == 0) {        // Yes - divisible by 4 but not by 100
+        auxLeapYear = true;
+    } else {                            // No - to all other years
+        auxLeapYear = false;
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return auxLeapYear;
+}
+
+bool_t DateTime::_isValidDate(cuint16_t year_p, const Month month_p, cuint8_t day_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::_isValidDate(cuint16_t, const Month, cuint8_t)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Local variables
+    bool_t validDate = true;
+
+    // Checks if any date value is zero
+    if((day_p == 0) || (month_p == Month::UNDEFINED) || (year_p == 0)) {
+        // Returns error
+        this->_lastError = Error::DATE_INVALID;
+        debugMessage(Error::DATE_INVALID, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Checks if date is greater than available month days
+    switch(month_p) {
+    case Month::JANUARY:        // 31 days
+    case Month::MARCH:
+    case Month::MAY:
+    case Month::JULY:
+    case Month::AUGUST:
+    case Month::OCTOBER:
+    case Month::DECEMBER:
+        if(day_p > 31) {
+            // Returns error
+            validDate = false;
+        }
+        break;
+    case Month::APRIL:
+    case Month::JUNE:
+    case Month::SEPTEMBER:
+    case Month::NOVEMBER:       // 30 days
+        if(day_p > 30) {
+            validDate = false;
+        }
+        break;
+    case Month::FEBRUARY:       // 28 or 29 days
+        if(day_p > 29) {
+            validDate = false;
+        } else if(day_p == 29) {
+            if(!this->_isLeapYear(year_p)) {
+                validDate = false;
+            }
+        }
+        break;
+    default:
+        validDate = false;
+        break;
+    }
+
+    // Checking result
+    if(!validDate) {
+        // Returns error
+        this->_lastError = Error::DATE_INVALID;
+        debugMessage(Error::DATE_INVALID, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+//     //////////////////     TIME RELATED METHODS //////////////////////     //
+
+bool_t DateTime::_convertTimeFormat(uint8_t *hours_p, AmPmFlag *amPmFlag_p, const TimeFormat fromFormat_p,
+        const TimeFormat toFormat_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::_convertTimeFormat(uint8_t *, AmPmFlag *, const TimeFormat, const TimeFormat)"
+            , Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Conversion procedure
+    if((fromFormat_p == TimeFormat::FORMAT_12_HOURS) && (toFormat_p == TimeFormat::FORMAT_24_HOURS)) {
+        // Convert 12-hour time format to 24-hour time format
+        if(*amPmFlag_p == AmPmFlag::AM) {
+            if(*hours_p == 12) {            // Time is 12:00 <-> 12:59 AM => 0 hours
+                *hours_p = 0;
+            } else {                        // Time is 1:00 <-> 11:59 AM => do nothing
+                doNothing();
+            }
+        } else { // amPmFlag_p == AmPmFlag::PM
+            if(*hours_p == 12) {            // Time is 1:00 <-> 11:59 PM => add 12 hours
+                *hours_p += 12;
+            } else {                        // Time is 12:00 <-> 12:59 PM => do nothing
+                doNothing();
+            }
+        }
+    } else if((fromFormat_p == TimeFormat::FORMAT_24_HOURS) && (toFormat_p == TimeFormat::FORMAT_12_HOURS)) {
+        // Convert 24-hour time format to 12-hour time format
+        switch(*hours_p) {
+        case 0:
+            *hours_p = 12;
+            *amPmFlag_p = AmPmFlag::AM;
+            break;
+        case 1 ... 11:
+            *amPmFlag_p = AmPmFlag::AM;
+            break;
+        case 12:
+            *amPmFlag_p = AmPmFlag::PM;
+            break;
+        case 13 ... 23:
+            *hours_p -= 12;
+            *amPmFlag_p = AmPmFlag::PM;
+            break;
+        default:
+            // Returns error
+            this->_lastError = Error::UNKNOWN;
+            debugMessage(Error::UNKNOWN, Debug::CodeIndex::DATE_TIME_MODULE);
+            return false;
+        }
+    } else {
+        // No conversion is needed
+        doNothing();
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+bool_t DateTime::_isValidTime(cuint8_t hours_p, cuint8_t minutes_p, cuint8_t seconds_p, const TimeFormat timeFormat_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("DateTime::_isValidTime(cuint8_t, cuint8_t, cuint8_t, const TimeFormat)"), Debug::CodeIndex::DATE_TIME_MODULE);
+
+    // Check values
+    if((seconds_p > 59) || (minutes_p > 59)) {
+        // Returns error
+        this->_lastError = Error::TIME_INVALID;
+        debugMessage(Error::TIME_INVALID, Debug::CodeIndex::DATE_TIME_MODULE);
+        return false;
+    }
+    if(timeFormat_p == TimeFormat::FORMAT_12_HOURS) {
+        if((hours_p == 0) || (hours_p > 12)) {
+            // Returns error
+            this->_lastError = Error::TIME_INVALID;
+            debugMessage(Error::TIME_INVALID, Debug::CodeIndex::DATE_TIME_MODULE);
+            return false;
+        }
+    } else {
+        if(hours_p > 23) {
+            // Returns error
+            this->_lastError = Error::TIME_INVALID;
+            debugMessage(Error::TIME_INVALID, Debug::CodeIndex::DATE_TIME_MODULE);
+            return false;
+        }
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::DATE_TIME_MODULE);
+    return true;
+}
+
+// =============================================================================
+// Class own methods - Protected
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt handlers
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+// NONE
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// End of file (dateTime.cpp)
+// =============================================================================

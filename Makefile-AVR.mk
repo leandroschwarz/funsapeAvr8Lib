@@ -1,0 +1,1256 @@
+ifeq ($(MCU_DEVICE_NAME),at43usb320)
+    MCU_DEVICE_CODE					= 1 [cite: 17]
+    MCU_DEVICE_MACRO				= __AVR_AT43USB320__ [cite: 17]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at43usb355)
+    MCU_DEVICE_CODE					= 2 [cite: 17]
+    MCU_DEVICE_MACRO				= __AVR_AT43USB355__ [cite: 17]
+    FLASH_SIZE						= 24576
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),at76c711)
+    MCU_DEVICE_CODE					= 3 [cite: 17]
+    MCU_DEVICE_MACRO				= __AVR_AT76C711__ [cite: 17]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),at86rf401)
+    MCU_DEVICE_CODE					= 4 [cite: 17]
+    MCU_DEVICE_MACRO				= __AVR_AT86RF401__ [cite: 17]
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),at90c8534)
+    MCU_DEVICE_CODE					= 5 [cite: 17]
+    MCU_DEVICE_MACRO				= __AVR_AT90C8534__ [cite: 17]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90can128)
+    MCU_DEVICE_CODE					= 6 [cite: 17]
+    MCU_DEVICE_MACRO				= __AVR_AT90CAN128__ [cite: 17]
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),at90can32)
+    MCU_DEVICE_CODE					= 7 [cite: 17]
+    MCU_DEVICE_MACRO				= __AVR_AT90CAN32__ [cite: 17]
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),at90can64)
+    MCU_DEVICE_CODE					= 8 [cite: 17]
+    MCU_DEVICE_MACRO				= __AVR_AT90CAN64__ [cite: 17]
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),at90pwm1)
+    MCU_DEVICE_CODE					= 9 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM1__ [cite: 18]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90pwm161)
+    MCU_DEVICE_CODE					= 10 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM161__ [cite: 18]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),at90pwm2)
+    MCU_DEVICE_CODE					= 11 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM2__ [cite: 18]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90pwm216)
+    MCU_DEVICE_CODE					= 12 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM216__ [cite: 18]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),at90pwm2b)
+    MCU_DEVICE_CODE					= 13 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM2B__ [cite: 18]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90pwm3)
+    MCU_DEVICE_CODE					= 14 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM3__ [cite: 18]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90pwm316)
+    MCU_DEVICE_CODE					= 15 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM316__ [cite: 18]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),at90pwm3b)
+    MCU_DEVICE_CODE					= 16 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM3B__ [cite: 18]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90pwm81)
+    MCU_DEVICE_CODE					= 17 [cite: 18]
+    MCU_DEVICE_MACRO				= __AVR_AT90PWM81__ [cite: 19]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90s1200)
+    MCU_DEVICE_CODE					= 18 [cite: 19]
+    MCU_DEVICE_MACRO				= __AVR_AT90S1200__ [cite: 19]
+    FLASH_SIZE						= 1024
+    SRAM_SIZE						= 0
+else ifeq ($(MCU_DEVICE_NAME),at90s2313)
+    MCU_DEVICE_CODE					= 19 [cite: 19]
+    MCU_DEVICE_MACRO				= __AVR_AT90S2313__ [cite: 19]
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),at90s2323)
+    MCU_DEVICE_CODE					= 20 [cite: 19]
+    MCU_DEVICE_MACRO				= __AVR_AT90S2323__ [cite: 19]
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),at90s2333)
+    MCU_DEVICE_CODE					= 21 [cite: 19]
+    MCU_DEVICE_MACRO				= __AVR_AT90S2333__ [cite: 19]
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),at90s2343)
+    MCU_DEVICE_CODE					= 22 [cite: 19]
+    MCU_DEVICE_MACRO				= __AVR_AT90S2343__ [cite: 19]
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),at90s4414)
+    MCU_DEVICE_CODE					= 23 [cite: 19]
+    MCU_DEVICE_MACRO				= __AVR_AT90S4414__ [cite: 19]
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),at90s4433)
+    MCU_DEVICE_CODE					= 24 [cite: 19]
+    MCU_DEVICE_MACRO				= __AVR_AT90S4433__ [cite: 19]
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),at90s4434)
+    MCU_DEVICE_CODE					= 25 [cite: 19]
+    MCU_DEVICE_MACRO				= __AVR_AT90S4434__ [cite: 19]
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),at90s8515)
+    MCU_DEVICE_CODE					= 26 [cite: 20]
+    MCU_DEVICE_MACRO				= __AVR_AT90S8515__ [cite: 20]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90s8535)
+    MCU_DEVICE_CODE					= 27 [cite: 20]
+    MCU_DEVICE_MACRO				= __AVR_AT90S8535__ [cite: 20]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90scr100)
+    MCU_DEVICE_CODE					= 28 [cite: 20]
+    MCU_DEVICE_MACRO				= __AVR_AT90SCR100__ [cite: 20]
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),at90usb1286)
+    MCU_DEVICE_CODE					= 29 [cite: 20]
+    MCU_DEVICE_MACRO				= __AVR_AT90USB1286__ [cite: 20]
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),at90usb1287)
+    MCU_DEVICE_CODE					= 30 [cite: 20]
+    MCU_DEVICE_MACRO				= __AVR_AT90USB1287__ [cite: 20]
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),at90usb162)
+    MCU_DEVICE_CODE					= 31 [cite: 20]
+    MCU_DEVICE_MACRO				= __AVR_AT90USB162__ [cite: 20]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at90usb646)
+    MCU_DEVICE_CODE					= 32 [cite: 20]
+    MCU_DEVICE_MACRO				= __AVR_AT90USB646__ [cite: 20]
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),at90usb647)
+    MCU_DEVICE_CODE					= 33 [cite: 20]
+    MCU_DEVICE_MACRO				= __AVR_AT90USB647__ [cite: 20]
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),at90usb82)
+    MCU_DEVICE_CODE					= 34 [cite: 21]
+    MCU_DEVICE_MACRO				= __AVR_AT90USB82__ [cite: 21]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),at94k)
+    MCU_DEVICE_CODE					= 35 [cite: 21]
+    MCU_DEVICE_MACRO				= __AVR_AT94K__ [cite: 21]
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),ata5272)
+    MCU_DEVICE_CODE					= 36 [cite: 21]
+    MCU_DEVICE_MACRO				= __AVR_ATA5272__ [cite: 21]
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),ata5505)
+    MCU_DEVICE_CODE					= 37 [cite: 21]
+    MCU_DEVICE_MACRO				= __AVR_ATA5505__ [cite: 21]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),ata5702m322)
+    MCU_DEVICE_CODE					= 38 [cite: 21]
+    MCU_DEVICE_MACRO				= __AVR_ATA5702M322__ [cite: 21]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),ata5782)
+    MCU_DEVICE_CODE					= 39 [cite: 21]
+    MCU_DEVICE_MACRO				= __AVR_ATA5782__ [cite: 21]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),ata5790)
+    MCU_DEVICE_CODE					= 40 [cite: 21]
+    MCU_DEVICE_MACRO				= __AVR_ATA5790__ [cite: 21]
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),ata5790n)
+    MCU_DEVICE_CODE					= 41
+    MCU_DEVICE_MACRO				= __AVR_AT43USB320__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),ata5795)
+    MCU_DEVICE_CODE					= 42
+    MCU_DEVICE_MACRO				= __AVR_ATA5795__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),ata5831)
+    MCU_DEVICE_CODE					= 43
+    MCU_DEVICE_MACRO				= __AVR_ATA5831__
+    FLASH_SIZE						= 24576
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),ata6285)
+    MCU_DEVICE_CODE					= 44
+    MCU_DEVICE_MACRO				= __AVR_ATA6285__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),ata6286)
+    MCU_DEVICE_CODE					= 45
+    MCU_DEVICE_MACRO				= __AVR_ATA6286__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),ata6289)
+    MCU_DEVICE_CODE					= 46
+    MCU_DEVICE_MACRO				= __AVR_ATA6289__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),ata6612c)
+    MCU_DEVICE_CODE					= 47
+    MCU_DEVICE_MACRO				= __AVR_ATA6612C__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),ata6613c)
+    MCU_DEVICE_CODE					= 48
+    MCU_DEVICE_MACRO				= __AVR_ATA6613C__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),ata6614q)
+    MCU_DEVICE_CODE					= 49
+    MCU_DEVICE_MACRO				= __AVR_ATA6614Q__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),ata6616c)
+    MCU_DEVICE_CODE					= 50
+    MCU_DEVICE_MACRO				= __AVR_ATA6616C__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),ata6617c)
+    MCU_DEVICE_CODE					= 51
+    MCU_DEVICE_MACRO				= __AVR_ATA6617C__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),ata664251)
+    MCU_DEVICE_CODE					= 52
+    MCU_DEVICE_MACRO				= __AVR_ATA664251__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega103)
+    MCU_DEVICE_CODE					= 53
+    MCU_DEVICE_MACRO				= __AVR_ATmega103__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega128)
+    MCU_DEVICE_CODE					= 54
+    MCU_DEVICE_MACRO				= __AVR_ATmega128__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega1280)
+    MCU_DEVICE_CODE					= 55
+    MCU_DEVICE_MACRO				= __AVR_ATmega1280__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atmega1281)
+    MCU_DEVICE_CODE					= 56
+    MCU_DEVICE_MACRO				= __AVR_ATmega1281__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atmega1284)
+    MCU_DEVICE_CODE					= 57
+    MCU_DEVICE_MACRO				= __AVR_ATmega1284__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atmega1284p)
+    MCU_DEVICE_CODE					= 58
+    MCU_DEVICE_MACRO				= __AVR_ATmega1284P__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atmega1284rfr2)
+    MCU_DEVICE_CODE					= 59
+    MCU_DEVICE_MACRO				= __AVR_ATmega1284RFR2__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atmega128a)
+    MCU_DEVICE_CODE					= 60
+    MCU_DEVICE_MACRO				= __AVR_ATmega128A__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega128rfr2)
+    MCU_DEVICE_CODE					= 61
+    MCU_DEVICE_MACRO				= __AVR_ATmega128RFR2__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atmega16)
+    MCU_DEVICE_CODE					= 62
+    MCU_DEVICE_MACRO				= __AVR_ATmega16__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega161)
+    MCU_DEVICE_CODE					= 63
+    MCU_DEVICE_MACRO				= __AVR_ATmega161__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega162)
+    MCU_DEVICE_CODE					= 64
+    MCU_DEVICE_MACRO				= __AVR_ATmega162__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega163)
+    MCU_DEVICE_CODE					= 65
+    MCU_DEVICE_MACRO				= __AVR_ATmega163__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega164a)
+    MCU_DEVICE_CODE					= 66
+    MCU_DEVICE_MACRO				= __AVR_ATmega164A__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega164p)
+    MCU_DEVICE_CODE					= 67
+    MCU_DEVICE_MACRO				= __AVR_ATmega164P__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega164pa)
+    MCU_DEVICE_CODE					= 68
+    MCU_DEVICE_MACRO				= __AVR_ATmega164PA__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega165)
+    MCU_DEVICE_CODE					= 69
+    MCU_DEVICE_MACRO				= __AVR_ATmega165__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega165a)
+    MCU_DEVICE_CODE					= 70
+    MCU_DEVICE_MACRO				= __AVR_ATmega165A__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega165p)
+    MCU_DEVICE_CODE					= 71
+    MCU_DEVICE_MACRO				= __AVR_ATmega165P__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega165pa)
+    MCU_DEVICE_CODE					= 72
+    MCU_DEVICE_MACRO				= __AVR_ATmega165PA__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega168)
+    MCU_DEVICE_CODE					= 73
+    MCU_DEVICE_MACRO				= __AVR_ATmega168__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega168a)
+    MCU_DEVICE_CODE					= 74
+    MCU_DEVICE_MACRO				= __AVR_ATmega168A__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega168p)
+    MCU_DEVICE_CODE					= 75
+    MCU_DEVICE_MACRO				= __AVR_ATmega168P__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega168pa)
+    MCU_DEVICE_CODE					= 76
+    MCU_DEVICE_MACRO				= __AVR_ATmega168PA__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega169)
+    MCU_DEVICE_CODE					= 77
+    MCU_DEVICE_MACRO				= __AVR_ATmega169__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega169a)
+    MCU_DEVICE_CODE					= 78
+    MCU_DEVICE_MACRO				= __AVR_ATmega169A__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega169p)
+    MCU_DEVICE_CODE					= 79
+    MCU_DEVICE_MACRO				= __AVR_ATmega169P__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega169pa)
+    MCU_DEVICE_CODE					= 80
+    MCU_DEVICE_MACRO				= __AVR_ATmega169PA__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega16a)
+    MCU_DEVICE_CODE					= 81
+    MCU_DEVICE_MACRO				= __AVR_ATmega16A__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega16hva)
+    MCU_DEVICE_CODE					= 82
+    MCU_DEVICE_MACRO				= __AVR_ATmega16HVA__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega16hva2)
+    MCU_DEVICE_CODE					= 83
+    MCU_DEVICE_MACRO				= __AVR_ATmega16HVA2__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega16hvb)
+    MCU_DEVICE_CODE					= 84
+    MCU_DEVICE_MACRO				= __AVR_ATmega16HVB__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega16hvbrevb)
+    MCU_DEVICE_CODE					= 85
+    MCU_DEVICE_MACRO				= __AVR_ATmega16HVBREVB__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega16m1)
+    MCU_DEVICE_CODE					= 86
+    MCU_DEVICE_MACRO				= __AVR_ATmega16M1__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega16u2)
+    MCU_DEVICE_CODE					= 87
+    MCU_DEVICE_MACRO				= __AVR_ATmega16U2__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega16u4)
+    MCU_DEVICE_CODE					= 88
+    MCU_DEVICE_MACRO				= __AVR_ATmega16U4__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1280
+else ifeq ($(MCU_DEVICE_NAME),atmega2560)
+    MCU_DEVICE_CODE					= 89
+    MCU_DEVICE_MACRO				= __AVR_ATmega2560__
+    FLASH_SIZE						= 262144
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atmega2561)
+    MCU_DEVICE_CODE					= 90
+    MCU_DEVICE_MACRO				= __AVR_ATmega2561__
+    FLASH_SIZE						= 262144
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atmega2564rfr2)
+    MCU_DEVICE_CODE					= 91
+    MCU_DEVICE_MACRO				= __AVR_ATmega2564RFR2__
+    FLASH_SIZE						= 262144
+    SRAM_SIZE						= 32768
+else ifeq ($(MCU_DEVICE_NAME),atmega256rfr2)
+    MCU_DEVICE_CODE					= 92
+    MCU_DEVICE_MACRO				= __AVR_ATmega256RFR2__
+    FLASH_SIZE						= 262144
+    SRAM_SIZE						= 32768
+else ifeq ($(MCU_DEVICE_NAME),atmega32)
+    MCU_DEVICE_CODE					= 93
+    MCU_DEVICE_MACRO				= __AVR_ATmega32__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega323)
+    MCU_DEVICE_CODE					= 94
+    MCU_DEVICE_MACRO				= __AVR_ATmega323__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega324a)
+    MCU_DEVICE_CODE					= 95
+    MCU_DEVICE_MACRO				= __AVR_ATmega324A__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega324p)
+    MCU_DEVICE_CODE					= 96
+    MCU_DEVICE_MACRO				= __AVR_ATmega324P__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega324pa)
+    MCU_DEVICE_CODE					= 97
+    MCU_DEVICE_MACRO				= __AVR_ATmega324PA__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega325)
+    MCU_DEVICE_CODE					= 98
+    MCU_DEVICE_MACRO				= __AVR_ATmega325__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega3250)
+    MCU_DEVICE_CODE					= 99
+    MCU_DEVICE_MACRO				= __AVR_ATmega3250__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega3250a)
+    MCU_DEVICE_CODE					= 100
+    MCU_DEVICE_MACRO				= __AVR_ATmega3250A__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega3250p)
+    MCU_DEVICE_CODE					= 101
+    MCU_DEVICE_MACRO				= __AVR_ATmega3250P__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega3250pa)
+    MCU_DEVICE_CODE					= 102
+    MCU_DEVICE_MACRO				= __AVR_ATmega3250PA__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega325a)
+    MCU_DEVICE_CODE					= 103
+    MCU_DEVICE_MACRO				= __AVR_ATmega325A__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega325p)
+    MCU_DEVICE_CODE					= 104
+    MCU_DEVICE_MACRO				= __AVR_ATmega325P__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega325pa)
+    MCU_DEVICE_CODE					= 105
+    MCU_DEVICE_MACRO				= __AVR_ATmega325PA__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega328)
+    MCU_DEVICE_CODE					= 106
+    MCU_DEVICE_MACRO				= __AVR_ATmega328__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega328p)
+    MCU_DEVICE_CODE					= 107
+    MCU_DEVICE_MACRO				= __AVR_ATmega328P__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega329)
+    MCU_DEVICE_CODE					= 108
+    MCU_DEVICE_MACRO				= __AVR_ATmega329__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega3290)
+    MCU_DEVICE_CODE					= 109
+    MCU_DEVICE_MACRO				= __AVR_ATmega3290__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega3290a)
+    MCU_DEVICE_CODE					= 110
+    MCU_DEVICE_MACRO				= __AVR_ATmega3290A__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega3290p)
+    MCU_DEVICE_CODE					= 111
+    MCU_DEVICE_MACRO				= __AVR_ATmega3290P__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega3290pa)
+    MCU_DEVICE_CODE					= 112
+    MCU_DEVICE_MACRO				= __AVR_ATmega3290PA__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega329a)
+    MCU_DEVICE_CODE					= 113
+    MCU_DEVICE_MACRO				= __AVR_ATmega329A__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega329p)
+    MCU_DEVICE_CODE					= 114
+    MCU_DEVICE_MACRO				= __AVR_ATmega329P__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega329pa)
+    MCU_DEVICE_CODE					= 115
+    MCU_DEVICE_MACRO				= __AVR_ATmega329PA__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega32a)
+    MCU_DEVICE_CODE					= 116
+    MCU_DEVICE_MACRO				= __AVR_ATmega32A__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega32c1)
+    MCU_DEVICE_CODE					= 117
+    MCU_DEVICE_MACRO				= __AVR_ATmega32C1__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega32hvb)
+    MCU_DEVICE_CODE					= 118
+    MCU_DEVICE_MACRO				= __AVR_ATmega32HVB__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega32hvbrevb)
+    MCU_DEVICE_CODE					= 119
+    MCU_DEVICE_MACRO				= __AVR_ATmega32HVBREVB__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega32m1)
+    MCU_DEVICE_CODE					= 120
+    MCU_DEVICE_MACRO				= __AVR_ATmega32M1__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega32u2)
+    MCU_DEVICE_CODE					= 121
+    MCU_DEVICE_MACRO				= __AVR_ATmega32U2__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega32u4)
+    MCU_DEVICE_CODE					= 122
+    MCU_DEVICE_MACRO				= __AVR_ATmega32U4__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2560
+else ifeq ($(MCU_DEVICE_NAME),atmega32u6)
+    MCU_DEVICE_CODE					= 123
+    MCU_DEVICE_MACRO				= __AVR_ATmega32U6__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 2560
+else ifeq ($(MCU_DEVICE_NAME),atmega406)
+    MCU_DEVICE_CODE					= 124
+    MCU_DEVICE_MACRO				= __AVR_ATmega406__
+    FLASH_SIZE						= 40960
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atmega48)
+    MCU_DEVICE_CODE					= 125
+    MCU_DEVICE_MACRO				= __AVR_ATmega48__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega48a)
+    MCU_DEVICE_CODE					= 126
+    MCU_DEVICE_MACRO				= __AVR_ATmega48A__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega48p)
+    MCU_DEVICE_CODE					= 127
+    MCU_DEVICE_MACRO				= __AVR_ATmega48P__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega48pa)
+    MCU_DEVICE_CODE					= 128
+    MCU_DEVICE_MACRO				= __AVR_ATmega48PA__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega603)
+    MCU_DEVICE_CODE					= 129
+    MCU_DEVICE_MACRO				= __AVR_ATmega603__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega64)
+    MCU_DEVICE_CODE					= 130
+    MCU_DEVICE_MACRO				= __AVR_ATmega64__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega640)
+    MCU_DEVICE_CODE					= 131
+    MCU_DEVICE_MACRO				= __AVR_ATmega640__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atmega644)
+    MCU_DEVICE_CODE					= 132
+    MCU_DEVICE_MACRO				= __AVR_ATmega644__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega644a)
+    MCU_DEVICE_CODE					= 133
+    MCU_DEVICE_MACRO				= __AVR_ATmega644A__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega644p)
+    MCU_DEVICE_CODE					= 134
+    MCU_DEVICE_MACRO				= __AVR_ATmega644P__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega644pa)
+    MCU_DEVICE_CODE					= 135
+    MCU_DEVICE_MACRO				= __AVR_ATmega644PA__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega644rfr2)
+    MCU_DEVICE_CODE					= 136
+    MCU_DEVICE_MACRO				= __AVR_ATmega644RFR2__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atmega645)
+    MCU_DEVICE_CODE					= 137
+    MCU_DEVICE_MACRO				= __AVR_ATmega645__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega6450)
+    MCU_DEVICE_CODE					= 138
+    MCU_DEVICE_MACRO				= __AVR_ATmega6450__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega6450a)
+    MCU_DEVICE_CODE					= 139
+    MCU_DEVICE_MACRO				= __AVR_ATmega6450A__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega6450p)
+    MCU_DEVICE_CODE					= 140
+    MCU_DEVICE_MACRO				= __AVR_ATmega6450P__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega645a)
+    MCU_DEVICE_CODE					= 141
+    MCU_DEVICE_MACRO				= __AVR_ATmega645A__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega645p)
+    MCU_DEVICE_CODE					= 142
+    MCU_DEVICE_MACRO				= __AVR_ATmega645P__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega649)
+    MCU_DEVICE_CODE					= 143
+    MCU_DEVICE_MACRO				= __AVR_ATmega649__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega6490)
+    MCU_DEVICE_CODE					= 144
+    MCU_DEVICE_MACRO				= __AVR_ATmega6490__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega6490a)
+    MCU_DEVICE_CODE					= 145
+    MCU_DEVICE_MACRO				= __AVR_ATmega6490A__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega6490p)
+    MCU_DEVICE_CODE					= 146
+    MCU_DEVICE_MACRO				= __AVR_ATmega6490P__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega649a)
+    MCU_DEVICE_CODE					= 147
+    MCU_DEVICE_MACRO				= __AVR_ATmega649A__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega649p)
+    MCU_DEVICE_CODE					= 148
+    MCU_DEVICE_MACRO				= __AVR_ATmega649P__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega64a)
+    MCU_DEVICE_CODE					= 149
+    MCU_DEVICE_MACRO				= __AVR_ATmega64A__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega64c1)
+    MCU_DEVICE_CODE					= 150
+    MCU_DEVICE_MACRO				= __AVR_ATmega64C1__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega64hve)
+    MCU_DEVICE_CODE					= 151
+    MCU_DEVICE_MACRO				= __AVR_ATmega64HVE__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega64hve2)
+    MCU_DEVICE_CODE					= 152
+    MCU_DEVICE_MACRO				= __AVR_ATmega64HVE2__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega64m1)
+    MCU_DEVICE_CODE					= 153
+    MCU_DEVICE_MACRO				= __AVR_ATmega64M1__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atmega64rfr2)
+    MCU_DEVICE_CODE					= 154
+    MCU_DEVICE_MACRO				= __AVR_ATmega64RFR2__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atmega8)
+    MCU_DEVICE_CODE					= 155
+    MCU_DEVICE_MACRO				= __AVR_ATmega8__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega8515)
+    MCU_DEVICE_CODE					= 156
+    MCU_DEVICE_MACRO				= __AVR_ATmega8515__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega8535)
+    MCU_DEVICE_CODE					= 157
+    MCU_DEVICE_MACRO				= __AVR_ATmega8535__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega88)
+    MCU_DEVICE_CODE					= 158
+    MCU_DEVICE_MACRO				= __AVR_ATmega88__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega88a)
+    MCU_DEVICE_CODE					= 159
+    MCU_DEVICE_MACRO				= __AVR_ATmega88A__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega88p)
+    MCU_DEVICE_CODE					= 160
+    MCU_DEVICE_MACRO				= __AVR_ATmega88P__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega88pa)
+    MCU_DEVICE_CODE					= 161
+    MCU_DEVICE_MACRO				= __AVR_ATmega88PA__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega8a)
+    MCU_DEVICE_CODE					= 162
+    MCU_DEVICE_MACRO				= __AVR_ATmega8A__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),atmega8hva)
+    MCU_DEVICE_CODE					= 163
+    MCU_DEVICE_MACRO				= __AVR_ATmega8HVA__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),atmega8u2)
+    MCU_DEVICE_CODE					= 164
+    MCU_DEVICE_MACRO				= __AVR_ATmega8U2__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny10)
+    MCU_DEVICE_CODE					= 165
+    MCU_DEVICE_MACRO				= __AVR_ATtiny10__
+    FLASH_SIZE						= 1024
+    SRAM_SIZE						= 32
+else ifeq ($(MCU_DEVICE_NAME),attiny11)
+    MCU_DEVICE_CODE					= 166
+    MCU_DEVICE_MACRO				= __AVR_ATtiny11__
+    FLASH_SIZE						= 1024
+    SRAM_SIZE						= 0
+else ifeq ($(MCU_DEVICE_NAME),attiny12)
+    MCU_DEVICE_CODE					= 167
+    MCU_DEVICE_MACRO				= __AVR_ATtiny12__
+    FLASH_SIZE						= 1024
+    SRAM_SIZE						= 0
+else ifeq ($(MCU_DEVICE_NAME),attiny13)
+    MCU_DEVICE_CODE					= 168
+    MCU_DEVICE_MACRO				= __AVR_ATtiny13__
+    FLASH_SIZE						= 1024
+    SRAM_SIZE						= 64
+else ifeq ($(MCU_DEVICE_NAME),attiny13a)
+    MCU_DEVICE_CODE					= 169
+    MCU_DEVICE_MACRO				= __AVR_ATtiny13A__
+    FLASH_SIZE						= 1024
+    SRAM_SIZE						= 64
+else ifeq ($(MCU_DEVICE_NAME),attiny15)
+    MCU_DEVICE_CODE					= 170
+    MCU_DEVICE_MACRO				= __AVR_ATtiny15__
+    FLASH_SIZE						= 1024
+    SRAM_SIZE						= 0
+else ifeq ($(MCU_DEVICE_NAME),attiny1634)
+    MCU_DEVICE_CODE					= 171
+    MCU_DEVICE_MACRO				= __AVR_ATtiny1634__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),attiny167)
+    MCU_DEVICE_CODE					= 172
+    MCU_DEVICE_MACRO				= __AVR_ATtiny167__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny20)
+    MCU_DEVICE_CODE					= 173
+    MCU_DEVICE_MACRO				= __AVR_ATtiny20__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny22)
+    MCU_DEVICE_CODE					= 174
+    MCU_DEVICE_MACRO				= __AVR_ATtiny22__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny2313)
+    MCU_DEVICE_CODE					= 175
+    MCU_DEVICE_MACRO				= __AVR_ATtiny2313__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny2313a)
+    MCU_DEVICE_CODE					= 176
+    MCU_DEVICE_MACRO				= __AVR_ATtiny2313A__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny24)
+    MCU_DEVICE_CODE					= 177
+    MCU_DEVICE_MACRO				= __AVR_ATtiny24__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny24a)
+    MCU_DEVICE_CODE					= 178
+    MCU_DEVICE_MACRO				= __AVR_ATtiny24A__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny25)
+    MCU_DEVICE_CODE					= 179
+    MCU_DEVICE_MACRO				= __AVR_ATtiny25__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny26)
+    MCU_DEVICE_CODE					= 180
+    MCU_DEVICE_MACRO				= __AVR_ATtiny26__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny261)
+    MCU_DEVICE_CODE					= 181
+    MCU_DEVICE_MACRO				= __AVR_ATtiny261__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny261a)
+    MCU_DEVICE_CODE					= 182
+    MCU_DEVICE_MACRO				= __AVR_ATtiny261A__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 128
+else ifeq ($(MCU_DEVICE_NAME),attiny28)
+    MCU_DEVICE_CODE					= 183
+    MCU_DEVICE_MACRO				= __AVR_ATtiny28__
+    FLASH_SIZE						= 2048
+    SRAM_SIZE						= 0
+else ifeq ($(MCU_DEVICE_NAME),attiny4)
+    MCU_DEVICE_CODE					= 184
+    MCU_DEVICE_MACRO				= __AVR_ATtiny4__
+    FLASH_SIZE						= 512
+    SRAM_SIZE						= 32
+else ifeq ($(MCU_DEVICE_NAME),attiny40)
+    MCU_DEVICE_CODE					= 185
+    MCU_DEVICE_MACRO				= __AVR_ATtiny40__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny4313)
+    MCU_DEVICE_CODE					= 186
+    MCU_DEVICE_MACRO				= __AVR_ATtiny4313__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny43u)
+    MCU_DEVICE_CODE					= 187
+    MCU_DEVICE_MACRO				= __AVR_ATtiny43U__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny44)
+    MCU_DEVICE_CODE					= 188
+    MCU_DEVICE_MACRO				= __AVR_ATtiny44__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny441)
+    MCU_DEVICE_CODE					= 189
+    MCU_DEVICE_MACRO				= __AVR_ATtiny441__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny44a)
+    MCU_DEVICE_CODE					= 190
+    MCU_DEVICE_MACRO				= __AVR_ATtiny44A__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny45)
+    MCU_DEVICE_CODE					= 191
+    MCU_DEVICE_MACRO				= __AVR_ATtiny45__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny461)
+    MCU_DEVICE_CODE					= 192
+    MCU_DEVICE_MACRO				= __AVR_ATtiny461__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny461a)
+    MCU_DEVICE_CODE					= 193
+    MCU_DEVICE_MACRO				= __AVR_ATtiny461A__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny48)
+    MCU_DEVICE_CODE					= 194
+    MCU_DEVICE_MACRO				= __AVR_ATtiny48__
+    FLASH_SIZE						= 4096
+    SRAM_SIZE						= 256
+else ifeq ($(MCU_DEVICE_NAME),attiny5)
+    MCU_DEVICE_CODE					= 195
+    MCU_DEVICE_MACRO				= __AVR_ATtiny5__
+    FLASH_SIZE						= 512
+    SRAM_SIZE						= 32
+else ifeq ($(MCU_DEVICE_NAME),attiny828)
+    MCU_DEVICE_CODE					= 196
+    MCU_DEVICE_MACRO				= __AVR_ATtiny828__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny84)
+    MCU_DEVICE_CODE					= 197
+    MCU_DEVICE_MACRO				= __AVR_ATtiny84__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny841)
+    MCU_DEVICE_CODE					= 198
+    MCU_DEVICE_MACRO				= __AVR_ATtiny841__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny84a)
+    MCU_DEVICE_CODE					= 199
+    MCU_DEVICE_MACRO				= __AVR_ATtiny84A__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny85)
+    MCU_DEVICE_CODE					= 200
+    MCU_DEVICE_MACRO				= __AVR_ATtiny85__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny861)
+    MCU_DEVICE_CODE					= 201
+    MCU_DEVICE_MACRO				= __AVR_ATtiny861__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny861a)
+    MCU_DEVICE_CODE					= 202
+    MCU_DEVICE_MACRO				= __AVR_ATtiny861A__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny87)
+    MCU_DEVICE_CODE					= 203
+    MCU_DEVICE_MACRO				= __AVR_ATtiny87__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny88)
+    MCU_DEVICE_CODE					= 204
+    MCU_DEVICE_MACRO				= __AVR_ATtiny88__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 512
+else ifeq ($(MCU_DEVICE_NAME),attiny9)
+    MCU_DEVICE_CODE					= 205
+    MCU_DEVICE_MACRO				= __AVR_ATtiny9__
+    FLASH_SIZE						= 512
+    SRAM_SIZE						= 32
+else ifeq ($(MCU_DEVICE_NAME),atxmega128a1)
+    MCU_DEVICE_CODE					= 206
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128A1__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128a1u)
+    MCU_DEVICE_CODE					= 207
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128A1U__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128a3)
+    MCU_DEVICE_CODE					= 208
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128A3__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128a3u)
+    MCU_DEVICE_CODE					= 209
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128A3U__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128a4u)
+    MCU_DEVICE_CODE					= 210
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128A4U__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128b1)
+    MCU_DEVICE_CODE					= 211
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128B1__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128b3)
+    MCU_DEVICE_CODE					= 212
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128B3__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128c3)
+    MCU_DEVICE_CODE					= 213
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128C3__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128d3)
+    MCU_DEVICE_CODE					= 214
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128D3__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega128d4)
+    MCU_DEVICE_CODE					= 215
+    MCU_DEVICE_MACRO				= __AVR_ATxmega128D4__
+    FLASH_SIZE						= 131072
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega16a4)
+    MCU_DEVICE_CODE					= 216
+    MCU_DEVICE_MACRO				= __AVR_ATxmega16A4__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atxmega16a4u)
+    MCU_DEVICE_CODE					= 217
+    MCU_DEVICE_MACRO				= __AVR_ATxmega16A4U__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atxmega16c4)
+    MCU_DEVICE_CODE					= 218
+    MCU_DEVICE_MACRO				= __AVR_ATxmega16C4__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atxmega16d4)
+    MCU_DEVICE_CODE					= 219
+    MCU_DEVICE_MACRO				= __AVR_ATxmega16D4__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atxmega16e5)
+    MCU_DEVICE_CODE					= 220
+    MCU_DEVICE_MACRO				= __AVR_ATxmega16E5__
+    FLASH_SIZE						= 16384
+    SRAM_SIZE						= 2048
+else ifeq ($(MCU_DEVICE_NAME),atxmega192a3)
+    MCU_DEVICE_CODE					= 221
+    MCU_DEVICE_MACRO				= __AVR_ATxmega192A3__
+    FLASH_SIZE						= 196608
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atxmega192a3u)
+    MCU_DEVICE_CODE					= 222
+    MCU_DEVICE_MACRO				= __AVR_ATxmega192A3U__
+    FLASH_SIZE						= 196608
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atxmega192c3)
+    MCU_DEVICE_CODE					= 223
+    MCU_DEVICE_MACRO				= __AVR_ATxmega192C3__
+    FLASH_SIZE						= 196608
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atxmega192d3)
+    MCU_DEVICE_CODE					= 224
+    MCU_DEVICE_MACRO				= __AVR_ATxmega192D3__
+    FLASH_SIZE						= 196608
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atxmega256a3)
+    MCU_DEVICE_CODE					= 225
+    MCU_DEVICE_MACRO				= __AVR_ATxmega256A3__
+    FLASH_SIZE						= 262144
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atxmega256a3u)
+    MCU_DEVICE_CODE					= 226
+    MCU_DEVICE_MACRO				= __AVR_ATxmega256A3U__
+    FLASH_SIZE						= 262144
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atxmega256c3)
+    MCU_DEVICE_CODE					= 227
+    MCU_DEVICE_MACRO				= __AVR_ATxmega256C3__
+    FLASH_SIZE						= 262144
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atxmega256d3)
+    MCU_DEVICE_CODE					= 228
+    MCU_DEVICE_MACRO				= __AVR_ATxmega256D3__
+    FLASH_SIZE						= 262144
+    SRAM_SIZE						= 16384
+else ifeq ($(MCU_DEVICE_NAME),atxmega32a4)
+    MCU_DEVICE_CODE					= 229
+    MCU_DEVICE_MACRO				= __AVR_ATxmega32A4__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega32a4u)
+    MCU_DEVICE_CODE					= 230
+    MCU_DEVICE_MACRO				= __AVR_ATxmega32A4U__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega32c3)
+    MCU_DEVICE_CODE					= 231
+    MCU_DEVICE_MACRO				= __AVR_ATxmega32C3__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega32d3)
+    MCU_DEVICE_CODE					= 232
+    MCU_DEVICE_MACRO				= __AVR_ATxmega32D3__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega32d4)
+    MCU_DEVICE_CODE					= 233
+    MCU_DEVICE_MACRO				= __AVR_ATxmega32D4__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega32e5)
+    MCU_DEVICE_CODE					= 234
+    MCU_DEVICE_MACRO				= __AVR_ATxmega32E5__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega384c3)
+    MCU_DEVICE_CODE					= 235
+    MCU_DEVICE_MACRO				= __AVR_ATxmega384C3__
+    FLASH_SIZE						= 393216
+    SRAM_SIZE						= 32768
+else ifeq ($(MCU_DEVICE_NAME),atxmega384d3)
+    MCU_DEVICE_CODE					= 236
+    MCU_DEVICE_MACRO				= __AVR_ATxmega384D3__
+    FLASH_SIZE						= 393216
+    SRAM_SIZE						= 32768
+else ifeq ($(MCU_DEVICE_NAME),atxmega64a1)
+    MCU_DEVICE_CODE					= 237
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64A1__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64a1u)
+    MCU_DEVICE_CODE					= 238
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64A1U__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64a3)
+    MCU_DEVICE_CODE					= 239
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64A3__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64a3u)
+    MCU_DEVICE_CODE					= 240
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64A3U__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64a1u)
+    MCU_DEVICE_CODE					= 241
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64A1U__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64a3)
+    MCU_DEVICE_CODE					= 242
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64A3__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64a3u)
+    MCU_DEVICE_CODE					= 243
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64A3U__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64a4u)
+    MCU_DEVICE_CODE					= 244
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64A4U__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64b1)
+    MCU_DEVICE_CODE					= 245
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64B1__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega64b3)
+    MCU_DEVICE_CODE					= 246
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64B3__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 8192
+else ifeq ($(MCU_DEVICE_NAME),atxmega64c3)
+    MCU_DEVICE_CODE					= 247
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64C3__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64d3)
+    MCU_DEVICE_CODE					= 248
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64D3__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega64d4)
+    MCU_DEVICE_CODE					= 249
+    MCU_DEVICE_MACRO				= __AVR_ATxmega64D4__
+    FLASH_SIZE						= 65536
+    SRAM_SIZE						= 4096
+else ifeq ($(MCU_DEVICE_NAME),atxmega8e5)
+    MCU_DEVICE_CODE					= 250
+    MCU_DEVICE_MACRO				= __AVR_ATxmega8E5__
+    FLASH_SIZE						= 8192
+    SRAM_SIZE						= 1024
+else ifeq ($(MCU_DEVICE_NAME),m3000)
+    MCU_DEVICE_CODE					= 251
+    MCU_DEVICE_MACRO				= __AVR_M3000__
+    FLASH_SIZE						= 32768
+    SRAM_SIZE						= 4096
+endif

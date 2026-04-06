@@ -1,0 +1,1266 @@
+/**
+ *******************************************************************************
+ * @file            circularBuffer.hpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           Generic data-wide circular buffer module.
+ * @details         This file provides a template class to handle circular
+ *                      buffers for the FunSAPE++ AVR8 Library.
+ * @date            2025-08-08
+ * @version         25.08
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No itens in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// Include guard (START)
+// =============================================================================
+
+#ifndef __CIRCULAR_BUFFER_HPP
+#define __CIRCULAR_BUFFER_HPP           2508
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+//     /////////////////     GLOBAL DEFINITIONS FILE    /////////////////     //
+
+#include "../globalDefines.hpp"
+#if !defined(__GLOBAL_DEFINES_HPP)
+#   error [circularBuffer.hpp] Error 1 - Header file (globalDefines.hpp) is missing or corrupted!
+#elif __GLOBAL_DEFINES_HPP != __CIRCULAR_BUFFER_HPP
+#   error [circularBuffer.hpp] Error 2 - Build mismatch between file (circularBuffer.hpp) and global definitions file (globalDefines.hpp)!
+#endif
+
+//     //////////////////     LIBRARY DEPENDENCIES     //////////////////     //
+
+#include "../util/debug.hpp"
+#if !defined(__DEBUG_HPP)
+#   error [circularBuffer.hpp] Error 1 - Header file (debug.hpp) is missing or corrupted!
+#elif __DEBUG_HPP != __CIRCULAR_BUFFER_HPP
+#   error [circularBuffer.hpp] Error 5 - Build mismatch between file (circularBuffer.hpp) and library dependency (debug.hpp)!
+#endif
+
+//     ///////////////////     STANDARD C LIBRARY     ///////////////////     //
+
+// NONE
+
+//     ////////////////////    AVR LIBRARY FILES     ////////////////////     //
+
+// NONE
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start main group "Util"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      Util
+ * @brief           Utilities.
+ * @{
+*/
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start subgroup "Util/Circular_Buffer"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      Circular_Buffer
+ * @brief           Generic circular buffer handler module.
+ * @{
+*/
+
+// =============================================================================
+// Undefining previous definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Classes
+// =============================================================================
+
+/**
+ * @brief           CircularBuffer class.
+ * @details         This class is a template class that controls a generic
+ *                      circular buffer.
+ * @tparam          T                   data type.
+*/
+template<typename T>
+class CircularBuffer
+{
+    // -------------------------------------------------------------------------
+    // New data types ----------------------------------------------------------
+public:
+    // NONE
+
+private:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Constructors ------------------------------------------------------------
+public:
+
+    /**
+     * @brief       CircularBuffer class constructor.
+     * @details     Creates a CircularBuffer object. The object is loaded with
+     *                  the default values (no circular buffer size and do not
+     *                  overwrite if full).
+     *                  The object still must be initialized before use.
+     * @see         init(cuint16_t bufferSize_p, cbool_t overwrite_p).
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    CircularBuffer(
+            void
+    );
+
+    /**
+     * @brief       CircularBuffer class constructor.
+     * @details     Creates a CircularBuffer object, and initializes it with the
+     *                  given @a bufferSize_p number of elements and
+     *                  @a overwrite_p overwrite procedure option.
+     * @par Error codes:
+     *
+     * | Error code                           | Meaning                             |
+     * |:-------------------------------------|:------------------------------------|
+     * | @ref Error::NONE                     | Success. No erros were detected.    |
+     * | @ref Error::ARGUMENT_CANNOT_BE_ZERO  | @a bufferSize_p cannot be zero.     |
+     * | @ref Error::BUFFER_SIZE_TOO_SMALL    | @a bufferSize_p must be at least 2. |
+     * | @ref Error::MEMORY_ALLOCATION_FAILED | Memory allocation procedure failed. |
+     *
+    */
+    CircularBuffer(
+            cuint16_t   bufferSize_p,
+            cbool_t     overwrite_p     = false
+    );
+
+    /**
+     * @brief       CircularBuffer class destructor.
+     * @details     Destroys a CircularBuffer object.
+    */
+    ~CircularBuffer(
+            void
+    );
+
+    // -------------------------------------------------------------------------
+    // Methods -----------------------------------------------------------------
+public:
+
+    //     /////////////////     CONTROL AND STATUS     /////////////////     //
+
+    /**
+     * @brief       Returns the number of free space for elements.
+     * @details     Returns the number of elements that can be written into the
+     *                  circular buffer until it gets full.
+     * @return      Number of free space of the circular buffer.
+     * @par Error codes:
+     *
+     * | Error code                          | Meaning                             |
+     * |:------------------------------------|:------------------------------------|
+     * | @ref Error::NONE                    | Success. No erros were detected.    |
+     *
+    */
+    uint16_t getFreeSpace(
+            void
+    );
+
+    /**
+     * @brief       Returns the last error.
+     * @details     Returns the last error.
+     * @return      @ref Error          Error status of the last operation.
+    */
+    Error getLastError(
+            void
+    );
+
+    /**
+     * @brief       Returns the number of elements in the circular buffer.
+     * @details     Returns the number of elements available in the circular
+     *                  buffer.
+     * @return      Number of occupied space of the circular buffer.
+     * @par Error codes:
+     *
+     * | Error code                          | Meaning                             |
+     * |:------------------------------------|:------------------------------------|
+     * | @ref Error::NONE                    | Success. No erros were detected.    |
+     *
+    */
+    uint16_t getOccupation(
+            void
+    );
+
+    /**
+     * @brief       Initializes the circular buffer.
+     * @details     Initializes the circular buffer, with the given
+     *                  @a bufferSize_p number of elements and @a overwrite_p
+     *                  overwrite procedure.
+     * @param[in]   bufferSize_p        Number of elements in the circular
+     *                                      buffer.
+     * @param[in]   overwrite_p         If @c true, new elements will be ignored
+     *                                      if the circular buffer is full. If
+     *                                      @c false, new elements will
+     *                                      overwrite old elements in the
+     *                                      circular buffer.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code                           | Meaning                             |
+     * |:-------------------------------------|:------------------------------------|
+     * | @ref Error::NONE                     | Success. No erros were detected.    |
+     * | @ref Error::ARGUMENT_CANNOT_BE_ZERO  | @a bufferSize_p cannot be zero.     |
+     * | @ref Error::BUFFER_SIZE_TOO_SMALL    | @a bufferSize_p must be at least 2. |
+     * | @ref Error::MEMORY_ALLOCATION_FAILED | Memory allocation procedure failed. |
+     *
+    */
+    bool_t init(
+            cuint16_t   bufferSize_p    = 20,
+            cbool_t     overwrite_p     = false
+    );
+
+    /**
+     * @brief       Returns if the circular buffer is empty.
+     * @details     Returns if the circular buffer is empty.
+     * @retval      true                if there is no unread elements in the
+     *                                      circular buffer.
+     * @retval      false               if there is at least one unread element
+     *                                      in the circular buffer.
+     * @par Error codes:
+     *
+     * | Error code                          | Meaning                             |
+     * |:------------------------------------|:------------------------------------|
+     * | @ref Error::NONE                    | Success. No erros were detected.    |
+     *
+    */
+    bool_t isEmpty(
+            void
+    );
+
+    /**
+     * @brief       Returns if the circular buffer is full.
+     * @details     Returns if the circular buffer is full.
+     * @retval      true                if there is space for at least one new
+     *                                      element in the circular buffer.
+     * @retval      false               if there is no more spaces available in
+     *                                      the circular buffer.
+     * @par Error codes:
+     *
+     * | Error code                          | Meaning                             |
+     * |:------------------------------------|:------------------------------------|
+     * | @ref Error::NONE                    | Success. No erros were detected.    |
+     *
+    */
+    bool_t isFull(
+            void
+    );
+
+    //     //////////////////    DATA MANIPULATION     //////////////////     //
+
+    /**
+     * @brief       Clears all unread elements in the circular buffer.
+     * @details     Clears all unread elements in the circular buffer.
+     * @param[in]   bypassProtection_p  If @c true, the elements will be cleared
+     *                                      even if the circular buffer is
+     *                                      protected against read/write
+     *                                      operations. If @c false, the
+     *                                      elements will be cleared only if the
+     *                                      circular buffer in not protected
+     *                                      against read/write operations.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code                          | Meaning                                           |
+     * |:------------------------------------|:--------------------------------------------------|
+     * | @ref Error::NONE                    | Success. No erros were detected.                  |
+     * | @ref Error::NOT_INITIALIZED         | Object was not initialized.                       |
+     * | @ref Error::LOCKED                  | The buffer is locked.                             |
+     * | @ref Error::READ_PROTECTED          | The buffer is protected against read operations.  |
+     * | @ref Error::WRITE_PROTECTED         | The buffer is protected against write operations. |
+     *
+    */
+    bool_t flush(
+            cbool_t     bypassProtection_p = false
+    );
+
+    /**
+     * @brief       Gets one element of the circular buffer.
+     * @details     This function gets the last element from the circular
+     *                  buffer, copies it to the given @a data_p pointer, and
+     *                  clears the element from the circular buffer if
+     *                  @a keepData_p is set to @c false.
+     * @param[out]  data_p              Pointer to store the element.
+     * @param[in]   keepData_p          If @c false, the element will be cleared
+     *                                      from the circular buffer. If
+     *                                      @c true, the element will not be
+     *                                      cleared from the circular buffer
+     *                                      and can be retrieved again.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code                          | Meaning                                             |
+     * |:------------------------------------|:----------------------------------------------------|
+     * | @ref Error::NONE                    | Success. No erros were detected.                    |
+     * | @ref Error::ARGUMENT_POINTER_NULL   | @a data_p pointer is a null pointer.                |
+     * | @ref Error::NOT_INITIALIZED         | Object was not initialized.                         |
+     * | @ref Error::LOCKED                  | The buffer is locked.                               |
+     * | @ref Error::READ_PROTECTED          | The buffer is protected against read operations.    |
+     * | @ref Error::BUFFER_EMPTY            | The buffer is empty. There is no elements to read.  |
+     *
+    */
+    bool_t pop(
+            T           *data_p,
+            cbool_t     keepData_p = false
+    );
+
+    /**
+     * @brief       Gets elements of the circular buffer.
+     * @details     This function gets the number of elements @a bufSize_p from
+     *                  the circular buffer, copies it to the given @a bufData_p
+     *                  pointer, and clears the elements from the circular
+     *                  buffer if @a keepData_p is set to @c false.
+     * @param[out]  bufData_p           Pointer to the buffer to store the
+     *                                      elements.
+     * @param[in]   bufSize_p           Number of elements to be read from the
+     *                                      circular buffer.
+     * @param[in]   keepData_p          If @c false, the elements will be
+     *                                      cleared from the circular buffer. If
+     *                                      @c true, the elements will not be
+     *                                      cleared from the circular buffer and
+     *                                      can be retrieved again.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code                             | Meaning                                                                   |
+     * |:---------------------------------------|:--------------------------------------------------------------------------|
+     * | @ref Error::NONE                       | Success. No erros were detected.                                          |
+     * | @ref Error::ARGUMENT_POINTER_NULL      | @a bufData_p pointer is a null pointer.                                   |
+     * | @ref Error::ARGUMENT_CANNOT_BE_ZERO    | @a bufSize_p cannot be zero.                                              |
+     * | @ref Error::NOT_INITIALIZED            | Object was not initialized.                                               |
+     * | @ref Error::LOCKED                     | The buffer is locked.                                                     |
+     * | @ref Error::READ_PROTECTED             | The buffer is protected against read operations.                          |
+     * | @ref Error::BUFFER_NOT_ENOUGH_ELEMENTS | The number of unread elements in the buffer is smaller than @a bufSize_p. |
+     *
+    */
+    bool_t popBuffer(
+            T           *bufData_p,
+            cuint16_t   bufSize_p,
+            cbool_t     keepData_p = false
+    );
+
+    /**
+     * @brief       Puts one element in the circular buffer.
+     * @details     This function puts one element at the end of the circular
+     *                  buffer.
+     * @param[in]   data_p              Element to be written at the circular
+     *                                      buffer.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code                  | Meaning                                           |
+     * |:----------------------------|:--------------------------------------------------|
+     * | @ref Error::NONE            | Success. No erros were detected.                  |
+     * | @ref Error::NOT_INITIALIZED | Object was not initialized.                       |
+     * | @ref Error::LOCKED          | The buffer is locked.                             |
+     * | @ref Error::WRITE_PROTECTED | The buffer is protected against write operations. |
+     * | @ref Error::BUFFER_FULL     | The buffer is full.                               |
+     *
+    */
+    bool_t push(
+            const T     data_p
+    );
+
+    /**
+     * @brief       Puts elements in the circular buffer.
+     * @details     This function puts @a bufSize_p number of elements from the
+     *                  given buffer @a bufSize_p at the end of the circular
+     *                  buffer.
+     * @param[in]   bufData_p           Pointer to the buffer to be written at
+     *                                      the circular buffer.
+     * @param[in]   bufSize_p           Number of elements to be written at the
+     *                                      circular buffer.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code                          | Meaning                                                    |
+     * |:------------------------------------|:-----------------------------------------------------------|
+     * | @ref Error::NONE                    | Success. No erros were detected.                           |
+     * | @ref Error::ARGUMENT_POINTER_NULL   | @a bufData_p pointer is a null pointer.                    |
+     * | @ref Error::ARGUMENT_CANNOT_BE_ZERO | @a bufSize_p cannot be zero.                               |
+     * | @ref Error::NOT_INITIALIZED         | Object was not initialized.                                |
+     * | @ref Error::LOCKED                  | The buffer is locked.                                      |
+     * | @ref Error::WRITE_PROTECTED         | The buffer is protected against write operations.          |
+     * | @ref Error::BUFFER_NOT_ENOUGH_SPACE | The free space in the buffer is smaller than @a bufSize_p. |
+     *
+    */
+    bool_t pushBuffer(
+            const T     *bufData_p,
+            cuint16_t   bufSize_p
+    );
+
+    //     ///////////////////     BUFFER CONTROL     ///////////////////     //
+
+    /**
+     * @brief       Configures the read protection procedure.
+     * @details     This function configures the circular buffer protection
+     *                  feature against read operations, according to the given
+     *                  @a block_p flag.
+     * @param[in]   block_p             If @c true, the circular buffer is
+     *                                      protected against read operations.
+     *                                      If @c false, read operations are
+     *                                      allowed at the circular buffer.
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    void setBlockRead(
+            cbool_t     block_p
+    );
+
+    /**
+     * @brief       Configures the write protection procedure.
+     * @details     This function configures the circular buffer protection
+     *                  feature against write operations, according to the given
+     *                  @a block_p flag.
+     * @param[in]   block_p             If @c true, the circular buffer is
+     *                                      protected against write operations.
+     *                                      If @c false, write operations are
+     *                                      allowed at the circular buffer.
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    void setBlockWrite(
+            cbool_t     block_p
+    );
+
+private:
+
+    /**
+     * @cond
+    */
+
+    void _moveBothPointers(
+            void
+    );
+    void _moveReadPointer(
+            void
+    );
+    void _moveWritePointer(
+            void
+    );
+
+    /**
+     * @endcond
+    */
+
+    // -------------------------------------------------------------------------
+    // Properties --------------------------------------------------------------
+private:
+
+    //     /////////////////    CONTROL AND STATUS     //////////////////     //
+
+    bool_t          _isEmpty            : 1;    //!< Empty buffer flag.
+    bool_t          _isFull             : 1;    //!< Full buffer flag.
+    bool_t          _isInitialized      : 1;    //!< Initialization flag.
+    bool_t          _isLocked           : 1;    //!< Buffer locked flag.
+    bool_t          _isReadProtected    : 1;    //!< Read protection flag.
+    bool_t          _isWriteProtected   : 1;    //!< Write protection flag.
+    Error           _lastError;                 //!< Last error.
+    uint16_t        _occupation;                //!< Number of unread elements into the circular buffer.
+    bool_t          _overwriting        : 1;    //!< Allow overwriting if buffe is full.
+
+    //     ////////////////////   CONFIGURATION     /////////////////////     //
+    uint16_t        _maxSize;                   //!< Buffer size.
+
+    //     /////////////////////    BUFFER DATA     /////////////////////     //
+    T               *_data;                     //!< Circular buffer data buffer.
+    uint16_t        _rdIndex;                   //!< Circular buffer read pointer.
+    uint16_t        _wrIndex;                   //!< Circular buffer write pointer.
+
+}; // class CircularBuffer
+
+// =============================================================================
+// Class constructors
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+template<typename T> CircularBuffer<T>::CircularBuffer(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::CircularBuffer(void)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Locking procedure
+    this->_isLocked         = true;                  // Locks circular buffer
+    this->_isReadProtected  = true;                  // Protects against read operations
+    this->_isWriteProtected = true;                  // Protects against write operations
+
+    // Reset data members
+    this->_data             = nullptr;
+    this->_isEmpty          = true;
+    this->_isFull           = false;
+    this->_isInitialized    = false;
+    this->_maxSize          = 0;
+    this->_occupation       = 0;
+    this->_overwriting      = false;
+    this->_rdIndex          = 0;
+    this->_wrIndex          = 0;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return;
+}
+
+template<typename T> CircularBuffer<T>::CircularBuffer(cuint16_t bufferSize_p, cbool_t overwrite_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::CircularBuffer(cuint16_t, cbool_t)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Locking procedure
+    this->_isLocked         = true;                  // Locks circular buffer
+    this->_isReadProtected  = true;                  // Protects against read operations
+    this->_isWriteProtected = true;                  // Protects against write operations
+
+    // Reset data members
+    this->_data             = nullptr;
+    this->_isEmpty            = true;
+    this->_isFull             = false;
+    this->_isInitialized    = false;
+    this->_maxSize          = 0;
+    this->_occupation       = 0;
+    this->_overwriting      = false;
+    this->_rdIndex          = 0;
+    this->_wrIndex          = 0;
+
+    // CHECK FOR ERROR - Zero-sized buffer
+    if(bufferSize_p == 0) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_CANNOT_BE_ZERO;
+        debugMessage(Error::ARGUMENT_CANNOT_BE_ZERO, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return;
+    }
+    // CHECK FOR ERROR - Size too small
+    if(bufferSize_p < 2) {
+        // Returns error
+        this->_lastError = Error::BUFFER_SIZE_TOO_SMALL;
+        debugMessage(Error::BUFFER_SIZE_TOO_SMALL, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return;
+    }
+
+    // Allocate memory
+    this->_data = (T *)calloc(bufferSize_p, sizeof(T));
+    if(!isPointerValid(this->_data)) {
+        // Returns error
+        this->_lastError = Error::MEMORY_ALLOCATION_FAILED;
+        debugMessage(Error::MEMORY_ALLOCATION_FAILED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return;
+    }
+
+    // Update data members
+    this->_isInitialized    = true;
+    this->_maxSize          = bufferSize_p;
+    this->_overwriting      = overwrite_p;
+
+    // Unlock procedure
+    this->_isLocked         = false;                 // Unlocks circular buffer
+    this->_isReadProtected  = false;                 // Allows read operations
+    this->_isWriteProtected = false;                 // Allows write operations
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return;
+}
+
+template<typename T> CircularBuffer<T>::~CircularBuffer(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::~CircularBuffer(void)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Locking procedure
+    this->_isLocked         = true;                  // Locks circular buffer
+    this->_isReadProtected  = true;                  // Protects against read operations
+    this->_isWriteProtected = true;                  // Protects against write operations
+
+    // Is there some memory allocated to buffer?
+    if(isPointerValid(this->_data)) {
+        free(this->_data);
+    }
+    this->_data             = nullptr;              // Clears pointer
+
+    // Reset data members
+    this->_isEmpty          = true;
+    this->_isFull           = false;
+    this->_isInitialized    = false;
+    this->_maxSize          = 0;
+    this->_occupation       = 0;
+    this->_overwriting      = false;
+    this->_rdIndex          = 0;
+    this->_wrIndex          = 0;
+
+    // Returns successfully (but do NOT unlock)
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return;
+}
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// Public class member functions
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+template<typename T> uint16_t CircularBuffer<T>::getFreeSpace(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::getFreeSpace(void)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Returns amount of free space
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return (this->_maxSize - this->_occupation);
+}
+
+template<typename T> Error CircularBuffer<T>::getLastError(void)
+{
+    // Returns successfully
+    return this->_lastError;
+}
+
+template<typename T> uint16_t CircularBuffer<T>::getOccupation(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::getOccupation(void)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Returns amount of occupied space
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return this->_occupation;
+}
+
+template<typename T> bool_t CircularBuffer<T>::init(cuint16_t bufferSize_p, cbool_t overwrite_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::init(cuint16_t, cbool_t)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Locking procedure
+    this->_isLocked         = true;                  // Locks circular buffer
+    this->_isReadProtected  = true;                  // Protects against read operations
+    this->_isWriteProtected = true;                  // Protects against write operations
+
+    // Is there some memory allocated to buffer?
+    if(isPointerValid(this->_data)) {
+        free(this->_data);
+    }
+
+    // Reset data members
+    this->_data             = nullptr;
+    this->_isEmpty            = true;
+    this->_isFull             = false;
+    this->_isInitialized    = false;
+    this->_maxSize          = 0;
+    this->_occupation       = 0;
+    this->_overwriting      = false;
+    this->_rdIndex          = 0;
+    this->_wrIndex          = 0;
+
+    // CHECK FOR ERROR - Zero-sized buffer
+    if(bufferSize_p == 0) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_CANNOT_BE_ZERO;
+        debugMessage(Error::ARGUMENT_CANNOT_BE_ZERO, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Size too small
+    if(bufferSize_p < 2) {
+        // Returns error
+        this->_lastError = Error::BUFFER_SIZE_TOO_SMALL;
+        debugMessage(Error::BUFFER_SIZE_TOO_SMALL, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+
+    // Allocates memory
+    this->_data = (T *)calloc(bufferSize_p, sizeof(T));
+    if(!isPointerValid(this->_data)) {
+        // Returns error
+        this->_lastError = Error::MEMORY_ALLOCATION_FAILED;
+        debugMessage(Error::MEMORY_ALLOCATION_FAILED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+
+    // Update data members
+    this->_isInitialized    = true;
+    this->_maxSize          = bufferSize_p;
+    this->_overwriting      = overwrite_p;
+
+    // Unlock procedure
+    this->_isLocked         = false;                    // Unlocks circular buffer
+    this->_isReadProtected  = false;                    // Allows read operations
+    this->_isWriteProtected = false;                    // Allows write operations
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return true;
+}
+
+template<typename T> bool_t CircularBuffer<T>::isEmpty(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::isEmpty(void)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Returns whether buffer is empty or not
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return this->_isEmpty;
+}
+
+template<typename T> bool_t CircularBuffer<T>::isFull(void)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::isFull(void)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Returns whether buffer is full or not
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return this->_isFull;
+}
+
+//     //////////////////    DATA MANIPULATION     //////////////////     //
+
+template<typename T> bool_t CircularBuffer<T>::flush(cbool_t bypassProtection_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::flush(cbool_t)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // CHECK FOR ERROR - Not initialized
+    if(!this->_isInitialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Locked
+    if(this->_isLocked) {
+        // Returns error
+        this->_lastError = Error::LOCKED;
+        debugMessage(Error::LOCKED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // Must bypass read and write protection?
+    if(!bypassProtection_p) {                   // No, lets see if any protection is on!
+        // CHECK FOR ERROR - Read protected
+        if(this->_isReadProtected) {
+            // Returns error
+            this->_lastError = Error::READ_PROTECTED;
+            debugMessage(Error::READ_PROTECTED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+            return false;
+        }
+        // CHECK FOR ERROR - Write protected
+        if(this->_isWriteProtected) {
+            // Returns error
+            this->_lastError = Error::WRITE_PROTECTED;
+            debugMessage(Error::WRITE_PROTECTED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+            return false;
+        }
+    }
+
+    // Locking procedure
+    this->_isLocked         = true;                  // Locks circular buffer
+    this->_isReadProtected  = true;                  // Protects against read operations
+    this->_isWriteProtected = true;                  // Protects against write operations
+
+    // Flushes data
+    this->_isEmpty            = true;
+    this->_isFull             = false;
+    this->_occupation       = 0;
+    this->_rdIndex          = 0;
+    this->_wrIndex          = 0;
+
+    // Unlock procedure (also resets protection)
+    this->_isLocked         = false;                 // Unlocks circular buffer
+    this->_isReadProtected  = false;                 // Allows read operations
+    this->_isWriteProtected = false;                 // Allows write operations
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return true;
+}
+
+template<typename T> bool_t CircularBuffer<T>::pop(T *data_p, cbool_t keepData_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::pop(T *, cbool_t)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // CHECK FOR ERROR - Argument is a NULL pointer
+    if(!isPointerValid(data_p)) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Not initialized
+    if(!this->_isInitialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Locked
+    if(this->_isLocked) {
+        // Returns error
+        this->_lastError = Error::LOCKED;
+        debugMessage(Error::LOCKED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Read protected
+    if(this->_isReadProtected) {
+        // Returns error
+        this->_lastError = Error::READ_PROTECTED;
+        debugMessage(Error::READ_PROTECTED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Buffer empty
+    if(this->_isEmpty) {
+        // Returns error
+        this->_lastError = Error::BUFFER_EMPTY;
+        debugMessage(Error::BUFFER_EMPTY, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+
+    // Locking procedure
+    this->_isLocked = true;                       // Locks circular buffer
+
+    // Gets data
+    *data_p = this->_data[this->_rdIndex];      // Retrieves data
+    // Must move pointer?
+    if(!keepData_p) {                           // Yes, pointer must be moved!
+        this->_moveReadPointer();                       // Moves pointer
+    }
+
+    // Unlocking procedure
+    this->_isLocked = false;                      // Unlocks circular buffer
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return true;
+}
+
+template<typename T> bool_t CircularBuffer<T>::popBuffer(T *bufData_p, cuint16_t bufSize_p, cbool_t keepData_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::popBuffer(T *, cuint16_t, cbool_t)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // CHECK FOR ERROR - Argument is a NULL pointer
+    if(!isPointerValid(bufData_p)) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Buffer is zero-sized
+    if(bufSize_p == 0) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_CANNOT_BE_ZERO;
+        debugMessage(Error::ARGUMENT_CANNOT_BE_ZERO, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Not initialized
+    if(!this->_isInitialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Locked
+    if(this->_isLocked) {
+        // Returns error
+        this->_lastError = Error::LOCKED;
+        debugMessage(Error::LOCKED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Read protected
+    if(this->_isReadProtected) {
+        // Returns error
+        this->_lastError = Error::READ_PROTECTED;
+        debugMessage(Error::READ_PROTECTED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Not enough elements to get from buffer
+    if(this->_occupation < bufSize_p) {
+        // Returns error
+        this->_lastError = Error::BUFFER_NOT_ENOUGH_ELEMENTS;
+        debugMessage(Error::BUFFER_NOT_ENOUGH_ELEMENTS, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+
+    // Locking procedure
+    this->_isLocked = true;                       // Locks circular buffer
+
+    // Keep record of current buffer status
+    bool_t      emptyOld                = this->_isEmpty;
+    bool_t      fullOld                 = this->_isFull;
+    uint16_t    occupationOld           = this->_occupation;
+    uint16_t    rdIndexOld              = this->_rdIndex;
+
+    // Get elements from buffer
+    for(uint16_t i = 0; i < bufSize_p; i++) {
+        bufData_p[i] = this->_data[this->_rdIndex]; // Retrieves data
+        this->_moveReadPointer();                   // Moves READ pointer
+    }
+
+    // Must keep old data?
+    if(keepData_p) {                                // Yes, load old status!
+        this->_rdIndex = rdIndexOld;
+        this->_occupation = occupationOld;
+        this->_isEmpty = emptyOld;
+        this->_isFull = fullOld;
+    }
+
+    // Unlocking procedure
+    this->_isLocked = false;                      // Unlocks circular buffer
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return true;
+}
+
+template<typename T> bool_t CircularBuffer<T>::push(const T data_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::push(T)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // CHECK FOR ERROR - Not initialized
+    if(!this->_isInitialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Locked
+    if(this->_isLocked) {
+        // Returns error
+        this->_lastError = Error::LOCKED;
+        debugMessage(Error::LOCKED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Write protected
+    if(this->_isWriteProtected) {
+        this->_lastError = Error::WRITE_PROTECTED;
+        debugMessage(Error::WRITE_PROTECTED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+
+    // Locking procedure
+    this->_isLocked = true;                       // Locks circular buffer
+
+    // Is buffer full?
+    if(!this->_isFull) {                          // No, normal operation!
+        this->_data[this->_wrIndex] = data_p;           // Stores data
+        this->_moveWritePointer();                      // Moves WRITE pointer only
+    } else {                                    // Yes, must check what to do!
+        // Is overwriting allowed?
+        if(this->_overwriting) {                        // Yes, overwrites old data!
+            this->_data[this->_wrIndex] = data_p;               // Stores data
+            this->_moveBothPointers();                          // Moves BOTH pointers
+        } else {                                        // No, trow error!
+            // Returns error
+            this->_isLocked = false;              // Unlocking procedure before exit
+            this->_lastError = Error::BUFFER_FULL;
+            debugMessage(Error::BUFFER_FULL, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+            return false;
+        }
+    }
+
+    // Unlocking procedure
+    this->_isLocked = false;                      // Unlocks circular buffer
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return true;
+}
+
+template<typename T> bool_t CircularBuffer<T>::pushBuffer(const T *bufData_p, cuint16_t bufSize_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::pushBuffer(T *, cuint16_t)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // CHECK FOR ERROR - Argument is a NULL pointer
+    if(!isPointerValid(bufData_p)) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Buffer is zero-sized
+    if(bufSize_p == 0) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_CANNOT_BE_ZERO;
+        debugMessage(Error::ARGUMENT_CANNOT_BE_ZERO, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Not initialized
+    if(!this->_isInitialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Buffer is locked
+    if(this->_isLocked) {
+        // Returns error
+        this->_lastError = Error::LOCKED;
+        debugMessage(Error::LOCKED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+    // CHECK FOR ERROR - Write protected
+    if(this->_isWriteProtected) {
+        // Returns error
+        this->_lastError = Error::WRITE_PROTECTED;
+        debugMessage(Error::WRITE_PROTECTED, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+        return false;
+    }
+
+    // Locking procedure
+    this->_isLocked = true;                       // Locks circular buffer
+
+    uint16_t freeSpace = this->_maxSize - this->_occupation;
+    // Is there enough space?
+    if(freeSpace >= bufSize_p) {                    // Yes, normal operation!
+        for(uint16_t i = 0; i < bufSize_p; i++) {
+            this->_data[this->_wrIndex] = bufData_p[i]; // Stores data
+            this->_moveWritePointer();                  // Moves WRITE pointer
+        }
+    } else {                                    // No, must check what to do!
+        // Is overwriting allowed?
+        if(this->_overwriting) {                        // Yes, split operation!
+            for(uint16_t i = 0; i < bufSize_p; i++) {
+                this->_data[this->_wrIndex] = bufData_p[i];     // Stores data
+                // Is buffer full?
+                if(this->_isFull) {                               // Yes, move BOTH pointers!
+                    this->_moveBothPointers();
+                } else {                                        // No, move WRITE pointer only!
+                    this->_moveWritePointer();
+                }
+            }
+        } else {                                        // No, trow error!
+            // Returns error
+            this->_isLocked = false;              // Unlocking procedure before exit
+            this->_lastError = Error::BUFFER_NOT_ENOUGH_SPACE;
+            debugMessage(Error::BUFFER_NOT_ENOUGH_SPACE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+            return false;
+        }
+    }
+
+    // Unlocking procedure
+    this->_isLocked = false;                      // Unlocks circular buffer
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return true;
+}
+
+//     ///////////////////     BUFFER CONTROL     ///////////////////     //
+
+template<typename T> void CircularBuffer<T>::setBlockRead(cbool_t block_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::setBlockRead(cbool_t)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Update data members
+    this->_isReadProtected = block_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return;
+}
+
+template<typename T> void CircularBuffer<T>::setBlockWrite(cbool_t block_p)
+{
+    // Mark passage for debugging purpose
+    debugMark(PSTR("CircularBuffer::setBlockWrite(cbool_t)"), Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+
+    // Update data members
+    this->_isWriteProtected = block_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::CIRCULAR_BUFFER_MODULE);
+    return;
+}
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// Inlined class functions
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+template<typename T> void inlined CircularBuffer<T>::_moveBothPointers(void)
+{
+    // Move buffer pointers
+    this->_wrIndex++;                           // Increments write pointer
+    this->_wrIndex %= this->_maxSize;           // Resolves write pointer overflow
+    this->_rdIndex++;                           // Increments read pointer
+    this->_rdIndex %= this->_maxSize;           // Resolves read pointer overflow
+    this->_isFull = (this->_occupation == this->_maxSize);    // Resolves full status
+    this->_isEmpty = (this->_occupation == 0);    // Resolves empty status
+
+    // Returns successfully
+    return;
+}
+
+template<typename T> void inlined CircularBuffer<T>::_moveReadPointer(void)
+{
+    // Move buffer pointers
+    this->_rdIndex++;                           // Increments read pointer
+    this->_rdIndex %= this->_maxSize;           // Resolves read pointer overflow
+    this->_occupation--;                        // Decreases occupation number
+    this->_isFull = false;                        // Not full anymore
+    this->_isEmpty = (this->_occupation == 0);    // Resolves empty status
+
+    // Returns successfully
+    return;
+}
+
+template<typename T> void inlined CircularBuffer<T>::_moveWritePointer(void)
+{
+    // Move buffer pointers
+    this->_wrIndex++;                           // Increments write pointer
+    this->_wrIndex %= this->_maxSize;           // Resolves write pointer overflow
+    this->_occupation++;                        // Increases occupation number
+    this->_isFull = (this->_occupation == this->_maxSize);    // Resolves full status
+    this->_isEmpty = false;                       // Not empty anymore
+
+    // Returns successfully
+    return;
+}
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// External global variables
+// =============================================================================
+
+// NONE
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End subgroup "Util/Circular_Buffer"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+* @}
+*/
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End main group "Util"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @}
+*/
+
+// =============================================================================
+// Include guard (END)
+// =============================================================================
+
+#endif  // __CIRCULAR_BUFFER_HPP
+
+// =============================================================================
+// End of file (circularBuffer.hpp)
+// =============================================================================

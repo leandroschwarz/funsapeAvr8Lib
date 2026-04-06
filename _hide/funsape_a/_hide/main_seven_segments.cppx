@@ -1,0 +1,154 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/globalDefines.hpp"
+#include "funsape/peripheral/gpioBus.hpp"
+#include "funsape/peripheral/gpioPin.hpp"
+#include "funsape/peripheral/timer0.hpp"
+#include "funsape/peripheral/timer1.hpp"
+#include "funsape/device/sevenSegmentsDisplay.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+typedef union {
+    struct {
+        bool_t      timer0Overflow      : 1;
+        bool_t      timer1Overflow      : 1;
+        uint8_t     unsedBits           : 6;
+    };
+    uint8_t allFlags;
+} systemFlags_t;
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+volatile systemFlags_t systemFlags;
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // =========================================================================
+    // Variables
+    // =========================================================================
+
+    // -------------------------------------------------------------------------
+    // Local variables ---------------------------------------------------------
+
+    GpioPin led;
+    GpioBus display;
+    uint8_t counter = 0;
+
+    // -------------------------------------------------------------------------
+    // Variable initialization -------------------------------------------------
+
+    systemFlags.allFlags = 0;
+
+    // =========================================================================
+    // Peripheral configuration
+    // =========================================================================
+
+    // -------------------------------------------------------------------------
+    // LED configuration -------------------------------------------------------
+
+    led.init(&DDRB, GpioPin::PinIndex::P5);
+    led.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // -------------------------------------------------------------------------
+    // Timer0 configuration ----------------------------------------------------
+
+    // Overflow = 10ms (100 Hz)
+    timer0.setCompareAValue(157);
+    timer0.init(Timer0::Mode::CTC_OCRA, Timer0::ClockSource::PRESCALER_1024);
+    timer0.clearCompareAInterruptRequest();
+    timer0.activateCompareAInterrupt();
+
+    // -------------------------------------------------------------------------
+    // Timer1 configuration ----------------------------------------------------
+
+    // Overflow = 500ms (2 Hz)
+    timer1.setCompareAValue(31250);
+    timer1.init(Timer1::Mode::CTC_OCRA, Timer1::ClockSource::PRESCALER_256);
+    timer1.clearCompareAInterruptRequest();
+    timer1.activateCompareAInterrupt();
+
+
+//    display.init(&DDRD, GpioBus::PinIndex::P0, 8);
+//    display.setMode(GpioBus::Mode::OUTPUT_PUSH_PULL);
+
+    sei();
+
+    // -------------------------------------------------------------------------
+    // Main loop ---------------------------------------------------------------
+
+    while(1) {
+
+        if(systemFlags.timer0Overflow) {
+            led.toggle();
+            systemFlags.timer0Overflow = false;
+        }
+
+        if(systemFlags.timer1Overflow) {
+            display.write(convertToSevenSegments(counter, false));
+            counter = (counter == 0x0F) ? 0 : (counter + 1);
+            systemFlags.timer1Overflow = false;
+        }
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+void timer0CompareACallback(void)
+{
+    systemFlags.timer0Overflow = true;
+}
+
+void timer1CompareACallback(void)
+{
+    systemFlags.timer1Overflow = true;
+}

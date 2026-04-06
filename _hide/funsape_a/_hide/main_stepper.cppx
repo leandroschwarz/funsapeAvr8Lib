@@ -1,0 +1,312 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/globalDefines.hpp"
+#include "funsape/peripheral/gpioPin.hpp"
+#include "funsape/peripheral/pcint1.hpp"
+#include "funsape/peripheral/timer0.hpp"
+#include "funsape/device/stepper.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+
+cuint8_t constCompareValueSpeedSlow     = 249;  // Interrupt each 16ms
+cuint8_t constCompareValueSpeedFast     = 74;   // Interrupt each 4.8ms
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+typedef union {
+    struct {
+        bool_t      isRunning           : 1;
+        bool_t      isDirectionCcw      : 1;
+        bool_t      isSpeedFast         : 1;
+        uint8_t     driveMode           : 2;    // 0=FULL STEP, 1=HALF STEP, 2=DUAL COIL
+        bool_t      updateLeds          : 1;
+        uint8_t     unusedBits          : 2;
+    };
+    uint8_t allFlags;
+} systemFlags_t;
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// System event flags
+volatile systemFlags_t systemFlags;
+
+// Stepper motor
+Stepper stepperMotor;
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // =========================================================================
+    // Variables
+    // =========================================================================
+
+    // -------------------------------------------------------------------------
+    // Local variables ---------------------------------------------------------
+
+    // Information LEDs
+    GpioPin ledDirection;
+    GpioPin ledRunning;
+    GpioPin ledSpeed;
+    GpioPin ledModeFullStepDrive;
+    GpioPin ledModeHalfStepDrive;
+    GpioPin ledModeDualCoilDrive;
+
+    // Stepper variables
+    GpioPin stepperCoilA;
+    GpioPin stepperCoilB;
+    GpioPin stepperCoilC;
+    GpioPin stepperCoilD;
+
+    // -------------------------------------------------------------------------
+    // Variable initialization -------------------------------------------------
+
+    systemFlags.allFlags = 0;
+
+    // =========================================================================
+    // Peripheral/Device configuration
+    // =========================================================================
+
+    // -------------------------------------------------------------------------
+    // Informative LEDs configuration ------------------------------------------
+
+    // Direction
+    ledDirection.init(&DDRB, GpioPin::PinIndex::P0);
+    ledDirection.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // Running
+    ledRunning.init(&DDRB, GpioPin::PinIndex::P1);
+    ledRunning.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // Speed
+    ledSpeed.init(&DDRB, GpioPin::PinIndex::P2);
+    ledSpeed.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // Drive mode
+    ledModeFullStepDrive.init(&DDRB, GpioPin::PinIndex::P3);
+    ledModeHalfStepDrive.init(&DDRB, GpioPin::PinIndex::P4);
+    ledModeDualCoilDrive.init(&DDRB, GpioPin::PinIndex::P5);
+    ledModeFullStepDrive.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+    ledModeHalfStepDrive.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+    ledModeDualCoilDrive.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // Show LEDs
+    systemFlags.updateLeds = true;
+
+    // -------------------------------------------------------------------------
+    // Stepper motor configuration -------------------------------------------------------
+
+    // Stepper GPIO configuration
+    stepperCoilA.init(&DDRD, GpioPin::PinIndex::P4);
+    stepperCoilB.init(&DDRD, GpioPin::PinIndex::P5);
+    stepperCoilC.init(&DDRD, GpioPin::PinIndex::P6);
+    stepperCoilD.init(&DDRD, GpioPin::PinIndex::P7);
+    stepperMotor.setPorts(&stepperCoilA, &stepperCoilB, &stepperCoilC, &stepperCoilD);
+
+    // Stepper initialization
+    stepperMotor.init(Stepper::Mode::FULL_STEP_DRIVE);
+
+    // -------------------------------------------------------------------------
+    // Pcint1 configuration ----------------------------------------------------
+
+    pcint1.init(
+            (
+                    Pcint1::Pin::PIN_PCINT10 | Pcint1::Pin::PIN_PCINT11
+                    | Pcint1::Pin::PIN_PCINT12 | Pcint1::Pin::PIN_PCINT13
+            )
+    );
+    pcint1.setPinMode(
+            (
+                    Pcint1::Pin::PIN_PCINT10 | Pcint1::Pin::PIN_PCINT11
+                    | Pcint1::Pin::PIN_PCINT12 | Pcint1::Pin::PIN_PCINT13
+            ),
+            Pcint1::PinMode::INPUT_PULLED_UP
+    );
+    pcint1.clearInterruptRequest();
+    pcint1.activateInterrupt();
+
+    // -------------------------------------------------------------------------
+    // Timer0 configuration ----------------------------------------------------
+
+    timer0.setCompareAValue(constCompareValueSpeedSlow);
+    timer0.init(Timer0::Mode::CTC_OCRA, Timer0::ClockSource::PRESCALER_1024);
+    timer0.clearCompareAInterruptRequest();
+    timer0.activateCompareAInterrupt();
+
+    sei();
+
+    // -------------------------------------------------------------------------
+    // Main loop ---------------------------------------------------------------
+
+    while(1) {
+
+        if(systemFlags.updateLeds) {
+            // Direction LED
+            if(systemFlags.isDirectionCcw) {
+                ledDirection.high();
+            } else {
+                ledDirection.low();
+            }
+
+            // Runnig LED
+            if(systemFlags.isRunning) {
+                ledRunning.high();
+            } else {
+                ledRunning.low();
+            }
+
+            // Speed LED
+            if(systemFlags.isSpeedFast) {
+                ledSpeed.high();
+            } else {
+                ledSpeed.low();
+            }
+
+            // Mode LEDs
+            switch(systemFlags.driveMode) {
+            case 0:
+                ledModeFullStepDrive.high();
+                ledModeHalfStepDrive.low();
+                ledModeDualCoilDrive.low();
+                break;
+            case 1:
+                ledModeFullStepDrive.low();
+                ledModeHalfStepDrive.high();
+                ledModeDualCoilDrive.low();
+                break;
+            case 2:
+                ledModeFullStepDrive.low();
+                ledModeHalfStepDrive.low();
+                ledModeDualCoilDrive.high();
+                break;
+            }
+
+            systemFlags.updateLeds = false;
+        }
+
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+void timer0CompareACallback(void)
+{
+    // Returns if stepper is stoped
+    if(!systemFlags.isRunning) {
+        return;
+    }
+
+    if(systemFlags.isDirectionCcw) {
+        stepperMotor.move(Rotation::COUNTERCLOCKWISE);
+    } else {
+        stepperMotor.move(Rotation::CLOCKWISE);
+    }
+}
+
+void pcint1InterruptCallback(void)
+{
+    static uint8_t stateOld = (0x0F << 2);
+    uint8_t stateNew = (PINC & (0x0F << 2));
+    uint8_t stateDif = stateNew ^ stateOld;
+
+    // Checks for change in PC2
+    if(isBitSet(stateDif, PC2)) {
+        if(isBitClr(stateNew, PC2)) {
+            // Changes drive mode
+            switch(systemFlags.driveMode) {
+            case 0:
+                systemFlags.driveMode = 1;
+                stepperMotor.setMode(Stepper::Mode::HALF_STEP_DRIVE);
+                break;
+            case 1:
+                systemFlags.driveMode = 2;
+                stepperMotor.setMode(Stepper::Mode::DUAL_COIL_DRIVE);
+                break;
+            case 2:
+                systemFlags.driveMode = 0;
+                stepperMotor.setMode(Stepper::Mode::FULL_STEP_DRIVE);
+                break;
+            }
+            systemFlags.updateLeds = true;
+        }
+    }
+
+    // Checks for change in PC3
+    if(isBitSet(stateDif, PC3)) {
+        if(isBitClr(stateNew, PC3)) {
+            // Changes direction
+            systemFlags.isDirectionCcw = !systemFlags.isDirectionCcw;
+            systemFlags.updateLeds = true;
+        }
+    }
+
+    // Checks for change in PC4
+    if(isBitSet(stateDif, PC4)) {
+        if(isBitClr(stateNew, PC4)) {
+            // Changes speed
+            timer0.clearCompareAInterruptRequest();
+            timer0.setCounterValue(0);
+            if(systemFlags.isSpeedFast) {
+                timer0.setCompareAValue(constCompareValueSpeedSlow);
+            } else {
+                timer0.setCompareAValue(constCompareValueSpeedFast);
+            }
+            systemFlags.isSpeedFast = !systemFlags.isSpeedFast;
+            systemFlags.updateLeds = true;
+        }
+    }
+
+    // Checks for change in PC5
+    if(isBitSet(stateDif, PC5)) {
+        if(isBitClr(stateNew, PC5)) {
+            // Start/Stop
+            systemFlags.isRunning = !systemFlags.isRunning;
+            systemFlags.updateLeds = true;
+        }
+    }
+
+}

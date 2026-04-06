@@ -1,0 +1,208 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/funsapeLibGlobalDefines.hpp"
+#include "funsape/peripheral/funsapeLibGpioPin.hpp"
+#include "funsape/peripheral/funsapeLibGpioBus.hpp"
+#include "funsape/peripheral/funsapeLibTwi.hpp"
+#include "funsape/device/funsapeLibHd44780.hpp"
+#include "funsape/device/funsapeLibBmp280.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+// NONE
+void debugLed()
+{
+    while(1) {
+        cplBit(PORTB, PB5);
+        delayMs(500);
+    }
+}
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // Local variables
+    GpioPin lcdControlRs;
+    GpioPin lcdControlEn;
+    GpioBus lcdDataBus;
+    Hd44780 lcd;
+    Bmp280 bmp280;
+    uint8_t timeCounter = 0;
+    int16_t temperature = 0;
+    uint32_t pressure = 0;
+
+    // Configures LED
+    setBit(DDRB, PB5);
+
+    // LCD configuration
+    lcdControlRs.init(&DDRB, GpioPin::PinIndex::P0);
+    lcdControlEn.init(&DDRB, GpioPin::PinIndex::P1);
+    lcdDataBus.init(&DDRD, GpioBus::PinIndex::P4, 4);
+    lcd.setControlPort(&lcdControlEn, &lcdControlRs);
+    lcd.setDataPort(&lcdDataBus);
+    lcd.init(Hd44780::Size::LCD_16X2, Hd44780::Font::FONT_5X8);
+
+    // Shows splash screen
+    lcd.stdio();
+    lcd.clearScreen();
+    printf(" BMP280 example \n");
+    printf("   2024-12-12   \n");
+    delayMs(300);
+    lcd.clearScreen();
+
+    // TWI configuration
+    twi.init(100'000UL);
+    sei();
+
+    // BMP280 configuration
+    if(!bmp280.init(&twi)) {
+        lcd.cursorHome();
+        Error lastError = bmp280.getLastError();
+        printf("init()\nError %04x\n", (uint16_t)lastError);
+        systemHalt();
+    }
+    lcd.cursorHome();
+    printf("init()\nOK\n");
+
+    if(!bmp280.reset()) {
+        lcd.cursorHome();
+        Error lastError = bmp280.getLastError();
+        printf("reset()\nError %04x\n", (uint16_t)lastError);
+        systemHalt();
+    }
+    lcd.cursorHome();
+    printf("reset()\nOK\n");
+
+    if(!bmp280.setResolution()) {
+        lcd.cursorHome();
+        Error lastError = bmp280.getLastError();
+        printf("setResolution()\nError %04x\n", (uint16_t)lastError);
+        systemHalt();
+    }
+    lcd.cursorHome();
+    printf("setResolution()\nOK\n");
+
+    if(!bmp280.setStandbyTime(Bmp280::StandbyTime::STANDBY_250_MS)) {
+        lcd.cursorHome();
+        Error lastError = bmp280.getLastError();
+        printf("setStandbyTime()\nError %04x\n", (uint16_t)lastError);
+        systemHalt();
+    }
+    lcd.cursorHome();
+    printf("setStandbyTime()\nOK\n");
+
+    if(!bmp280.setFilterCoefficients(Bmp280::FilterCoeff::FILTER_OFF)) {
+        lcd.cursorHome();
+        Error lastError = bmp280.getLastError();
+        printf("setFilterCoef.()\nError %04x\n", (uint16_t)lastError);
+        systemHalt();
+    }
+    lcd.cursorHome();
+    printf("setFilterCoef.()\nOK\n");
+
+    // Main loop
+    while(1) {
+        // Start measurement
+        if(!bmp280.startMeasurement()) {
+            lcd.cursorHome();
+            Error lastError = bmp280.getLastError();
+            printf("startMeas.()\nError %04x\n", (uint16_t)lastError);
+            systemHalt();
+        }
+
+        timeCounter = 0;
+        do {
+            // Check device status
+            if(!bmp280.checkStatus()) {
+                lcd.cursorHome();
+                Error lastError = bmp280.getLastError();
+                printf("checkStatus()\nError %04x\n", (uint16_t)lastError);
+                systemHalt();
+            }
+            // Verify if new data is available
+            if(bmp280.isReady()) {
+                // Gets data
+                if(!bmp280.getData(&pressure, &temperature)) {
+                    lcd.cursorHome();
+                    Error lastError = bmp280.getLastError();
+                    printf("getData()\nError %04x\n", (uint16_t)lastError);
+                    systemHalt();
+                }
+                // Breaks loop
+                break;
+            }
+            // Increments timeCounter
+            timeCounter++;
+            delayMs(1);
+        } while(timeCounter < 200);
+
+        // Prints data
+        lcd.cursorHome();
+        printf(
+                "%d.%02u %cC\n%lu Pa %u\n",
+                (temperature / 100), (temperature % 100), 0xDF,
+                pressure,
+                timeCounter
+        );
+
+        // Toggles led
+        cplBit(PORTB, PB5);
+        delayMs(100);
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+// NONE

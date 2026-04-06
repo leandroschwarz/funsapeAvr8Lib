@@ -1,0 +1,397 @@
+/**
+ *******************************************************************************
+ * @file            nokia5110.hpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           Nokia 5110 display interface for the  FunSAPE++ AVR8
+ *                      Library.
+ * @details         Nokia 5110 display module interface for the  FunSAPE++ AVR8
+ *                      Library.
+ * @date            2025-02-14
+ * @version         25.02
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No items in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// Include guard (START)
+// =============================================================================
+
+#ifndef __NOKIA5110_HPP
+#define __NOKIA5110_HPP                 2502
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+//     /////////////////     GLOBAL DEFINITIONS FILE    /////////////////     //
+
+#include "../globalDefines.hpp"
+#if !defined(__GLOBAL_DEFINES_HPP)
+#   error [nokia5110.hpp] Error 1 - Header file (globalDefines.hpp) is missing or corrupted!
+#elif __GLOBAL_DEFINES_HPP != __NOKIA5110_HPP
+#   error [nokia5110.hpp] Error 2 - Build mismatch between file (nokia5110.hpp) and global definitions file (globalDefines.hpp)!
+#endif
+
+//     //////////////////     LIBRARY DEPENDENCIES     //////////////////     //
+
+#include "../util/debug.hpp"
+#if !defined(__DEBUG_HPP)
+#   error [nokia5110.hpp] Error 1 - Header file (debug.hpp) is missing or corrupted!
+#elif __DEBUG_HPP != __NOKIA5110_HPP
+#   error [nokia5110.hpp] Error 5 - Build mismatch between file (nokia5110.hpp) and library dependency (debug.hpp)!
+#endif
+
+#include "../peripheral/gpioPin.hpp"
+#ifndef __GPIO_PIN_HPP
+#   error [nokia5110.hpp] Error 1 - Header file (gpioPin.hpp) is missing or corrupted!
+#elif __GPIO_PIN_HPP != __NOKIA5110_HPP
+#   error [nokia5110.hpp] Error 5 - Build mismatch between file (nokia5110.hpp) and library dependency (gpioPin.hpp)!
+#endif
+
+//     ///////////////////     STANDARD C LIBRARY     ///////////////////     //
+
+// NONE
+
+//     ////////////////////    AVR LIBRARY FILES     ////////////////////     //
+
+// NONE
+
+//     ///////////////////     STANDARD C LIBRARY     ///////////////////     //
+
+// NONE
+
+//     ////////////////////    AVR LIBRARY FILES     ////////////////////     //
+
+// NONE
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start main group "Devices"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      Devices
+ * @brief           External devices.
+ * @{
+*/
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start subgroup "Devices/Nokia5110"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      Nokia5110
+ * @brief           Nokia 5110 display controller module.
+ * @{
+*/
+
+// =============================================================================
+// Undefining previous definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Classes
+// =============================================================================
+
+/**
+ * @brief           Nokia5110 class.
+ * @details         This class can handle the Nokia 5110 display.
+*/
+class Nokia5110
+{
+    // -------------------------------------------------------------------------
+    // New data types ----------------------------------------------------------
+
+public:
+    // NONE
+
+private:
+    enum class DataCommand : bool_t {
+        COMMAND     = false,
+        DATA        = true
+    };
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Constructors ------------------------------------------------------------
+
+public:
+    /**
+     * @brief       Nokia5110 class constructor.
+     * @details     Creates a Nokia5110 object. The object still
+     *                  must be initialized before use.
+     * @see         init(void).
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    Nokia5110(
+            void
+    );
+
+    /**
+     * @brief       Nokia5110 class destructor.
+     * @details     Destroys a Nokia5110 object.
+    */
+    ~Nokia5110(
+            void
+    );
+
+private:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Methods - Inherited methods ---------------------------------------------
+
+public:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Methods - class own methods ---------------------------------------------
+
+public:
+    //     /////////////////     CONTROL AND STATUS     /////////////////     //
+
+    /**
+     * @brief       Returns the last error.
+     * @details     Returns the last error.
+     * @return      @ref Error          Error status of the last operation.
+    */
+    Error inlined getLastError(
+            void
+    );
+
+    /**
+     * @brief       Initializes a Nokia5110 object.
+     * @details     This function initializes the Nokia5110 object.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     *
+     * @par Error codes:
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t init(
+            void
+    );
+
+    /**
+     * @brief       Set display pins.
+     * @details     This function sets the display pins.
+     * @param[out]  gpioClockPin_p      Pointer to @ref GpioPin of the clock pin.
+     * @param[out]  gpioDataPin_p       Pointer to @ref GpioPin of the data pin.
+     * @param[out]  gpioDcPin_p         Pointer to @ref GpioPin of the data/command pin.
+     * @param[out]  gpioResetPin_p      Pointer to @ref GpioPin of the reset pin.
+     * @param[out]  gpioEnablePin_p     Pointer to @ref GpioPin of the enable pin.
+     * @param[out]  gpioBackLightPin_p  Pointer to @ref GpioPin of the back light pin.
+     *                                      pin.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     *
+     * @par Error codes:
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t setPorts(
+            GpioPin *gpioClockPin_p,
+            GpioPin *gpioDataPin_p,
+            GpioPin *gpioDcPin_p,
+            GpioPin *gpioResetPin_p,
+            GpioPin *gpioEnablePin_p,
+            GpioPin *gpioBackLightPin_p = nullptr
+    );
+
+    bool_t setPower(
+            cbool_t turnOn_p
+    );
+
+    //     ///////////////////////    DISPLAY     ///////////////////////     //
+
+    bool_t clearScreen(
+            void
+    );
+
+    bool_t render(
+            void
+    );
+
+    bool_t setCursor(
+            cuint8_t posX_p,
+            cuint8_t posY_p
+    );
+
+    bool_t setPixel(
+            cuint8_t posX_p,
+            cuint8_t posY_p,
+            cbool_t isTurnedOn_p
+    );
+
+    bool_t write(
+            cchar_t character_p,
+            cuint8_t scale_p
+    );
+
+    bool_t write(
+            cchar_t *string_p,
+            cuint8_t scale_p
+    );
+
+private:
+    void _sendDataCommand(
+            cuint8_t value_p,
+            const DataCommand dataCommand_p
+    );
+
+    void _writeCharacter(
+            cchar_t character_p,
+            cuint8_t scale_p
+    );
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Properties --------------------------------------------------------------
+
+private:
+    //     ///////////////////    DEVICE BUS PORT     ///////////////////     //
+    GpioPin                             *_gpioClockPin;
+    GpioPin                             *_gpioDataPin;
+    GpioPin                             *_gpioDcPin;
+    GpioPin                             *_gpioResetPin;
+    GpioPin                             *_gpioEnablePin;
+    GpioPin                             *_gpioBackLightPin;
+
+    //     /////////////////     CONTROL AND STATUS     /////////////////     //
+    bool_t                              _isInitialized          : 1;
+    bool_t                              _isPortsSet             : 1;
+    Error                               _lastError;
+
+    //     ///////////////////    DISPLAY CONTROL     ///////////////////     //
+    uint8_t                             _cursorX;
+    uint8_t                             _cursorY;
+    uint8_t                             _screen[504];
+
+protected:
+    // NONE
+
+}; // class Nokia5110
+
+// =============================================================================
+// Inlined class functions
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+Error inlined Nokia5110::getLastError(void)
+{
+    // Returns last error
+    return this->_lastError;
+}
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// External global variables
+// =============================================================================
+
+// NONE
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End subgroup "Devices/Nokia5110"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+* @}
+*/
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End main group "Devices"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @}
+*/
+
+// =============================================================================
+// Include guard (END)
+// =============================================================================
+
+#endif  // __NOKIA5110_HPP
+
+// =============================================================================
+// End of file (nokia5110.hpp)
+// =============================================================================

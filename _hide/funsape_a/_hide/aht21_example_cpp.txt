@@ -1,0 +1,163 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/funsapeLibGlobalDefines.hpp"
+#include "funsape/peripheral/funsapeLibGpioPin.hpp"
+#include "funsape/peripheral/funsapeLibGpioBus.hpp"
+#include "funsape/peripheral/funsapeLibTwi.hpp"
+#include "funsape/device/funsapeLibHd44780.hpp"
+#include "funsape/device/funsapeLibAht21.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // Local variables
+    GpioPin lcdControlRs;
+    GpioPin lcdControlEn;
+    GpioBus lcdDataBus;
+    Hd44780 lcd;
+    Aht21 aht21;
+    uint8_t timeCounter = 0;
+    uint16_t temperature = 0;
+    uint16_t humidity = 0;
+
+    // Configures LED
+    setBit(DDRB, PB5);
+
+    // LCD configuration
+    lcdControlRs.init(&DDRB, GpioPin::PinIndex::P0);
+    lcdControlEn.init(&DDRB, GpioPin::PinIndex::P1);
+    lcdDataBus.init(&DDRD, GpioBus::PinIndex::P4, 4);
+    lcd.setControlPort(&lcdControlEn, &lcdControlRs);
+    lcd.setDataPort(&lcdDataBus);
+    lcd.init(Hd44780::Size::LCD_16X2, Hd44780::Font::FONT_5X8);
+
+    // Shows splash screen
+    lcd.stdio();
+    lcd.clearScreen();
+    printf(" AHT21 example! \n");
+    printf("   2024-12-11   \n");
+    delayMs(300);
+    lcd.clearScreen();
+
+    // TWI configuration
+    twi.init(100'000UL);
+    sei();
+
+    // AHT21 configuration
+    if(!aht21.init(&twi)) {
+        lcd.cursorHome();
+        Error lastError = aht21.getLastError();
+        printf("init()\nError %04x\n", (uint16_t)lastError);
+        systemHalt();
+    }
+
+    // Main loop
+    while(1) {
+        // Start measurement
+        if(!aht21.startMeasurement()) {
+            lcd.cursorHome();
+            Error lastError = aht21.getLastError();
+            printf("startMeas.()\nError %04x\n", (uint16_t)lastError);
+            systemHalt();
+        }
+
+        timeCounter = 0;
+        do {
+            // Check device status
+            if(!aht21.checkStatus()) {
+                lcd.cursorHome();
+                Error lastError = aht21.getLastError();
+                printf("checkStatus()\nError %04x\n", (uint16_t)lastError);
+                systemHalt();
+            }
+            // Verify if new data is available
+            if(aht21.isReady()) {
+                // Gets data
+                if(!aht21.getData(&temperature, &humidity)) {
+                    lcd.cursorHome();
+                    Error lastError = aht21.getLastError();
+                    printf("getData()\nError %04x\n", (uint16_t)lastError);
+                    systemHalt();
+                }
+                // Breaks loop
+                break;
+            }
+            // Increments timeCounter
+            timeCounter++;
+            delayMs(1);
+        } while(timeCounter < 200);
+
+        // Prints data
+        lcd.cursorHome();
+        printf(
+                "AHT21 %u\n%u.%02u%% %u.%02u %cC\n",
+                timeCounter,
+                (humidity / 100), (humidity % 100),
+                (temperature / 100), (temperature % 100), 0xDF
+        );
+
+        // Toggles led
+        cplBit(PORTB, PB5);
+        delayMs(100);
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+// NONE

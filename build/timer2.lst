@@ -1,0 +1,1176 @@
+GAS LISTING /tmp/ccB5MtNN.s 			page 1
+
+
+   1               		.file	"timer2.cpp"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.text._ZN6Timer2C2Ev,"ax",@progbits
+  11               	.global	_ZN6Timer2C2Ev
+  13               	_ZN6Timer2C2Ev:
+  14               	.LFB84:
+  15               		.file 1 "funsape/peripheral/timer2.cpp"
+   1:funsape/peripheral/timer2.cpp **** //!
+   2:funsape/peripheral/timer2.cpp **** //! ****************************************************************************
+   3:funsape/peripheral/timer2.cpp **** //! @file           timer2.cpp
+   4:funsape/peripheral/timer2.cpp **** //! @author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+   5:funsape/peripheral/timer2.cpp **** //! @brief          TIMER2 peripheral control.
+   6:funsape/peripheral/timer2.cpp **** //! @details        This file provides peripheral control for the TIMER2 module
+   7:funsape/peripheral/timer2.cpp **** //!                     for the FunSAPE++ AVR8 Library.
+   8:funsape/peripheral/timer2.cpp **** //! @date           2026-04-03
+   9:funsape/peripheral/timer2.cpp **** //! @version        26.04
+  10:funsape/peripheral/timer2.cpp **** //! @copyright      MIT License
+  11:funsape/peripheral/timer2.cpp **** //! @note           No notes at this time.
+  12:funsape/peripheral/timer2.cpp **** //! @todo           No items in todo list yet.
+  13:funsape/peripheral/timer2.cpp **** //! @bug            No bugs detected yet.
+  14:funsape/peripheral/timer2.cpp **** //! ****************************************************************************
+  15:funsape/peripheral/timer2.cpp **** //! @attention
+  16:funsape/peripheral/timer2.cpp **** //!
+  17:funsape/peripheral/timer2.cpp **** //! MIT License
+  18:funsape/peripheral/timer2.cpp **** //!
+  19:funsape/peripheral/timer2.cpp **** //! Copyright (c) 2026 Leandro Schwarz
+  20:funsape/peripheral/timer2.cpp **** //!
+  21:funsape/peripheral/timer2.cpp **** //! Permission is hereby granted, free of charge, to any person obtaining a copy
+  22:funsape/peripheral/timer2.cpp **** //!     of this software and associated documentation files (the "Software"), to
+  23:funsape/peripheral/timer2.cpp **** //!     deal in the Software without restriction, including without limitation
+  24:funsape/peripheral/timer2.cpp **** //!     the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  25:funsape/peripheral/timer2.cpp **** //!     and/or sell copies of the Software, and to permit persons to whom the
+  26:funsape/peripheral/timer2.cpp **** //!     Software is furnished to do so, subject to the following conditions:
+  27:funsape/peripheral/timer2.cpp **** //!
+  28:funsape/peripheral/timer2.cpp **** //! The above copyright notice and this permission notice shall be included in
+  29:funsape/peripheral/timer2.cpp **** //!     all copies or substantial portions of the Software.
+  30:funsape/peripheral/timer2.cpp **** //!
+  31:funsape/peripheral/timer2.cpp **** //! THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  32:funsape/peripheral/timer2.cpp **** //!     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  33:funsape/peripheral/timer2.cpp **** //!     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  34:funsape/peripheral/timer2.cpp **** //!     THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+  35:funsape/peripheral/timer2.cpp **** //!     OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+  36:funsape/peripheral/timer2.cpp **** //!     ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  37:funsape/peripheral/timer2.cpp **** //!     OTHER DEALINGS IN THE SOFTWARE.
+  38:funsape/peripheral/timer2.cpp **** //!
+  39:funsape/peripheral/timer2.cpp **** //! ****************************************************************************
+  40:funsape/peripheral/timer2.cpp **** //!
+  41:funsape/peripheral/timer2.cpp **** 
+  42:funsape/peripheral/timer2.cpp **** // =============================================================================
+  43:funsape/peripheral/timer2.cpp **** // System file dependencies
+GAS LISTING /tmp/ccB5MtNN.s 			page 2
+
+
+  44:funsape/peripheral/timer2.cpp **** // =============================================================================
+  45:funsape/peripheral/timer2.cpp **** 
+  46:funsape/peripheral/timer2.cpp **** #include "timer2.hpp"
+  47:funsape/peripheral/timer2.cpp **** #if !defined(__TIMER2_HPP)
+  48:funsape/peripheral/timer2.cpp **** #    error Error 1 - Header file (timer2.hpp) is missing or corrupted!
+  49:funsape/peripheral/timer2.cpp **** #elif __TIMER2_HPP != 2604
+  50:funsape/peripheral/timer2.cpp **** #    error Error 6 - Build mismatch between header file (timer2.hpp) and source file (timer2.cpp)!
+  51:funsape/peripheral/timer2.cpp **** #endif
+  52:funsape/peripheral/timer2.cpp **** 
+  53:funsape/peripheral/timer2.cpp **** // =============================================================================
+  54:funsape/peripheral/timer2.cpp **** // File exclusive - Constants
+  55:funsape/peripheral/timer2.cpp **** // =============================================================================
+  56:funsape/peripheral/timer2.cpp **** 
+  57:funsape/peripheral/timer2.cpp **** // NONE
+  58:funsape/peripheral/timer2.cpp **** 
+  59:funsape/peripheral/timer2.cpp **** // =============================================================================
+  60:funsape/peripheral/timer2.cpp **** // File exclusive - New data types
+  61:funsape/peripheral/timer2.cpp **** // =============================================================================
+  62:funsape/peripheral/timer2.cpp **** 
+  63:funsape/peripheral/timer2.cpp **** // NONE
+  64:funsape/peripheral/timer2.cpp **** 
+  65:funsape/peripheral/timer2.cpp **** // =============================================================================
+  66:funsape/peripheral/timer2.cpp **** // File exclusive - Macro-functions
+  67:funsape/peripheral/timer2.cpp **** // =============================================================================
+  68:funsape/peripheral/timer2.cpp **** 
+  69:funsape/peripheral/timer2.cpp **** // NONE
+  70:funsape/peripheral/timer2.cpp **** 
+  71:funsape/peripheral/timer2.cpp **** // =============================================================================
+  72:funsape/peripheral/timer2.cpp **** // Global variables
+  73:funsape/peripheral/timer2.cpp **** // =============================================================================
+  74:funsape/peripheral/timer2.cpp **** 
+  75:funsape/peripheral/timer2.cpp **** Timer2 Timer2::_instance;
+  76:funsape/peripheral/timer2.cpp **** 
+  77:funsape/peripheral/timer2.cpp **** // =============================================================================
+  78:funsape/peripheral/timer2.cpp **** // Static functions declarations
+  79:funsape/peripheral/timer2.cpp **** // =============================================================================
+  80:funsape/peripheral/timer2.cpp **** 
+  81:funsape/peripheral/timer2.cpp **** // NONE
+  82:funsape/peripheral/timer2.cpp **** 
+  83:funsape/peripheral/timer2.cpp **** // =============================================================================
+  84:funsape/peripheral/timer2.cpp **** // Public function definitions
+  85:funsape/peripheral/timer2.cpp **** // =============================================================================
+  86:funsape/peripheral/timer2.cpp **** 
+  87:funsape/peripheral/timer2.cpp **** // NONE
+  88:funsape/peripheral/timer2.cpp **** 
+  89:funsape/peripheral/timer2.cpp **** // =============================================================================
+  90:funsape/peripheral/timer2.cpp **** // Class constructors
+  91:funsape/peripheral/timer2.cpp **** // =============================================================================
+  92:funsape/peripheral/timer2.cpp **** 
+  93:funsape/peripheral/timer2.cpp **** Timer2::Timer2() :
+  16               		.loc 1 93 0
+  17               		.cfi_startproc
+  18               	.LVL0:
+  19               	/* prologue: function */
+  20               	/* frame size = 0 */
+  21               	/* stack size = 0 */
+  22               	.L__stack_usage = 0
+GAS LISTING /tmp/ccB5MtNN.s 			page 3
+
+
+  23 0000 FC01      		movw r30,r24
+  24               	.LBB2:
+  94:funsape/peripheral/timer2.cpp ****     _isInitialized(false),
+  95:funsape/peripheral/timer2.cpp ****     _lastError(Error::NONE),
+  96:funsape/peripheral/timer2.cpp ****     _clockSource(Timer2::ClockSource::DISABLED),
+  97:funsape/peripheral/timer2.cpp ****     _mode(Timer2::Mode::NORMAL)
+  25               		.loc 1 97 0
+  26 0002 8081      		ld r24,Z
+  27               	.LVL1:
+  28 0004 8E7F      		andi r24,lo8(~(1<<0))
+  29 0006 8083      		st Z,r24
+  30 0008 1282      		std Z+2,__zero_reg__
+  31 000a 1182      		std Z+1,__zero_reg__
+  32 000c 1382      		std Z+3,__zero_reg__
+  33 000e 1482      		std Z+4,__zero_reg__
+  34               	/* epilogue start */
+  35               	.LBE2:
+  98:funsape/peripheral/timer2.cpp **** {
+  99:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 100:funsape/peripheral/timer2.cpp ****     debugMark(PSTR("Timer2::Timer2(void)"), Debug::CodeIndex::TIMER2_MODULE);
+ 101:funsape/peripheral/timer2.cpp **** 
+ 102:funsape/peripheral/timer2.cpp ****     // Returns successfully
+ 103:funsape/peripheral/timer2.cpp ****     this->_lastError = Error::NONE;
+ 104:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 105:funsape/peripheral/timer2.cpp ****     return;
+ 106:funsape/peripheral/timer2.cpp **** }
+  36               		.loc 1 106 0
+  37 0010 0895      		ret
+  38               		.cfi_endproc
+  39               	.LFE84:
+  41               	.global	_ZN6Timer2C1Ev
+  42               		.set	_ZN6Timer2C1Ev,_ZN6Timer2C2Ev
+  43               		.section	.text._ZN6Timer2D2Ev,"ax",@progbits
+  44               	.global	_ZN6Timer2D2Ev
+  46               	_ZN6Timer2D2Ev:
+  47               	.LFB87:
+ 107:funsape/peripheral/timer2.cpp **** 
+ 108:funsape/peripheral/timer2.cpp **** Timer2::~Timer2()
+  48               		.loc 1 108 0
+  49               		.cfi_startproc
+  50               	.LVL2:
+  51               	/* prologue: function */
+  52               	/* frame size = 0 */
+  53               	/* stack size = 0 */
+  54               	.L__stack_usage = 0
+  55               	/* epilogue start */
+ 109:funsape/peripheral/timer2.cpp **** {
+ 110:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 111:funsape/peripheral/timer2.cpp ****     debugMark(PSTR("Timer2::~Timer2(void)"), Debug::CodeIndex::TIMER2_MODULE);
+ 112:funsape/peripheral/timer2.cpp **** 
+ 113:funsape/peripheral/timer2.cpp ****     // Returns successfully
+ 114:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 115:funsape/peripheral/timer2.cpp ****     return;
+ 116:funsape/peripheral/timer2.cpp **** }
+  56               		.loc 1 116 0
+  57 0000 0895      		ret
+  58               		.cfi_endproc
+GAS LISTING /tmp/ccB5MtNN.s 			page 4
+
+
+  59               	.LFE87:
+  61               	.global	_ZN6Timer2D1Ev
+  62               		.set	_ZN6Timer2D1Ev,_ZN6Timer2D2Ev
+  63               		.section	.text._Z41__static_initialization_and_destruction_0ii,"ax",@progbits
+  65               	_Z41__static_initialization_and_destruction_0ii:
+  66               	.LFB99:
+ 117:funsape/peripheral/timer2.cpp **** 
+ 118:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 119:funsape/peripheral/timer2.cpp **** // Class own methods - Public
+ 120:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 121:funsape/peripheral/timer2.cpp **** 
+ 122:funsape/peripheral/timer2.cpp **** //     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+ 123:funsape/peripheral/timer2.cpp **** 
+ 124:funsape/peripheral/timer2.cpp **** bool_t Timer2::init(const Timer2::Mode mode_p, const Timer2::ClockSource clockSource_p)
+ 125:funsape/peripheral/timer2.cpp **** {
+ 126:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 127:funsape/peripheral/timer2.cpp ****     debugMark(PSTR("Timer2::init(const Timer2::Mode, const Timer2::ClockSource)"), Debug::CodeIndex
+ 128:funsape/peripheral/timer2.cpp **** 
+ 129:funsape/peripheral/timer2.cpp ****     // Local variables
+ 130:funsape/peripheral/timer2.cpp ****     uint8_t auxTccr2A   = MCU_TIMER2_CTRL_A_REG;
+ 131:funsape/peripheral/timer2.cpp ****     uint8_t auxTccr2B   = MCU_TIMER2_CTRL_B_REG;
+ 132:funsape/peripheral/timer2.cpp ****     uint8_t aux8        = 0;
+ 133:funsape/peripheral/timer2.cpp **** 
+ 134:funsape/peripheral/timer2.cpp ****     // Configure mode
+ 135:funsape/peripheral/timer2.cpp ****     aux8 = (uint8_t)mode_p;
+ 136:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2A, MCU_TIMER2_MODE_BIT_0_MASK, MCU_TIMER2_MODE_BIT_0_POS);
+ 137:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2B, MCU_TIMER2_MODE_BIT_2_MASK, MCU_TIMER2_MODE_BIT_2_POS);
+ 138:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2A, (aux8 & 0x03), MCU_TIMER2_MODE_BIT_0_POS);
+ 139:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2B, (aux8 >> 2), MCU_TIMER2_MODE_BIT_2_POS);
+ 140:funsape/peripheral/timer2.cpp ****     // Configure clock source
+ 141:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2B, MCU_TIMER2_CLOCK_BIT_MASK, MCU_TIMER2_CLOCK_BIT_POS);
+ 142:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2B, ((uint8_t)clockSource_p), MCU_TIMER2_CLOCK_BIT_POS);
+ 143:funsape/peripheral/timer2.cpp **** 
+ 144:funsape/peripheral/timer2.cpp ****     // Update registers
+ 145:funsape/peripheral/timer2.cpp ****     MCU_TIMER2_CTRL_A_REG          = auxTccr2A;
+ 146:funsape/peripheral/timer2.cpp ****     MCU_TIMER2_CTRL_B_REG          = auxTccr2B;
+ 147:funsape/peripheral/timer2.cpp **** 
+ 148:funsape/peripheral/timer2.cpp ****     // Update class members
+ 149:funsape/peripheral/timer2.cpp ****     this->_mode             = mode_p;
+ 150:funsape/peripheral/timer2.cpp ****     this->_clockSource      = clockSource_p;
+ 151:funsape/peripheral/timer2.cpp ****     this->_isInitialized    = true;
+ 152:funsape/peripheral/timer2.cpp **** 
+ 153:funsape/peripheral/timer2.cpp ****     // Returns successfully
+ 154:funsape/peripheral/timer2.cpp ****     this->_lastError = Error::NONE;
+ 155:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 156:funsape/peripheral/timer2.cpp ****     return true;
+ 157:funsape/peripheral/timer2.cpp **** }
+ 158:funsape/peripheral/timer2.cpp **** 
+ 159:funsape/peripheral/timer2.cpp **** bool_t Timer2::setClockSource(const Timer2::ClockSource clockSource_p)
+ 160:funsape/peripheral/timer2.cpp **** {
+ 161:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 162:funsape/peripheral/timer2.cpp ****     debugMark(PSTR("Timer2::setClockSource(const Timer2::ClockSource)"), Debug::CodeIndex::TIMER2_M
+ 163:funsape/peripheral/timer2.cpp **** 
+ 164:funsape/peripheral/timer2.cpp ****     // Local variables
+ 165:funsape/peripheral/timer2.cpp ****     uint8_t auxTccr2B = MCU_TIMER2_CTRL_B_REG;
+ 166:funsape/peripheral/timer2.cpp **** 
+ 167:funsape/peripheral/timer2.cpp ****     // Configure clock source
+GAS LISTING /tmp/ccB5MtNN.s 			page 5
+
+
+ 168:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2B, MCU_TIMER2_CLOCK_BIT_MASK, MCU_TIMER2_CLOCK_BIT_POS);
+ 169:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2B, ((uint8_t)clockSource_p), MCU_TIMER2_CLOCK_BIT_POS);
+ 170:funsape/peripheral/timer2.cpp **** 
+ 171:funsape/peripheral/timer2.cpp ****     // Update registers
+ 172:funsape/peripheral/timer2.cpp ****     MCU_TIMER2_CTRL_B_REG          = auxTccr2B;
+ 173:funsape/peripheral/timer2.cpp **** 
+ 174:funsape/peripheral/timer2.cpp ****     // Update class members
+ 175:funsape/peripheral/timer2.cpp ****     this->_clockSource      = clockSource_p;
+ 176:funsape/peripheral/timer2.cpp **** 
+ 177:funsape/peripheral/timer2.cpp ****     // Returns successfully
+ 178:funsape/peripheral/timer2.cpp ****     this->_lastError = Error::NONE;
+ 179:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 180:funsape/peripheral/timer2.cpp ****     return true;
+ 181:funsape/peripheral/timer2.cpp **** }
+ 182:funsape/peripheral/timer2.cpp **** 
+ 183:funsape/peripheral/timer2.cpp **** bool_t Timer2::setMode(const Timer2::Mode mode_p)
+ 184:funsape/peripheral/timer2.cpp **** {
+ 185:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 186:funsape/peripheral/timer2.cpp ****     debugMark(PSTR("Timer2::setMode(const Timer2::Mode)"), Debug::CodeIndex::TIMER2_MODULE);
+ 187:funsape/peripheral/timer2.cpp **** 
+ 188:funsape/peripheral/timer2.cpp ****     // Local variables
+ 189:funsape/peripheral/timer2.cpp ****     uint8_t auxTccr2A = MCU_TIMER2_CTRL_A_REG;
+ 190:funsape/peripheral/timer2.cpp ****     uint8_t auxTccr2B = MCU_TIMER2_CTRL_B_REG;
+ 191:funsape/peripheral/timer2.cpp ****     uint8_t aux8 = 0;
+ 192:funsape/peripheral/timer2.cpp **** 
+ 193:funsape/peripheral/timer2.cpp ****     // Configure mode
+ 194:funsape/peripheral/timer2.cpp ****     aux8 = (uint8_t)mode_p;
+ 195:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2A, MCU_TIMER2_MODE_BIT_0_MASK, MCU_TIMER2_MODE_BIT_0_POS);
+ 196:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2B, MCU_TIMER2_MODE_BIT_2_MASK, MCU_TIMER2_MODE_BIT_2_POS);
+ 197:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2A, (aux8 & 0x03), MCU_TIMER2_MODE_BIT_0_POS);
+ 198:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2B, (aux8 >> 2), MCU_TIMER2_MODE_BIT_2_POS);
+ 199:funsape/peripheral/timer2.cpp **** 
+ 200:funsape/peripheral/timer2.cpp ****     // Update registers
+ 201:funsape/peripheral/timer2.cpp ****     MCU_TIMER2_CTRL_A_REG          = auxTccr2A;
+ 202:funsape/peripheral/timer2.cpp ****     MCU_TIMER2_CTRL_B_REG          = auxTccr2B;
+ 203:funsape/peripheral/timer2.cpp **** 
+ 204:funsape/peripheral/timer2.cpp ****     // Update class members
+ 205:funsape/peripheral/timer2.cpp ****     this->_mode     = mode_p;
+ 206:funsape/peripheral/timer2.cpp **** 
+ 207:funsape/peripheral/timer2.cpp ****     // Returns successfully
+ 208:funsape/peripheral/timer2.cpp ****     this->_lastError = Error::NONE;
+ 209:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 210:funsape/peripheral/timer2.cpp ****     return true;
+ 211:funsape/peripheral/timer2.cpp **** }
+ 212:funsape/peripheral/timer2.cpp **** 
+ 213:funsape/peripheral/timer2.cpp **** bool_t Timer2::setOutputMode(const Timer2::OutputMode compA_p, const Timer2::OutputMode compB_p)
+ 214:funsape/peripheral/timer2.cpp **** {
+ 215:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 216:funsape/peripheral/timer2.cpp ****     debugMark(PSTR("Timer2::setOutputMode(const Timer2::OutputMode, const Timer2::OutputMode)"),
+ 217:funsape/peripheral/timer2.cpp ****             Debug::CodeIndex::TIMER2_MODULE);
+ 218:funsape/peripheral/timer2.cpp **** 
+ 219:funsape/peripheral/timer2.cpp ****     // Local variables
+ 220:funsape/peripheral/timer2.cpp ****     uint8_t auxTccr2A = MCU_TIMER2_CTRL_A_REG;
+ 221:funsape/peripheral/timer2.cpp **** 
+ 222:funsape/peripheral/timer2.cpp ****     // Configure outputs
+ 223:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2A, MCU_TIMER2_OUTPUT_A_MODE_BIT_MASK, MCU_TIMER2_OUTPUT_A_MODE_BIT_POS);
+ 224:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2A, ((uint8_t)compA_p), MCU_TIMER2_OUTPUT_A_MODE_BIT_POS);
+GAS LISTING /tmp/ccB5MtNN.s 			page 6
+
+
+ 225:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2A, MCU_TIMER2_OUTPUT_B_MODE_BIT_MASK, MCU_TIMER2_OUTPUT_B_MODE_BIT_POS);
+ 226:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2A, ((uint8_t)compB_p), MCU_TIMER2_OUTPUT_B_MODE_BIT_POS);
+ 227:funsape/peripheral/timer2.cpp **** 
+ 228:funsape/peripheral/timer2.cpp ****     // Update registers
+ 229:funsape/peripheral/timer2.cpp ****     MCU_TIMER2_CTRL_A_REG          = auxTccr2A;
+ 230:funsape/peripheral/timer2.cpp **** 
+ 231:funsape/peripheral/timer2.cpp ****     // Returns successfully
+ 232:funsape/peripheral/timer2.cpp ****     this->_lastError = Error::NONE;
+ 233:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 234:funsape/peripheral/timer2.cpp ****     return true;
+ 235:funsape/peripheral/timer2.cpp **** }
+ 236:funsape/peripheral/timer2.cpp **** 
+ 237:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 238:funsape/peripheral/timer2.cpp **** // Class own methods - Private
+ 239:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 240:funsape/peripheral/timer2.cpp **** 
+ 241:funsape/peripheral/timer2.cpp **** // NONE
+ 242:funsape/peripheral/timer2.cpp **** 
+ 243:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 244:funsape/peripheral/timer2.cpp **** // Class own methods - Protected
+ 245:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 246:funsape/peripheral/timer2.cpp **** 
+ 247:funsape/peripheral/timer2.cpp **** // NONE
+ 248:funsape/peripheral/timer2.cpp **** 
+ 249:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 250:funsape/peripheral/timer2.cpp **** // Static functions definitions
+ 251:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 252:funsape/peripheral/timer2.cpp **** 
+ 253:funsape/peripheral/timer2.cpp **** // NONE
+ 254:funsape/peripheral/timer2.cpp **** 
+ 255:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 256:funsape/peripheral/timer2.cpp **** // Interrupt callback functions
+ 257:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 258:funsape/peripheral/timer2.cpp **** 
+ 259:funsape/peripheral/timer2.cpp **** void weakened timer2CompareACallback(void)
+ 260:funsape/peripheral/timer2.cpp **** {
+ 261:funsape/peripheral/timer2.cpp ****     return;
+ 262:funsape/peripheral/timer2.cpp **** }
+ 263:funsape/peripheral/timer2.cpp **** 
+ 264:funsape/peripheral/timer2.cpp **** void weakened timer2CompareBCallback(void)
+ 265:funsape/peripheral/timer2.cpp **** {
+ 266:funsape/peripheral/timer2.cpp ****     return;
+ 267:funsape/peripheral/timer2.cpp **** }
+ 268:funsape/peripheral/timer2.cpp **** 
+ 269:funsape/peripheral/timer2.cpp **** void weakened timer2OverflowCallback(void)
+ 270:funsape/peripheral/timer2.cpp **** {
+ 271:funsape/peripheral/timer2.cpp ****     return;
+ 272:funsape/peripheral/timer2.cpp **** }
+ 273:funsape/peripheral/timer2.cpp **** 
+ 274:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 275:funsape/peripheral/timer2.cpp **** // Interrupt handlers
+ 276:funsape/peripheral/timer2.cpp **** // =============================================================================
+ 277:funsape/peripheral/timer2.cpp **** 
+ 278:funsape/peripheral/timer2.cpp **** //!
+ 279:funsape/peripheral/timer2.cpp **** //! @cond
+ 280:funsape/peripheral/timer2.cpp **** //!
+ 281:funsape/peripheral/timer2.cpp **** 
+GAS LISTING /tmp/ccB5MtNN.s 			page 7
+
+
+ 282:funsape/peripheral/timer2.cpp **** ISR(TIMER2_COMPA_vect)
+ 283:funsape/peripheral/timer2.cpp **** {
+ 284:funsape/peripheral/timer2.cpp ****     timer2CompareACallback();
+ 285:funsape/peripheral/timer2.cpp **** }
+ 286:funsape/peripheral/timer2.cpp **** 
+ 287:funsape/peripheral/timer2.cpp **** ISR(TIMER2_COMPB_vect)
+ 288:funsape/peripheral/timer2.cpp **** {
+ 289:funsape/peripheral/timer2.cpp ****     timer2CompareBCallback();
+ 290:funsape/peripheral/timer2.cpp **** }
+ 291:funsape/peripheral/timer2.cpp **** 
+ 292:funsape/peripheral/timer2.cpp **** ISR(TIMER2_OVF_vect)
+ 293:funsape/peripheral/timer2.cpp **** {
+ 294:funsape/peripheral/timer2.cpp ****     timer2OverflowCallback();
+ 295:funsape/peripheral/timer2.cpp **** }
+  67               		.loc 1 295 0
+  68               		.cfi_startproc
+  69               	.LVL3:
+  70               	/* prologue: function */
+  71               	/* frame size = 0 */
+  72               	/* stack size = 0 */
+  73               	.L__stack_usage = 0
+  74               		.loc 1 295 0
+  75 0000 0197      		sbiw r24,1
+  76 0002 01F0      		breq .L5
+  77               	.LVL4:
+  78               	.L3:
+  79               	/* epilogue start */
+  80 0004 0895      		ret
+  81               	.LVL5:
+  82               	.L5:
+  83               		.loc 1 295 0 is_stmt 0 discriminator 1
+  84 0006 6F3F      		cpi r22,-1
+  85 0008 7F4F      		sbci r23,-1
+  86               	.LVL6:
+  87 000a 01F4      		brne .L3
+  75:funsape/peripheral/timer2.cpp **** 
+  88               		.loc 1 75 0 is_stmt 1
+  89 000c 80E0      		ldi r24,lo8(_ZN6Timer29_instanceE)
+  90 000e 90E0      		ldi r25,hi8(_ZN6Timer29_instanceE)
+  91 0010 0E94 0000 		call _ZN6Timer2C1Ev
+  92               	.LVL7:
+  93               		.loc 1 295 0
+  94 0014 00C0      		rjmp .L3
+  95               		.cfi_endproc
+  96               	.LFE99:
+  98               		.section	.text._ZN6Timer24initENS_4ModeENS_11ClockSourceE,"ax",@progbits
+  99               	.global	_ZN6Timer24initENS_4ModeENS_11ClockSourceE
+ 101               	_ZN6Timer24initENS_4ModeENS_11ClockSourceE:
+ 102               	.LFB89:
+ 125:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 103               		.loc 1 125 0
+ 104               		.cfi_startproc
+ 105               	.LVL8:
+ 106 0000 CF93      		push r28
+ 107               	.LCFI0:
+ 108               		.cfi_def_cfa_offset 3
+ 109               		.cfi_offset 28, -2
+GAS LISTING /tmp/ccB5MtNN.s 			page 8
+
+
+ 110 0002 DF93      		push r29
+ 111               	.LCFI1:
+ 112               		.cfi_def_cfa_offset 4
+ 113               		.cfi_offset 29, -3
+ 114               	/* prologue: function */
+ 115               	/* frame size = 0 */
+ 116               	/* stack size = 2 */
+ 117               	.L__stack_usage = 2
+ 118 0004 FC01      		movw r30,r24
+ 130:funsape/peripheral/timer2.cpp ****     uint8_t auxTccr2B   = MCU_TIMER2_CTRL_B_REG;
+ 119               		.loc 1 130 0
+ 120 0006 C0EB      		ldi r28,lo8(-80)
+ 121 0008 D0E0      		ldi r29,0
+ 122 000a 8881      		ld r24,Y
+ 123               	.LVL9:
+ 131:funsape/peripheral/timer2.cpp ****     uint8_t aux8        = 0;
+ 124               		.loc 1 131 0
+ 125 000c A1EB      		ldi r26,lo8(-79)
+ 126 000e B0E0      		ldi r27,0
+ 127 0010 9C91      		ld r25,X
+ 128               	.LVL10:
+ 136:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2B, MCU_TIMER2_MODE_BIT_2_MASK, MCU_TIMER2_MODE_BIT_2_POS);
+ 129               		.loc 1 136 0
+ 130 0012 8C7F      		andi r24,lo8(-4)
+ 131               	.LVL11:
+ 137:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2A, (aux8 & 0x03), MCU_TIMER2_MODE_BIT_0_POS);
+ 132               		.loc 1 137 0
+ 133 0014 977F      		andi r25,lo8(-9)
+ 134               	.LVL12:
+ 138:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2B, (aux8 >> 2), MCU_TIMER2_MODE_BIT_2_POS);
+ 135               		.loc 1 138 0
+ 136 0016 262F      		mov r18,r22
+ 137 0018 2370      		andi r18,lo8(3)
+ 138 001a 822B      		or r24,r18
+ 139               	.LVL13:
+ 139:funsape/peripheral/timer2.cpp ****     // Configure clock source
+ 140               		.loc 1 139 0
+ 141 001c 262F      		mov r18,r22
+ 142 001e 30E0      		ldi r19,0
+ 143 0020 3595      		asr r19
+ 144 0022 2795      		ror r18
+ 145 0024 3595      		asr r19
+ 146 0026 2795      		ror r18
+ 147 0028 220F      		lsl r18
+ 148 002a 331F      		rol r19
+ 149 002c 220F      		lsl r18
+ 150 002e 331F      		rol r19
+ 151 0030 220F      		lsl r18
+ 152 0032 331F      		rol r19
+ 153 0034 922B      		or r25,r18
+ 154               	.LVL14:
+ 141:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2B, ((uint8_t)clockSource_p), MCU_TIMER2_CLOCK_BIT_POS);
+ 155               		.loc 1 141 0
+ 156 0036 987F      		andi r25,lo8(-8)
+ 157               	.LVL15:
+ 142:funsape/peripheral/timer2.cpp **** 
+ 158               		.loc 1 142 0
+GAS LISTING /tmp/ccB5MtNN.s 			page 9
+
+
+ 159 0038 942B      		or r25,r20
+ 160               	.LVL16:
+ 145:funsape/peripheral/timer2.cpp ****     MCU_TIMER2_CTRL_B_REG          = auxTccr2B;
+ 161               		.loc 1 145 0
+ 162 003a 8883      		st Y,r24
+ 146:funsape/peripheral/timer2.cpp **** 
+ 163               		.loc 1 146 0
+ 164 003c 9C93      		st X,r25
+ 149:funsape/peripheral/timer2.cpp ****     this->_clockSource      = clockSource_p;
+ 165               		.loc 1 149 0
+ 166 003e 6483      		std Z+4,r22
+ 150:funsape/peripheral/timer2.cpp ****     this->_isInitialized    = true;
+ 167               		.loc 1 150 0
+ 168 0040 4383      		std Z+3,r20
+ 151:funsape/peripheral/timer2.cpp **** 
+ 169               		.loc 1 151 0
+ 170 0042 8081      		ld r24,Z
+ 171               	.LVL17:
+ 172 0044 8160      		ori r24,lo8(1<<0)
+ 173 0046 8083      		st Z,r24
+ 154:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 174               		.loc 1 154 0
+ 175 0048 1282      		std Z+2,__zero_reg__
+ 176 004a 1182      		std Z+1,__zero_reg__
+ 177               	.LVL18:
+ 157:funsape/peripheral/timer2.cpp **** 
+ 178               		.loc 1 157 0
+ 179 004c 81E0      		ldi r24,lo8(1)
+ 180               	/* epilogue start */
+ 181 004e DF91      		pop r29
+ 182 0050 CF91      		pop r28
+ 183 0052 0895      		ret
+ 184               		.cfi_endproc
+ 185               	.LFE89:
+ 187               		.section	.text._ZN6Timer214setClockSourceENS_11ClockSourceE,"ax",@progbits
+ 188               	.global	_ZN6Timer214setClockSourceENS_11ClockSourceE
+ 190               	_ZN6Timer214setClockSourceENS_11ClockSourceE:
+ 191               	.LFB90:
+ 160:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 192               		.loc 1 160 0
+ 193               		.cfi_startproc
+ 194               	.LVL19:
+ 195               	/* prologue: function */
+ 196               	/* frame size = 0 */
+ 197               	/* stack size = 0 */
+ 198               	.L__stack_usage = 0
+ 199 0000 FC01      		movw r30,r24
+ 165:funsape/peripheral/timer2.cpp **** 
+ 200               		.loc 1 165 0
+ 201 0002 A1EB      		ldi r26,lo8(-79)
+ 202 0004 B0E0      		ldi r27,0
+ 203 0006 9C91      		ld r25,X
+ 204               	.LVL20:
+ 168:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2B, ((uint8_t)clockSource_p), MCU_TIMER2_CLOCK_BIT_POS);
+ 205               		.loc 1 168 0
+ 206 0008 987F      		andi r25,lo8(-8)
+ 207               	.LVL21:
+GAS LISTING /tmp/ccB5MtNN.s 			page 10
+
+
+ 169:funsape/peripheral/timer2.cpp **** 
+ 208               		.loc 1 169 0
+ 209 000a 962B      		or r25,r22
+ 210               	.LVL22:
+ 172:funsape/peripheral/timer2.cpp **** 
+ 211               		.loc 1 172 0
+ 212 000c 9C93      		st X,r25
+ 175:funsape/peripheral/timer2.cpp **** 
+ 213               		.loc 1 175 0
+ 214 000e 6383      		std Z+3,r22
+ 178:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 215               		.loc 1 178 0
+ 216 0010 1282      		std Z+2,__zero_reg__
+ 217 0012 1182      		std Z+1,__zero_reg__
+ 218               	.LVL23:
+ 181:funsape/peripheral/timer2.cpp **** 
+ 219               		.loc 1 181 0
+ 220 0014 81E0      		ldi r24,lo8(1)
+ 221               	.LVL24:
+ 222               	/* epilogue start */
+ 223 0016 0895      		ret
+ 224               		.cfi_endproc
+ 225               	.LFE90:
+ 227               		.section	.text._ZN6Timer27setModeENS_4ModeE,"ax",@progbits
+ 228               	.global	_ZN6Timer27setModeENS_4ModeE
+ 230               	_ZN6Timer27setModeENS_4ModeE:
+ 231               	.LFB91:
+ 184:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 232               		.loc 1 184 0
+ 233               		.cfi_startproc
+ 234               	.LVL25:
+ 235 0000 CF93      		push r28
+ 236               	.LCFI2:
+ 237               		.cfi_def_cfa_offset 3
+ 238               		.cfi_offset 28, -2
+ 239 0002 DF93      		push r29
+ 240               	.LCFI3:
+ 241               		.cfi_def_cfa_offset 4
+ 242               		.cfi_offset 29, -3
+ 243               	/* prologue: function */
+ 244               	/* frame size = 0 */
+ 245               	/* stack size = 2 */
+ 246               	.L__stack_usage = 2
+ 247 0004 FC01      		movw r30,r24
+ 189:funsape/peripheral/timer2.cpp ****     uint8_t auxTccr2B = MCU_TIMER2_CTRL_B_REG;
+ 248               		.loc 1 189 0
+ 249 0006 C0EB      		ldi r28,lo8(-80)
+ 250 0008 D0E0      		ldi r29,0
+ 251 000a 2881      		ld r18,Y
+ 252               	.LVL26:
+ 190:funsape/peripheral/timer2.cpp ****     uint8_t aux8 = 0;
+ 253               		.loc 1 190 0
+ 254 000c A1EB      		ldi r26,lo8(-79)
+ 255 000e B0E0      		ldi r27,0
+ 256 0010 9C91      		ld r25,X
+ 257               	.LVL27:
+ 195:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2B, MCU_TIMER2_MODE_BIT_2_MASK, MCU_TIMER2_MODE_BIT_2_POS);
+GAS LISTING /tmp/ccB5MtNN.s 			page 11
+
+
+ 258               		.loc 1 195 0
+ 259 0012 2C7F      		andi r18,lo8(-4)
+ 260               	.LVL28:
+ 196:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2A, (aux8 & 0x03), MCU_TIMER2_MODE_BIT_0_POS);
+ 261               		.loc 1 196 0
+ 262 0014 977F      		andi r25,lo8(-9)
+ 263               	.LVL29:
+ 197:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2B, (aux8 >> 2), MCU_TIMER2_MODE_BIT_2_POS);
+ 264               		.loc 1 197 0
+ 265 0016 862F      		mov r24,r22
+ 266               	.LVL30:
+ 267 0018 8370      		andi r24,lo8(3)
+ 268 001a 282B      		or r18,r24
+ 269               	.LVL31:
+ 198:funsape/peripheral/timer2.cpp **** 
+ 270               		.loc 1 198 0
+ 271 001c 462F      		mov r20,r22
+ 272 001e 50E0      		ldi r21,0
+ 273 0020 5595      		asr r21
+ 274 0022 4795      		ror r20
+ 275 0024 5595      		asr r21
+ 276 0026 4795      		ror r20
+ 277 0028 440F      		lsl r20
+ 278 002a 551F      		rol r21
+ 279 002c 440F      		lsl r20
+ 280 002e 551F      		rol r21
+ 281 0030 440F      		lsl r20
+ 282 0032 551F      		rol r21
+ 283 0034 942B      		or r25,r20
+ 284               	.LVL32:
+ 201:funsape/peripheral/timer2.cpp ****     MCU_TIMER2_CTRL_B_REG          = auxTccr2B;
+ 285               		.loc 1 201 0
+ 286 0036 2883      		st Y,r18
+ 202:funsape/peripheral/timer2.cpp **** 
+ 287               		.loc 1 202 0
+ 288 0038 9C93      		st X,r25
+ 205:funsape/peripheral/timer2.cpp **** 
+ 289               		.loc 1 205 0
+ 290 003a 6483      		std Z+4,r22
+ 208:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 291               		.loc 1 208 0
+ 292 003c 1282      		std Z+2,__zero_reg__
+ 293 003e 1182      		std Z+1,__zero_reg__
+ 294               	.LVL33:
+ 211:funsape/peripheral/timer2.cpp **** 
+ 295               		.loc 1 211 0
+ 296 0040 81E0      		ldi r24,lo8(1)
+ 297               	/* epilogue start */
+ 298 0042 DF91      		pop r29
+ 299 0044 CF91      		pop r28
+ 300 0046 0895      		ret
+ 301               		.cfi_endproc
+ 302               	.LFE91:
+ 304               		.section	.text._ZN6Timer213setOutputModeENS_10OutputModeES0_,"ax",@progbits
+ 305               	.global	_ZN6Timer213setOutputModeENS_10OutputModeES0_
+ 307               	_ZN6Timer213setOutputModeENS_10OutputModeES0_:
+ 308               	.LFB92:
+GAS LISTING /tmp/ccB5MtNN.s 			page 12
+
+
+ 214:funsape/peripheral/timer2.cpp ****     // Mark passage for debugging purpose
+ 309               		.loc 1 214 0
+ 310               		.cfi_startproc
+ 311               	.LVL34:
+ 312               	/* prologue: function */
+ 313               	/* frame size = 0 */
+ 314               	/* stack size = 0 */
+ 315               	.L__stack_usage = 0
+ 220:funsape/peripheral/timer2.cpp **** 
+ 316               		.loc 1 220 0
+ 317 0000 E0EB      		ldi r30,lo8(-80)
+ 318 0002 F0E0      		ldi r31,0
+ 319 0004 2081      		ld r18,Z
+ 320               	.LVL35:
+ 223:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2A, ((uint8_t)compA_p), MCU_TIMER2_OUTPUT_A_MODE_BIT_POS);
+ 321               		.loc 1 223 0
+ 322 0006 2F73      		andi r18,lo8(63)
+ 323               	.LVL36:
+ 224:funsape/peripheral/timer2.cpp ****     clrMaskOffset(auxTccr2A, MCU_TIMER2_OUTPUT_B_MODE_BIT_MASK, MCU_TIMER2_OUTPUT_B_MODE_BIT_POS);
+ 324               		.loc 1 224 0
+ 325 0008 6295      		swap r22
+ 326               	.LVL37:
+ 327 000a 660F      		lsl r22
+ 328 000c 660F      		lsl r22
+ 329 000e 607C      		andi r22,lo8(-64)
+ 330 0010 622B      		or r22,r18
+ 331               	.LVL38:
+ 225:funsape/peripheral/timer2.cpp ****     setMaskOffset(auxTccr2A, ((uint8_t)compB_p), MCU_TIMER2_OUTPUT_B_MODE_BIT_POS);
+ 332               		.loc 1 225 0
+ 333 0012 6F7C      		andi r22,lo8(-49)
+ 334               	.LVL39:
+ 226:funsape/peripheral/timer2.cpp **** 
+ 335               		.loc 1 226 0
+ 336 0014 20E1      		ldi r18,lo8(16)
+ 337 0016 429F      		mul r20,r18
+ 338 0018 A001      		movw r20,r0
+ 339 001a 1124      		clr __zero_reg__
+ 340               	.LVL40:
+ 341 001c 462B      		or r20,r22
+ 342               	.LVL41:
+ 229:funsape/peripheral/timer2.cpp **** 
+ 343               		.loc 1 229 0
+ 344 001e 4083      		st Z,r20
+ 232:funsape/peripheral/timer2.cpp ****     debugMessage(Error::NONE, Debug::CodeIndex::TIMER2_MODULE);
+ 345               		.loc 1 232 0
+ 346 0020 FC01      		movw r30,r24
+ 347 0022 1282      		std Z+2,__zero_reg__
+ 348 0024 1182      		std Z+1,__zero_reg__
+ 349               	.LVL42:
+ 235:funsape/peripheral/timer2.cpp **** 
+ 350               		.loc 1 235 0
+ 351 0026 81E0      		ldi r24,lo8(1)
+ 352               	.LVL43:
+ 353               	/* epilogue start */
+ 354 0028 0895      		ret
+ 355               		.cfi_endproc
+ 356               	.LFE92:
+GAS LISTING /tmp/ccB5MtNN.s 			page 13
+
+
+ 358               		.section	.text._Z22timer2CompareACallbackv,"ax",@progbits
+ 359               		.weak	_Z22timer2CompareACallbackv
+ 361               	_Z22timer2CompareACallbackv:
+ 362               	.LFB93:
+ 260:funsape/peripheral/timer2.cpp ****     return;
+ 363               		.loc 1 260 0
+ 364               		.cfi_startproc
+ 365               	/* prologue: function */
+ 366               	/* frame size = 0 */
+ 367               	/* stack size = 0 */
+ 368               	.L__stack_usage = 0
+ 369               	/* epilogue start */
+ 262:funsape/peripheral/timer2.cpp **** 
+ 370               		.loc 1 262 0
+ 371 0000 0895      		ret
+ 372               		.cfi_endproc
+ 373               	.LFE93:
+ 375               		.section	.text._Z22timer2CompareBCallbackv,"ax",@progbits
+ 376               		.weak	_Z22timer2CompareBCallbackv
+ 378               	_Z22timer2CompareBCallbackv:
+ 379               	.LFB94:
+ 265:funsape/peripheral/timer2.cpp ****     return;
+ 380               		.loc 1 265 0
+ 381               		.cfi_startproc
+ 382               	/* prologue: function */
+ 383               	/* frame size = 0 */
+ 384               	/* stack size = 0 */
+ 385               	.L__stack_usage = 0
+ 386               	/* epilogue start */
+ 267:funsape/peripheral/timer2.cpp **** 
+ 387               		.loc 1 267 0
+ 388 0000 0895      		ret
+ 389               		.cfi_endproc
+ 390               	.LFE94:
+ 392               		.section	.text._Z22timer2OverflowCallbackv,"ax",@progbits
+ 393               		.weak	_Z22timer2OverflowCallbackv
+ 395               	_Z22timer2OverflowCallbackv:
+ 396               	.LFB95:
+ 270:funsape/peripheral/timer2.cpp ****     return;
+ 397               		.loc 1 270 0
+ 398               		.cfi_startproc
+ 399               	/* prologue: function */
+ 400               	/* frame size = 0 */
+ 401               	/* stack size = 0 */
+ 402               	.L__stack_usage = 0
+ 403               	/* epilogue start */
+ 272:funsape/peripheral/timer2.cpp **** 
+ 404               		.loc 1 272 0
+ 405 0000 0895      		ret
+ 406               		.cfi_endproc
+ 407               	.LFE95:
+ 409               		.section	.text.__vector_7,"ax",@progbits
+ 410               	.global	__vector_7
+ 412               	__vector_7:
+ 413               	.LFB96:
+ 283:funsape/peripheral/timer2.cpp ****     timer2CompareACallback();
+ 414               		.loc 1 283 0
+GAS LISTING /tmp/ccB5MtNN.s 			page 14
+
+
+ 415               		.cfi_startproc
+ 416 0000 1F92      		push r1
+ 417               	.LCFI4:
+ 418               		.cfi_def_cfa_offset 3
+ 419               		.cfi_offset 1, -2
+ 420 0002 0F92      		push r0
+ 421               	.LCFI5:
+ 422               		.cfi_def_cfa_offset 4
+ 423               		.cfi_offset 0, -3
+ 424 0004 0FB6      		in r0,__SREG__
+ 425 0006 0F92      		push r0
+ 426 0008 1124      		clr __zero_reg__
+ 427 000a 2F93      		push r18
+ 428               	.LCFI6:
+ 429               		.cfi_def_cfa_offset 5
+ 430               		.cfi_offset 18, -4
+ 431 000c 3F93      		push r19
+ 432               	.LCFI7:
+ 433               		.cfi_def_cfa_offset 6
+ 434               		.cfi_offset 19, -5
+ 435 000e 4F93      		push r20
+ 436               	.LCFI8:
+ 437               		.cfi_def_cfa_offset 7
+ 438               		.cfi_offset 20, -6
+ 439 0010 5F93      		push r21
+ 440               	.LCFI9:
+ 441               		.cfi_def_cfa_offset 8
+ 442               		.cfi_offset 21, -7
+ 443 0012 6F93      		push r22
+ 444               	.LCFI10:
+ 445               		.cfi_def_cfa_offset 9
+ 446               		.cfi_offset 22, -8
+ 447 0014 7F93      		push r23
+ 448               	.LCFI11:
+ 449               		.cfi_def_cfa_offset 10
+ 450               		.cfi_offset 23, -9
+ 451 0016 8F93      		push r24
+ 452               	.LCFI12:
+ 453               		.cfi_def_cfa_offset 11
+ 454               		.cfi_offset 24, -10
+ 455 0018 9F93      		push r25
+ 456               	.LCFI13:
+ 457               		.cfi_def_cfa_offset 12
+ 458               		.cfi_offset 25, -11
+ 459 001a AF93      		push r26
+ 460               	.LCFI14:
+ 461               		.cfi_def_cfa_offset 13
+ 462               		.cfi_offset 26, -12
+ 463 001c BF93      		push r27
+ 464               	.LCFI15:
+ 465               		.cfi_def_cfa_offset 14
+ 466               		.cfi_offset 27, -13
+ 467 001e EF93      		push r30
+ 468               	.LCFI16:
+ 469               		.cfi_def_cfa_offset 15
+ 470               		.cfi_offset 30, -14
+ 471 0020 FF93      		push r31
+GAS LISTING /tmp/ccB5MtNN.s 			page 15
+
+
+ 472               	.LCFI17:
+ 473               		.cfi_def_cfa_offset 16
+ 474               		.cfi_offset 31, -15
+ 475               	/* prologue: Signal */
+ 476               	/* frame size = 0 */
+ 477               	/* stack size = 15 */
+ 478               	.L__stack_usage = 15
+ 284:funsape/peripheral/timer2.cpp **** }
+ 479               		.loc 1 284 0
+ 480 0022 0E94 0000 		call _Z22timer2CompareACallbackv
+ 481               	.LVL44:
+ 482               	/* epilogue start */
+ 285:funsape/peripheral/timer2.cpp **** 
+ 483               		.loc 1 285 0
+ 484 0026 FF91      		pop r31
+ 485 0028 EF91      		pop r30
+ 486 002a BF91      		pop r27
+ 487 002c AF91      		pop r26
+ 488 002e 9F91      		pop r25
+ 489 0030 8F91      		pop r24
+ 490 0032 7F91      		pop r23
+ 491 0034 6F91      		pop r22
+ 492 0036 5F91      		pop r21
+ 493 0038 4F91      		pop r20
+ 494 003a 3F91      		pop r19
+ 495 003c 2F91      		pop r18
+ 496 003e 0F90      		pop r0
+ 497 0040 0FBE      		out __SREG__,r0
+ 498 0042 0F90      		pop r0
+ 499 0044 1F90      		pop r1
+ 500 0046 1895      		reti
+ 501               		.cfi_endproc
+ 502               	.LFE96:
+ 504               		.section	.text.__vector_8,"ax",@progbits
+ 505               	.global	__vector_8
+ 507               	__vector_8:
+ 508               	.LFB97:
+ 288:funsape/peripheral/timer2.cpp ****     timer2CompareBCallback();
+ 509               		.loc 1 288 0
+ 510               		.cfi_startproc
+ 511 0000 1F92      		push r1
+ 512               	.LCFI18:
+ 513               		.cfi_def_cfa_offset 3
+ 514               		.cfi_offset 1, -2
+ 515 0002 0F92      		push r0
+ 516               	.LCFI19:
+ 517               		.cfi_def_cfa_offset 4
+ 518               		.cfi_offset 0, -3
+ 519 0004 0FB6      		in r0,__SREG__
+ 520 0006 0F92      		push r0
+ 521 0008 1124      		clr __zero_reg__
+ 522 000a 2F93      		push r18
+ 523               	.LCFI20:
+ 524               		.cfi_def_cfa_offset 5
+ 525               		.cfi_offset 18, -4
+ 526 000c 3F93      		push r19
+ 527               	.LCFI21:
+GAS LISTING /tmp/ccB5MtNN.s 			page 16
+
+
+ 528               		.cfi_def_cfa_offset 6
+ 529               		.cfi_offset 19, -5
+ 530 000e 4F93      		push r20
+ 531               	.LCFI22:
+ 532               		.cfi_def_cfa_offset 7
+ 533               		.cfi_offset 20, -6
+ 534 0010 5F93      		push r21
+ 535               	.LCFI23:
+ 536               		.cfi_def_cfa_offset 8
+ 537               		.cfi_offset 21, -7
+ 538 0012 6F93      		push r22
+ 539               	.LCFI24:
+ 540               		.cfi_def_cfa_offset 9
+ 541               		.cfi_offset 22, -8
+ 542 0014 7F93      		push r23
+ 543               	.LCFI25:
+ 544               		.cfi_def_cfa_offset 10
+ 545               		.cfi_offset 23, -9
+ 546 0016 8F93      		push r24
+ 547               	.LCFI26:
+ 548               		.cfi_def_cfa_offset 11
+ 549               		.cfi_offset 24, -10
+ 550 0018 9F93      		push r25
+ 551               	.LCFI27:
+ 552               		.cfi_def_cfa_offset 12
+ 553               		.cfi_offset 25, -11
+ 554 001a AF93      		push r26
+ 555               	.LCFI28:
+ 556               		.cfi_def_cfa_offset 13
+ 557               		.cfi_offset 26, -12
+ 558 001c BF93      		push r27
+ 559               	.LCFI29:
+ 560               		.cfi_def_cfa_offset 14
+ 561               		.cfi_offset 27, -13
+ 562 001e EF93      		push r30
+ 563               	.LCFI30:
+ 564               		.cfi_def_cfa_offset 15
+ 565               		.cfi_offset 30, -14
+ 566 0020 FF93      		push r31
+ 567               	.LCFI31:
+ 568               		.cfi_def_cfa_offset 16
+ 569               		.cfi_offset 31, -15
+ 570               	/* prologue: Signal */
+ 571               	/* frame size = 0 */
+ 572               	/* stack size = 15 */
+ 573               	.L__stack_usage = 15
+ 289:funsape/peripheral/timer2.cpp **** }
+ 574               		.loc 1 289 0
+ 575 0022 0E94 0000 		call _Z22timer2CompareBCallbackv
+ 576               	.LVL45:
+ 577               	/* epilogue start */
+ 290:funsape/peripheral/timer2.cpp **** 
+ 578               		.loc 1 290 0
+ 579 0026 FF91      		pop r31
+ 580 0028 EF91      		pop r30
+ 581 002a BF91      		pop r27
+ 582 002c AF91      		pop r26
+GAS LISTING /tmp/ccB5MtNN.s 			page 17
+
+
+ 583 002e 9F91      		pop r25
+ 584 0030 8F91      		pop r24
+ 585 0032 7F91      		pop r23
+ 586 0034 6F91      		pop r22
+ 587 0036 5F91      		pop r21
+ 588 0038 4F91      		pop r20
+ 589 003a 3F91      		pop r19
+ 590 003c 2F91      		pop r18
+ 591 003e 0F90      		pop r0
+ 592 0040 0FBE      		out __SREG__,r0
+ 593 0042 0F90      		pop r0
+ 594 0044 1F90      		pop r1
+ 595 0046 1895      		reti
+ 596               		.cfi_endproc
+ 597               	.LFE97:
+ 599               		.section	.text.__vector_9,"ax",@progbits
+ 600               	.global	__vector_9
+ 602               	__vector_9:
+ 603               	.LFB98:
+ 293:funsape/peripheral/timer2.cpp ****     timer2OverflowCallback();
+ 604               		.loc 1 293 0
+ 605               		.cfi_startproc
+ 606 0000 1F92      		push r1
+ 607               	.LCFI32:
+ 608               		.cfi_def_cfa_offset 3
+ 609               		.cfi_offset 1, -2
+ 610 0002 0F92      		push r0
+ 611               	.LCFI33:
+ 612               		.cfi_def_cfa_offset 4
+ 613               		.cfi_offset 0, -3
+ 614 0004 0FB6      		in r0,__SREG__
+ 615 0006 0F92      		push r0
+ 616 0008 1124      		clr __zero_reg__
+ 617 000a 2F93      		push r18
+ 618               	.LCFI34:
+ 619               		.cfi_def_cfa_offset 5
+ 620               		.cfi_offset 18, -4
+ 621 000c 3F93      		push r19
+ 622               	.LCFI35:
+ 623               		.cfi_def_cfa_offset 6
+ 624               		.cfi_offset 19, -5
+ 625 000e 4F93      		push r20
+ 626               	.LCFI36:
+ 627               		.cfi_def_cfa_offset 7
+ 628               		.cfi_offset 20, -6
+ 629 0010 5F93      		push r21
+ 630               	.LCFI37:
+ 631               		.cfi_def_cfa_offset 8
+ 632               		.cfi_offset 21, -7
+ 633 0012 6F93      		push r22
+ 634               	.LCFI38:
+ 635               		.cfi_def_cfa_offset 9
+ 636               		.cfi_offset 22, -8
+ 637 0014 7F93      		push r23
+ 638               	.LCFI39:
+ 639               		.cfi_def_cfa_offset 10
+ 640               		.cfi_offset 23, -9
+GAS LISTING /tmp/ccB5MtNN.s 			page 18
+
+
+ 641 0016 8F93      		push r24
+ 642               	.LCFI40:
+ 643               		.cfi_def_cfa_offset 11
+ 644               		.cfi_offset 24, -10
+ 645 0018 9F93      		push r25
+ 646               	.LCFI41:
+ 647               		.cfi_def_cfa_offset 12
+ 648               		.cfi_offset 25, -11
+ 649 001a AF93      		push r26
+ 650               	.LCFI42:
+ 651               		.cfi_def_cfa_offset 13
+ 652               		.cfi_offset 26, -12
+ 653 001c BF93      		push r27
+ 654               	.LCFI43:
+ 655               		.cfi_def_cfa_offset 14
+ 656               		.cfi_offset 27, -13
+ 657 001e EF93      		push r30
+ 658               	.LCFI44:
+ 659               		.cfi_def_cfa_offset 15
+ 660               		.cfi_offset 30, -14
+ 661 0020 FF93      		push r31
+ 662               	.LCFI45:
+ 663               		.cfi_def_cfa_offset 16
+ 664               		.cfi_offset 31, -15
+ 665               	/* prologue: Signal */
+ 666               	/* frame size = 0 */
+ 667               	/* stack size = 15 */
+ 668               	.L__stack_usage = 15
+ 294:funsape/peripheral/timer2.cpp **** }
+ 669               		.loc 1 294 0
+ 670 0022 0E94 0000 		call _Z22timer2OverflowCallbackv
+ 671               	.LVL46:
+ 672               	/* epilogue start */
+ 673               		.loc 1 295 0
+ 674 0026 FF91      		pop r31
+ 675 0028 EF91      		pop r30
+ 676 002a BF91      		pop r27
+ 677 002c AF91      		pop r26
+ 678 002e 9F91      		pop r25
+ 679 0030 8F91      		pop r24
+ 680 0032 7F91      		pop r23
+ 681 0034 6F91      		pop r22
+ 682 0036 5F91      		pop r21
+ 683 0038 4F91      		pop r20
+ 684 003a 3F91      		pop r19
+ 685 003c 2F91      		pop r18
+ 686 003e 0F90      		pop r0
+ 687 0040 0FBE      		out __SREG__,r0
+ 688 0042 0F90      		pop r0
+ 689 0044 1F90      		pop r1
+ 690 0046 1895      		reti
+ 691               		.cfi_endproc
+ 692               	.LFE98:
+ 694               		.section	.text._GLOBAL__sub_I__ZN6Timer29_instanceE,"ax",@progbits
+ 696               	_GLOBAL__sub_I__ZN6Timer29_instanceE:
+ 697               	.LFB100:
+ 698               		.loc 1 295 0
+GAS LISTING /tmp/ccB5MtNN.s 			page 19
+
+
+ 699               		.cfi_startproc
+ 700               	/* prologue: function */
+ 701               	/* frame size = 0 */
+ 702               	/* stack size = 0 */
+ 703               	.L__stack_usage = 0
+ 704               		.loc 1 295 0
+ 705 0000 6FEF      		ldi r22,lo8(-1)
+ 706 0002 7FEF      		ldi r23,lo8(-1)
+ 707 0004 81E0      		ldi r24,lo8(1)
+ 708 0006 90E0      		ldi r25,0
+ 709 0008 0E94 0000 		call _Z41__static_initialization_and_destruction_0ii
+ 710               	.LVL47:
+ 711               	/* epilogue start */
+ 712 000c 0895      		ret
+ 713               		.cfi_endproc
+ 714               	.LFE100:
+ 716               		.global __do_global_ctors
+ 717               		.section .ctors,"a",@progbits
+ 718               		.p2align	1
+ 719 0000 0000      		.word	gs(_GLOBAL__sub_I__ZN6Timer29_instanceE)
+ 720               		.section	.text._GLOBAL__sub_D__ZN6Timer29_instanceE,"ax",@progbits
+ 722               	_GLOBAL__sub_D__ZN6Timer29_instanceE:
+ 723               	.LFB101:
+ 724               		.loc 1 295 0
+ 725               		.cfi_startproc
+ 726               	/* prologue: function */
+ 727               	/* frame size = 0 */
+ 728               	/* stack size = 0 */
+ 729               	.L__stack_usage = 0
+ 730               		.loc 1 295 0
+ 731 0000 6FEF      		ldi r22,lo8(-1)
+ 732 0002 7FEF      		ldi r23,lo8(-1)
+ 733 0004 90E0      		ldi r25,0
+ 734 0006 80E0      		ldi r24,0
+ 735 0008 0E94 0000 		call _Z41__static_initialization_and_destruction_0ii
+ 736               	.LVL48:
+ 737               	/* epilogue start */
+ 738 000c 0895      		ret
+ 739               		.cfi_endproc
+ 740               	.LFE101:
+ 742               		.global __do_global_dtors
+ 743               		.section .dtors,"a",@progbits
+ 744               		.p2align	1
+ 745 0000 0000      		.word	gs(_GLOBAL__sub_D__ZN6Timer29_instanceE)
+ 746               	.global	_ZN6Timer29_instanceE
+ 747               		.section	.bss._ZN6Timer29_instanceE,"aw",@nobits
+ 750               	_ZN6Timer29_instanceE:
+ 751 0000 0000 0000 		.zero	5
+ 751      00
+ 752               		.text
+ 753               	.Letext0:
+ 754               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 755               		.file 3 "funsape/peripheral/../config/atmega328p.hpp"
+ 756               		.file 4 "/usr/lib/avr/include/stdio.h"
+ 757               		.file 5 "funsape/peripheral/../globalDefines.hpp"
+ 758               		.file 6 "funsape/peripheral/../util/debug.hpp"
+ 759               		.file 7 "funsape/peripheral/timer2.hpp"
+GAS LISTING /tmp/ccB5MtNN.s 			page 20
+
+
+GAS LISTING /tmp/ccB5MtNN.s 			page 21
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 timer2.cpp
+     /tmp/ccB5MtNN.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccB5MtNN.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccB5MtNN.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccB5MtNN.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccB5MtNN.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccB5MtNN.s:13     .text._ZN6Timer2C2Ev:0000000000000000 _ZN6Timer2C2Ev
+     /tmp/ccB5MtNN.s:13     .text._ZN6Timer2C2Ev:0000000000000000 _ZN6Timer2C1Ev
+     /tmp/ccB5MtNN.s:46     .text._ZN6Timer2D2Ev:0000000000000000 _ZN6Timer2D2Ev
+     /tmp/ccB5MtNN.s:46     .text._ZN6Timer2D2Ev:0000000000000000 _ZN6Timer2D1Ev
+     /tmp/ccB5MtNN.s:65     .text._Z41__static_initialization_and_destruction_0ii:0000000000000000 _Z41__static_initialization_and_destruction_0ii
+     /tmp/ccB5MtNN.s:750    .bss._ZN6Timer29_instanceE:0000000000000000 _ZN6Timer29_instanceE
+     /tmp/ccB5MtNN.s:101    .text._ZN6Timer24initENS_4ModeENS_11ClockSourceE:0000000000000000 _ZN6Timer24initENS_4ModeENS_11ClockSourceE
+     /tmp/ccB5MtNN.s:190    .text._ZN6Timer214setClockSourceENS_11ClockSourceE:0000000000000000 _ZN6Timer214setClockSourceENS_11ClockSourceE
+     /tmp/ccB5MtNN.s:230    .text._ZN6Timer27setModeENS_4ModeE:0000000000000000 _ZN6Timer27setModeENS_4ModeE
+     /tmp/ccB5MtNN.s:307    .text._ZN6Timer213setOutputModeENS_10OutputModeES0_:0000000000000000 _ZN6Timer213setOutputModeENS_10OutputModeES0_
+     /tmp/ccB5MtNN.s:361    .text._Z22timer2CompareACallbackv:0000000000000000 _Z22timer2CompareACallbackv
+     /tmp/ccB5MtNN.s:378    .text._Z22timer2CompareBCallbackv:0000000000000000 _Z22timer2CompareBCallbackv
+     /tmp/ccB5MtNN.s:395    .text._Z22timer2OverflowCallbackv:0000000000000000 _Z22timer2OverflowCallbackv
+     /tmp/ccB5MtNN.s:412    .text.__vector_7:0000000000000000 __vector_7
+     /tmp/ccB5MtNN.s:507    .text.__vector_8:0000000000000000 __vector_8
+     /tmp/ccB5MtNN.s:602    .text.__vector_9:0000000000000000 __vector_9
+     /tmp/ccB5MtNN.s:696    .text._GLOBAL__sub_I__ZN6Timer29_instanceE:0000000000000000 _GLOBAL__sub_I__ZN6Timer29_instanceE
+     /tmp/ccB5MtNN.s:722    .text._GLOBAL__sub_D__ZN6Timer29_instanceE:0000000000000000 _GLOBAL__sub_D__ZN6Timer29_instanceE
+
+UNDEFINED SYMBOLS
+__do_global_ctors
+__do_global_dtors
+__do_clear_bss

@@ -1,0 +1,255 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/funsapeLibGlobalDefines.hpp"
+#include "funsape/peripheral/funsapeLibAdc.hpp"
+#include "funsape/peripheral/funsapeLibGpioPin.hpp"
+#include "funsape/peripheral/funsapeLibInt0.hpp"
+#include "funsape/peripheral/funsapeLibTwi.hpp"
+#include "funsape/peripheral/funsapeLibUsart0.hpp"
+#include "funsape/device/funsapeLibDs1307.hpp"
+#include "funsape/util/funsapeLibDateTime.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+vbool_t rtcGetNewData   = false;
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // -------------------------------------------------------------------------
+    // Local variables ---------------------------------------------------------
+
+    Ds1307 rtc;                                 // RTC object
+    Error lastError             = Error::NONE;  // FunSAPE error code
+    DateTime auxDateTime;                       // DateTime object
+    GpioPin led;                                // On-board LED
+    uint16_t rawAdcValue        = 0;            // Raw ADC value
+    uint16_t rtcBatteryVoltage  = 0;            // Processed RTC battery voltage
+
+    // -------------------------------------------------------------------------
+    // On-board LED configuration ----------------------------------------------
+
+    led.init(&DDRB, GpioPin::PinIndex::P5);
+    led.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // -------------------------------------------------------------------------
+    // UART configuration (9600 8N1) -------------------------------------------
+
+    usart0.init();
+    usart0.enableTransmitter();
+    usart0.stdio();
+    printf("[  OK  ] USART configured!\r");
+
+    // -------------------------------------------------------------------------
+    // ADC configuration ------------------------------------------------------
+
+    // ADC initialization
+    if(!adc.init(Adc::Mode::SINGLE_CONVERSION, Adc::Reference::POWER_SUPPLY, Adc::Prescaler::PRESCALER_128)) {
+        lastError = adc.getLastError();
+        printf("[ FAIL ] ADC initialization failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // ADC select channel
+    if(!adc.setChannel(Adc::Channel::CHANNEL_0)) {
+        lastError = adc.getLastError();
+        printf("[ FAIL ] ADC channel selection failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // ADC enable
+    if(!adc.enable()) {
+        lastError = adc.getLastError();
+        printf("[ FAIL ] ADC enable failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    printf("[  OK  ] ADC configured!\r");
+
+    // -------------------------------------------------------------------------
+    // INT0 configuration ------------------------------------------------------
+
+    if(!int0.setPinMode(Int0::PinMode::INPUT_PULLED_UP)) {
+        lastError = int0.getLastError();
+        printf("[ FAIL ] INT0 pin configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // INT0 initialization
+    if(!int0.init(Int0::SenseMode::FALLING_EDGE)) {
+        lastError = int0.getLastError();
+        printf("[ FAIL ] INT0 initialization failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // INT0 activate interrupt
+    int0.activateInterrupt();
+    printf("[  OK  ] INT0 configured!\r");
+
+    // -------------------------------------------------------------------------
+    // TWI peripheral configuration --------------------------------------------
+
+    if(!twi.init(10'000)) {
+        lastError = twi.getLastError();
+        printf("[ FAIL ] TWI configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    sei();
+    printf("[  OK  ] TWI configured!\r");
+
+    // -------------------------------------------------------------------------
+    // RTC configuration -------------------------------------------------------
+
+    // RTC initialization
+    if(!rtc.init(&twi)) {
+        lastError = rtc.getLastError();
+        printf("[ FAIL ] RTC initialization failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // Preparing DateTime object
+    if(!auxDateTime.setDate(2025, DateTime::Month::JANUARY, 7)) {
+        lastError = auxDateTime.getLastError();
+        printf("[ FAIL ] DateTime object date configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    if(!auxDateTime.setTime(15, 58, 40, DateTime::TimeFormat::FORMAT_24_HOURS)) {
+        lastError = auxDateTime.getLastError();
+        printf("[ FAIL ] DateTime object time configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // Set new date and time
+    if(!rtc.setDateTime(auxDateTime)) {
+        lastError = rtc.getLastError();
+        printf("[ FAIL ] RTC write failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // Configure square wave generator
+    if(!rtc.setSquareWaveGenerator(Ds1307::SquareWave::CLOCK_1_HZ)) {
+        lastError = rtc.getLastError();
+        printf("[ FAIL ] RTC square wave generator configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // Start RTC clock
+    if(!rtc.clockStart()) {
+        lastError = rtc.getLastError();
+        printf("[ FAIL ] RTC clock start failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    printf("[  OK  ] RTC configured!\r");
+
+    // -------------------------------------------------------------------------
+    // Main loop ---------------------------------------------------------------
+
+    while(1) {
+
+        if(rtcGetNewData) {
+            // Reads RTC
+            if(!rtc.getDateTime(&auxDateTime)) {
+                lastError = rtc.getLastError();
+                printf("[ FAIL ] RTC read failed! Error=0x%04x\r", (uint16_t)lastError);
+                systemHalt();
+            }
+            // Gets date from DateTime object
+            uint16_t            auxYear         = 0;
+            DateTime::Month     auxMonth        = DateTime::Month::UNDEFINED;
+            uint8_t             auxMonthDay     = 0;
+            DateTime::WeekDay   auxWeekDay      = DateTime::WeekDay::UNDEFINED;
+            uint8_t             auxHours        = 0;
+            uint8_t             auxMinutes      = 0;
+            uint8_t             auxSeconds      = 0;
+            if(!auxDateTime.getDate(&auxYear, &auxMonth, &auxMonthDay, &auxWeekDay)) {
+                lastError = auxDateTime.getLastError();
+                printf("[ FAIL ] DateTime date retrieval failed! Error=0x%04x\r", (uint16_t)lastError);
+                systemHalt();
+            }
+            if(!auxDateTime.getTime(&auxHours, &auxMinutes, &auxSeconds, DateTime::TimeFormat::FORMAT_24_HOURS)) {
+                lastError = auxDateTime.getLastError();
+                printf("[ FAIL ] DateTime time retrieval failed! Error=0x%04x\r", (uint16_t)lastError);
+                systemHalt();
+            }
+            // Start conversion of ADC battery voltage
+            if(!adc.startConversion()) {
+                lastError = adc.getLastError();
+                printf("[ FAIL ] ADC start conversion failed! Error=0x%04x\r", (uint16_t)lastError);
+                systemHalt();
+            }
+            // Wait convension ends
+            if(!adc.waitUntilConversionFinish()) {
+                lastError = adc.getLastError();
+                printf("[ FAIL ] ADC conversion failed! Error=0x%04x\r", (uint16_t)lastError);
+                systemHalt();
+            }
+            // Gets ADC data
+            rawAdcValue = adc.getValue();
+            // Calculates battery voltage
+            uint32_t aux32 = (uint32_t)rawAdcValue;
+            aux32 *= 625;
+            aux32 /= 128;
+            rtcBatteryVoltage = (uint16_t)aux32;
+            // Prints data on serial terminal
+            printf(
+                    "%02d/%02d/%04d %02d %02d:%02d:%02d => Vbat=%d.%03d\r",
+                    auxMonthDay, (uint8_t)auxMonth, auxYear, (uint8_t)auxWeekDay,
+                    auxHours, auxMinutes, auxSeconds,
+                    (rtcBatteryVoltage / 1000), (rtcBatteryVoltage % 1000)
+            );
+            led.toggle();
+            // Clears event
+            rtcGetNewData = false;
+        }
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+void int0InterruptCallback(void)
+{
+    rtcGetNewData = true;
+}

@@ -1,0 +1,746 @@
+/**
+ *******************************************************************************
+ * @file            dateTime.hpp
+ * @author          Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+ * @brief           Date and Time definitions.
+ * @details         This file provides date and time definitionsfor the
+ *                      FunSAPE++ AVR8 Library.
+ * @date            2025-02-14
+ * @version         25.02
+ * @copyright       MIT License
+ * @note            No notes at this time.
+ * @todo            No itens in todo list yet.
+ * @bug             No bugs detected yet.
+ *
+ *******************************************************************************
+ * @attention
+ *
+ * MIT License
+ *
+ * Copyright (c) 2025 Leandro Schwarz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *      of this software and associated documentation files (the "Software"), to
+ *      deal in the Software without restriction, including without limitation
+ *      the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *      and/or sell copies of the Software, and to permit persons to whom the
+ *      Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ *      all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *      THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *      OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ *      ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *      OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *******************************************************************************
+*/
+
+// =============================================================================
+// Include guard (START)
+// =============================================================================
+
+#ifndef __DATE_TIME_HPP
+#define __DATE_TIME_HPP                 2502
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+//     /////////////////     GLOBAL DEFINITIONS FILE    /////////////////     //
+
+#include "../globalDefines.hpp"
+#if !defined(__GLOBAL_DEFINES_HPP)
+#   error [dateTime.hpp] Error 1 - Header file (globalDefines.hpp) is missing or corrupted!
+#elif __GLOBAL_DEFINES_HPP != __DATE_TIME_HPP
+#   error [dateTime.hpp] Error 2 - Build mismatch between file (dateTime.hpp) and global definitions file (globalDefines.hpp)!
+#endif
+
+//     //////////////////     LIBRARY DEPENDENCIES     //////////////////     //
+
+#include "../util/debug.hpp"
+#if !defined(__DEBUG_HPP)
+#   error [dateTime.hpp] Error 1 - Header file (debug.hpp) is missing or corrupted!
+#elif __DEBUG_HPP != __DATE_TIME_HPP
+#   error [dateTime.hpp] Error 5 - Build mismatch between file (dateTime.hpp) and library dependency (debug.hpp)!
+#endif
+
+//     ///////////////////     STANDARD C LIBRARY     ///////////////////     //
+
+// NONE
+
+//     ////////////////////    AVR LIBRARY FILES     ////////////////////     //
+
+// NONE
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start main group "Util"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      Util
+ * @brief           Utilities.
+ * @{
+*/
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: Start subgroup "Util/Date_Time"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @addtogroup      Date_Time
+ * @brief           Date and Time definitions.
+ * @{
+*/
+
+// =============================================================================
+// Undefining previous definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Public functions declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Classes
+// =============================================================================
+
+/**
+ * @brief           DateTime class.
+ * @details         This class handle calendar and clock data.
+*/
+class DateTime
+{
+    // -------------------------------------------------------------------------
+    // New data types ----------------------------------------------------------
+
+public:
+    /**
+     * @enum        AmPmFlag
+     * @brief       AM/PM flag for 12-Hours time format.
+     * @details     AM/PM flag for 12-Hours time format.
+    */
+    enum class AmPmFlag : bool_t {
+        AM                  = false,
+        PM                  = true,
+    };
+
+    /**
+     * @enum        Month
+     * @brief       Month enumerations.
+     * @details     Month enumerations.
+    */
+    enum class Month : uint8_t {
+        UNDEFINED           = 0,        //!< Used to test if the variable was previously setted
+        JANUARY             = 1,
+        FEBRUARY            = 2,
+        MARCH               = 3,
+        APRIL               = 4,
+        MAY                 = 5,
+        JUNE                = 6,
+        JULY                = 7,
+        AUGUST              = 8,
+        SEPTEMBER           = 9,
+        OCTOBER             = 10,
+        NOVEMBER            = 11,
+        DECEMBER            = 12
+    };
+
+    /**
+     * @enum        TimeFormat
+     * @brief       Time format flags.
+     * @details     Time format flags.
+    */
+    enum class TimeFormat : bool_t {
+        FORMAT_24_HOURS     = false,    //!< 24-hours format (0-23)
+        FORMAT_12_HOURS     = true,     //!< 12-hours format (1-12 AM/PM)
+    };
+
+    /**
+     * @enum        TimeZone
+     * @brief       Time zones enumerations.
+     * @details     Time zones enumerations.
+    */
+    enum class TimeZone : uint8_t {
+        UNDEFINED           = 0,        //!< Used to test if the variable was previously setted
+        UTC_MINUS_1200      = 1,        //! USA (Baker Island, Howland Island)
+        UTC_MINUS_1100      = 2,        //! New Zealand (Niu), USA (Jarvis Island, Kingman Reef, Midway Atoll, Palmyra Atoll)
+        UTC_MINUS_1000      = 3,        //! France (French Poynesia), New Zealand (Cook Islands), USA (Hawaii, Johnston Atoll)
+        UTC_MINUS_0930      = 4,        //! France (Marquesas Islands)
+        UTC_MINUS_0900      = 5,        //! France (Gambier Islands), USA (Alaska)
+        UTC_MINUS_0800      = 6,        //! Canada (British Columbia, Yukon), France (Clipperton Island), USA (Pacific Time Zone)
+        UTC_MINUS_0700      = 7,        //! Canada (Alberta, Nortwest Territories), Mexico (Chinhuahua, Nayarit, Sinaloa, Sonora), USA (Mountain Time Zone)
+        UTC_MINUS_0600      = 8,        //! Belize, Canada (Central Time Zone), Chile (Easter Island), Costa Rica, El Salvador, Guatemala, Honduras, Mexico, USA (Central Time Zone)
+        UTC_MINUS_0500      = 9,        //! Bahamas, Brazil (Acre, Amazonas - western part), Colombia, Cuba, Ecuador, Haiti, Jamaica, Panama, Peru, USA (Esatern Time Zone)
+        UTC_MINUS_0400      = 10,       //! Antigua e Barbuda, Barbados, Bolivia, Brazil (Amazonas, Mato Grosso, Mato Grosso do Sul, Rondonia, Roraima), Canada (Atlantic Time Zone), Chile, Dominica, Guyana, Paraguay, Venezuela
+        UTC_MINUS_0330      = 11,       //! Canada (Newfoundland)
+        UTC_MINUS_0300      = 12,       //! Argentina, Brazil (Brazilia Official Timezone), Suriname, Uruguay
+        UTC_MINUS_0230      = 13,       //! St. John's
+        UTC_MINUS_0200      = 14,       //! Brazil (Fernando de Noronha), United Kingdom (South Georgia, South Sandwich Islands)
+        UTC_MINUS_0100      = 15,       //! Cape Verde, Portugal (Azores)
+        UTC_EQUAL_0000      = 16,       //! Burkina Faso, Cote d'Ivoire, Gambia, Ghana, Guinea, Guinea-Bissau, Iceland, Ireland, Liberia, Mali, Mauritania, Marocco, Portugal, Senegal, Sierra Leone, Togo, United Kingdom, Western Sahara
+        UTC_PLUS_0100       = 17,       //! Albania, Algeria, Andorra, Angola, Austria, Belgium, Benin, Bosnia and Herzegovina, Cameroon, Central African Republic, Chad, Congo, Croatia, Czech Republic, Denmark, France, Gabon, Gemany, Hungary, Italy, Kosovo, Liechtenstein, Luxembourg, Macedonia, Malta, Monaco, Montenegro, Netherlands, Niger, Nigeria, Poland, San Marino, Serbia,  Slovakia, Slovenia, Spain, Sweeden, Switzerland, Tunisia, Vatican City
+        UTC_PLUS_0200       = 18,       //! Botswana, Bulgaria, Burundi, Cyprus, Egypt, Estonia, Finland, Greece, Israel, Jordan, Latvia, Lebanon, Lesotho, Lithuania, Libya, Malawi, Moldova, Mozambique, Namibia, State of Palestine, Romania, Rwanda, South Africa, Sudan, Swaziland, Syria, Ukraine, Zambia, Zimbabwe
+        UTC_PLUS_0300       = 19,       //! Bahrain, Belarus, Comoros, Djibouti, Eritrea, Iraq, Kenya, Kuwait, Madagascar, Qatar, Russia (Moscow Time), Saudi Arabia, Somalia, South Sudan, Tanzania, Turkey, Uganda, Yemen
+        UTC_PLUS_0330       = 20,       //! Iran
+        UTC_PLUS_0400       = 21,       //! Armenia, Azerbaijan, Mauritius, Oman, Russia (Samara Time), Seychelles, United Arab Emirates
+        UTC_PLUS_0430       = 22,       //! Afghanistan
+        UTC_PLUS_0500       = 23,       //! Maldives, Pakistan, Russia (Yekaterinburg Time), Tajikistan, Turkmenistan, Uzbekistan
+        UTC_PLUS_0530       = 24,       //! India, Sri Lanka
+        UTC_PLUS_0545       = 25,       //! Nepal
+        UTC_PLUS_0600       = 26,       //! Bangladesh, Bhutan, Kazakhstan, Kyrgyzstan, Russia (Omsk Time), United Kingdom (British Indian Ocean Territory)
+        UTC_PLUS_0630       = 27,       //! Myanmar
+        UTC_PLUS_0700       = 28,       //! Cambodia, Laos, Mongolia, Russia (Krasnoyarsk Time), Thailand, Vietnam
+        UTC_PLUS_0800       = 29,       //! Brunei, China, Malaysia, Philippines, Russia (Irkutsk Time), Singapore, Taiwan
+        UTC_PLUS_0830       = 30,       //! North Korea
+        UTC_PLUS_0845       = 31,       //! Australia (Eucla)
+        UTC_PLUS_0900       = 32,       //! Japan, South Korea, Palau, Russia (Amur, Siberia), Timor-Leste
+        UTC_PLUS_0930       = 33,       //! Australia (Broken Hill, New South Wales, Northern Territory, South Australia)
+        UTC_PLUS_1000       = 34,       //! Australia (Australian Capital Territory), Papua New Guinea, Russia (Vladivostok Time)
+        UTC_PLUS_1030       = 35,       //! Australia (Lord Howe Island)
+        UTC_PLUS_1100       = 36,       //! Russia (Srednekolymsk Time), Salomon Islands, Vanuatu
+        UTC_PLUS_1200       = 37,       //! Fiji, Kiribati (Gilbert Islands), Marshall Islands, Nauru, New Zealand, Russia (Kamchatka Time), Tuvalu
+        UTC_PLUS_1245       = 38,       //! New Zealand (Chatham Islands)
+        UTC_PLUS_1300       = 39,       //! Kiribati (Phoenix Islands), New Zealand (Tokelau), Samoa, Tonga
+        UTC_PLUS_1400       = 40        //! Kiribati (Line Islands)
+    };
+
+    /**
+     * @enum        WeekDay
+     * @brief       Week day enumerations.
+     * @details     Week day enumerations.
+    */
+    enum class WeekDay : uint8_t {
+        UNDEFINED           = 0,        //! Used to test if the variables was previously setted
+        SUNDAY              = 1,
+        MONDAY              = 2,
+        TUESDAY             = 3,
+        WEDNESDAY           = 4,
+        THURSDAY            = 5,
+        FRIDAY              = 6,
+        SATURDAY            = 7
+    };
+
+private:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Constructors ------------------------------------------------------------
+
+public:
+    /**
+     * @brief       DateTime class constructor.
+     * @details     Creates an empty DateTime object. The object still must be
+     *                  feed with data before use.
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    DateTime(
+            void
+    );
+
+    /**
+     * @brief       DateTime class destructor.
+     * @details     Destroys a DateTime object.
+    */
+    ~DateTime(
+            void
+    );
+
+    // -------------------------------------------------------------------------
+    // Methods - Inherited methods ---------------------------------------------
+
+public:
+    // NONE
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Methods - class own methods ---------------------------------------------
+
+public:
+    //     /////////////////     CONTROL AND STATUS     /////////////////     //
+
+    /**
+     * @brief       Returns the last error.
+     * @details     Returns the last error.
+     * @return      @ref Error          Error status of the last operation.
+    */
+    Error inlined getLastError(
+            void
+    );
+
+    /**
+     * @brief       Returns if the date is configured.
+     * @details     Returns if the date is configured.
+     * @retval      @c true             if the object is loaded with valid date
+     *                                      data.
+     * @retval      @c false            if the object is not loaded with valid
+     *                                      date data
+    */
+    bool_t isDateSet(
+            void
+    );
+
+    /**
+     * @brief       Returns if the time is configured.
+     * @details     Returns if the time is configured.
+     * @retval      @c true             if the object is loaded with valid time
+     *                                      data.
+     * @retval      @c false            if the object is not loaded with valid
+     *                                      time data
+    */
+    bool_t isTimeSet(
+            void
+    );
+
+    //     ////////////////     DATE RELATED METHODS ////////////////////     //
+
+    /**
+     * @brief       Returns the date.
+     * @details     Returns the date.
+     * @param[out]  year_p              Pointer to store the year.
+     * @param[out]  month_p             Pointer to store the month.
+     * @param[out]  day_p               Pointer to store the day of the month.
+     * @param[out]  weekDay_p           Pointer to store the day of the week.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t getDate(
+            uint16_t *year_p,
+            Month *month_p,
+            uint8_t *day_p,
+            WeekDay *weekDay_p          = nullptr
+    );
+
+    /**
+     * @brief       Returns the day of the week.
+     * @details     Returns the day of the week.
+     * @param[out]  weekDay_p           Pointer to store the day of the week.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t getWeekDay(
+            WeekDay *weekDay_p
+    );
+
+    /**
+     * @brief       Returns if the year is a leap year.
+     * @details     Returns if the year is a leap year.
+     * @retval      @c true             if the year is a leap year.
+     * @retval      @c false            if the year is not a leap year.
+    */
+    bool_t isLeapYear(
+            void
+    );
+
+    /**
+     * @brief       Sets the date.
+     * @details     Sets the date.
+     * @param[in]   year_p              Vaue of the year.
+     * @param[in]   month_p             Vaue of the month.
+     * @param[in]   day_p               Vaue of the day of the month.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t setDate(
+            cuint16_t year_p,
+            const Month month_p,
+            cuint8_t day_p
+    );
+
+    //     ////////////////     TIME RELATED METHODS ////////////////////     //
+
+    /**
+     * @brief       Returns the time.
+     * @details     Returns the time.
+     * @param[out]  hours_p             Pointer to store the hours.
+     * @param[out]  minutes_p           Pointer to store the minutes.
+     * @param[out]  seconds_p           Pointer to store the seconds.
+     * @param[in]   timeFormat          @ref TimeFormat time format.
+     * @param[out]  amPmFlag_p          @ref AmPmFlag pointer to store the flag.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t getTime(
+            uint8_t *hours_p,
+            uint8_t *minutes_p,
+            uint8_t *seconds_p,
+            const TimeFormat timeFormat = TimeFormat::FORMAT_24_HOURS,
+            AmPmFlag *amPmFlag_p        = nullptr
+    );
+
+    /**
+     * @brief       Returns the time.
+     * @details     Returns the time.
+     * @param[out]  hours_p             Pointer to store the hours.
+     * @param[out]  minutes_p           Pointer to store the minutes.
+     * @param[out]  seconds_p           Pointer to store the seconds.
+     * @param[out]  milliseconds_p      Pointer to store the milliseconds.
+     * @param[in]   timeFormat          @ref TimeFormat time format.
+     * @param[out]  amPmFlag_p          @ref AmPmFlag pointer to store the flag.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t getTime(
+            uint8_t *hours_p,
+            uint8_t *minutes_p,
+            uint8_t *seconds_p,
+            uint16_t *milliseconds_p,
+            const TimeFormat timeFormat = TimeFormat::FORMAT_24_HOURS,
+            AmPmFlag *amPmFlag_p        = nullptr
+    );
+
+    /**
+     * @brief       Returns the time format.
+     * @details     Returns the time format.
+     * @param[out]  timeFormat          Pointer to store the @ref TimeFormat
+     *                                      time format.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t getTimeFormat(
+            TimeFormat *timeFormat_p
+    );
+
+    /**
+     * @brief       Returns the time zone.
+     * @details     Returns the time zone.
+     * @param[out]  timeZone_p          Pointer to store the @ref TimeZone time
+     *                                      zone.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t getTimeZone(
+            TimeZone *timeZone_p
+    );
+
+    /**
+     * @brief       Sets the time.
+     * @details     Sets the time.
+     * @param[in]   hours_p             Value of the hours.
+     * @param[in]   minutes_p           Value of the minutes.
+     * @param[in]   seconds_p           Value of the seconds.
+     * @param[in]   timeFormat          @ref TimeFormat time format.
+     * @param[in]   amPmFlag_p          Value of the @ref AmPmFlag flag.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t setTime(
+            cuint8_t hours_p,
+            cuint8_t minutes_p,
+            cuint8_t seconds_p,
+            const TimeFormat timeFormat_p       = TimeFormat::FORMAT_24_HOURS,
+            const AmPmFlag amPmFlag_p           = AmPmFlag::AM
+    );
+
+
+    /**
+     * @brief       Sets the time.
+     * @details     Sets the time.
+     * @param[in]   hours_p             Value of the hours.
+     * @param[in]   minutes_p           Value of the minutes.
+     * @param[in]   seconds_p           Value of the seconds.
+     * @param[in]   milliseconds_p      Value of the milliseconds.
+     * @param[in]   timeFormat          @ref TimeFormat time format.
+     * @param[in]   amPmFlag_p          Value of the @ref AmPmFlag flag.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t setTime(
+            cuint8_t hours_p,
+            cuint8_t minutes_p,
+            cuint8_t seconds_p,
+            cuint16_t milliseconds_p,
+            const TimeFormat timeFormat_p       = TimeFormat::FORMAT_24_HOURS,
+            const AmPmFlag amPmFlag_p           = AmPmFlag::AM
+    );
+
+    /**
+     * @brief       Sets the time format.
+     * @details     Sets the time format.
+     * @param[in]   timeFormat_p        Value of the @ref TimeFormat time
+     *                                      format.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t setTimeFormat(
+            const TimeFormat timeFormat_p
+    );
+
+    /**
+     * @brief       Sets the time zone.
+     * @details     Sets the time zone.
+     * @param[in]   timeZone_p          Value of the @ref TimeZone time zone.
+     * @retval      true                if success.
+     * @retval      false               if an error occurred. Retrieve the error
+     *                                      by calling @ref getLastError().
+     * @par Error codes:
+     *
+     * | Error code       | Meaning                          |
+     * |:-----------------|:---------------------------------|
+     * | @ref Error::NONE | Success. No erros were detected. |
+     *
+    */
+    bool_t setTimeZone(
+            const TimeZone timeZone_p
+    );
+
+private:
+    //     /////////////////     CONTROL AND STATUS     /////////////////     //
+
+    void _clearData(
+            void
+    );
+
+    //     ////////////////     DATE RELATED METHODS ////////////////////     //
+
+    DateTime::WeekDay _evaluateDayOfWeek(
+            void
+    );
+
+    bool_t _isLeapYear(
+            cuint16_t year_p
+    );
+
+    bool_t _isValidDate(
+            cuint16_t year_p,
+            const Month month_p,
+            cuint8_t day_p
+    );
+
+    //     ////////////////     TIME RELATED METHODS ////////////////////     //
+
+    bool_t _convertTimeFormat(
+            uint8_t *hours_p,
+            AmPmFlag *amPmFlag_p,
+            const TimeFormat fromFormat_p,
+            const TimeFormat toFormat_p
+    );
+
+    bool_t _isValidTime(
+            cuint8_t hours_p,
+            cuint8_t minutes_p,
+            cuint8_t seconds_p,
+            const TimeFormat timeFormat_p
+    );
+
+protected:
+    // NONE
+
+    // -------------------------------------------------------------------------
+    // Properties --------------------------------------------------------------
+
+private:
+    //     /////////////////    CONTROL AND STATUS     //////////////////     //
+
+    bool_t          _dateSet            : 1;
+    bool_t          _timeSet            : 1;
+    Error           _lastError;
+
+    //     /////////////////     DATE DATA MEMBERS     //////////////////     //
+
+    uint8_t         _day            : 5;    // Month day number; valid values in range [1 to 31], 0 is NOT DEFINED
+    bool_t          _leapYear       : 1;    // If the year is a leap year
+    Month           _month;                 // Month number; valid values in range [1 to 12], 0 is NOT DEFINED
+    uint16_t        _year           : 14;   // Year in four digits valid values in range [1 to 9999], 0 is NOT DEFINED
+    WeekDay         _weekDay;               // Week day number; valid values in range [1 to 7], 0 is NOT DEFINED
+
+    //     /////////////////     TIME DATA MEMBERS     //////////////////     //
+
+    AmPmFlag        _amPmFlag;              // Time flag if AM/PM mode is set
+    uint8_t         _hours          : 5;    // Hour in 24-hours format; valid values in range [0 to 24], 25 is NOT DEFINED
+    uint16_t        _milliseconds   : 10;   // Milliseconds; valid values in range [0 to 999]
+    uint8_t         _minutes        : 6;    // Minutes; valid values in range [0 to 59]
+    uint8_t         _seconds        : 6;    // Seconds; valid values in range [0 to 59]
+    TimeFormat      _timeFormat;            // Time format
+    TimeZone        _timeZone;              // Current time zone
+
+protected:
+    // NONE
+
+}; // class DateTime
+
+// =============================================================================
+// Inlined class functions
+// =============================================================================
+
+/**
+ * @cond
+*/
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+Error inlined DateTime::getLastError(void)
+{
+    // Returns last error
+    return this->_lastError;
+}
+
+//     //////////////////     OPERATOR OVERLOADING     //////////////////     //
+
+bool_t inlined operator >(DateTime::Month a, int b)
+{
+    return static_cast<bool_t>(static_cast<int>(a) > static_cast<int>(b));
+}
+
+bool_t inlined operator >=(DateTime::Month a, int b)
+{
+    return static_cast<bool_t>(static_cast<int>(a) >= static_cast<int>(b));
+}
+
+bool_t inlined operator <(DateTime::Month a, int b)
+{
+    return static_cast<bool_t>(static_cast<int>(a) < static_cast<int>(b));
+}
+
+bool_t inlined operator <=(DateTime::Month a, int b)
+{
+    return static_cast<bool_t>(static_cast<int>(a) <= static_cast<int>(b));
+}
+
+bool_t inlined operator ==(DateTime::Month a, int b)
+{
+    return static_cast<bool_t>(static_cast<int>(a) == static_cast<int>(b));
+}
+
+bool_t inlined operator !=(DateTime::Month a, int b)
+{
+    return static_cast<bool_t>(static_cast<int>(a) != static_cast<int>(b));
+}
+
+/**
+ * @endcond
+*/
+
+// =============================================================================
+// External global variables
+// =============================================================================
+
+// NONE
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End subgroup "Util/Date_Time"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+* @}
+*/
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Doxygen: End main group "Util"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/**
+ * @}
+*/
+
+// =============================================================================
+// Include guard (END)
+// =============================================================================
+
+#endif  // __DATE_TIME_HPP
+
+// =============================================================================
+// End of file (dateTime.hpp)
+// =============================================================================

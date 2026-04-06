@@ -1,0 +1,120 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/globalDefines.hpp"
+#include "funsape/peripheral/usart0.hpp"
+#include <avr/boot.h>
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+
+    usart0.init();
+    usart0.enableTransmitter();
+    usart0.stdio();
+
+    uint8_t fuseL = boot_lock_fuse_bits_get(GET_LOW_FUSE_BITS);
+    printf("Fuse LOW = %02x\r", fuseL);
+    uint8_t fuseH = boot_lock_fuse_bits_get(GET_HIGH_FUSE_BITS);
+    printf("Fuse HIGH = %02x\r", fuseH);
+    uint8_t fuseE = boot_lock_fuse_bits_get(GET_EXTENDED_FUSE_BITS);
+    printf("Fuse EXTENDED = %02x\r", fuseE);
+    uint8_t lockB = boot_lock_fuse_bits_get(GET_LOCK_BITS);
+    printf("Lock bits = %02x\r", lockB);
+
+    uint8_t sig0 = boot_signature_byte_get(0);
+    printf("signature 0 = %02x\r", sig0);
+    uint8_t sig1 = boot_signature_byte_get(1);
+    printf("signature 1 = %02x\r", sig1);
+    uint8_t sig2 = boot_signature_byte_get(2);
+    printf("signature 2 = %02x\r", sig2);
+    uint8_t sig3 = boot_signature_byte_get(3);
+    printf("signature 3 = %02x\r", sig3);
+    uint8_t sig4 = boot_signature_byte_get(4);
+    printf("signature 4 = %02x\r", sig4);
+    uint8_t sig5 = boot_signature_byte_get(5);
+    printf("signature 5 = %02x\r", sig5);
+    uint8_t sig6 = boot_signature_byte_get(6);
+    printf("signature 6 = %02x\r", sig6);
+    uint8_t sig7 = boot_signature_byte_get(7);
+    printf("signature 7 = %02x\r", sig7);
+
+
+// To read the lock bits:
+//      load the Z - pointer with 0x0001 and set the BLBSET and SELFPRGEN bits in SPMCSR
+//      execute an LPM instruction within three CPU cycles after the BLBSET and SELFPRGEN bits are set in SPMCSR
+//      the value of the Lock bits will be loaded in the destination register.
+
+// To read the fuse low byte
+//      load the Z - pointer with 0x0000 and set the BLBSET and SELFPRGEN bits in SPMCSR
+//      execute an LPM instruction within three cycles after the BLBSET and SELFPRGEN bits are set in the SPMCSR
+//      the value of the fuse low byte(FLB) will be loaded in the destination register
+// when reading the fuse high byte(FHB), load 0x0003 in the Z - pointer.
+// when reading the extended fuse byte(EFB), load 0x0002 in the Z - pointer.
+
+    while(1) {
+
+
+
+
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+// NONE

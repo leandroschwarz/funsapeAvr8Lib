@@ -1,0 +1,575 @@
+//!
+//! \file           bh1750.cpp
+//! \brief          BH1750 Luminosity sensor module interface to Funsape AVR8 Library
+//! \author         Leandro Schwarz (bladabuska+funsapeavr8lib@gmail.com)
+//! \date           2025-02-12
+//! \version        24.05
+//! \copyright      license
+//! \details        BH1750 Luminosity sensor module interface.
+//! \note           none
+//! \todo           Todo list
+//!
+
+// =============================================================================
+// System file dependencies
+// =============================================================================
+
+#include "bh1750.hpp"
+#if !defined(__BH1750_HPP)
+#    error "Header file is corrupted!"
+#elif __BH1750_HPP != 2502
+#    error "Version mismatch between source and header files!"
+#endif
+
+// =============================================================================
+// File exclusive - Constants
+// =============================================================================
+
+cuint8_t constBh1750DeviceAddressNormal         = 0x23;
+cuint8_t constBh1750DeviceAddressAlternate      = 0x5C;
+cuint8_t constBh1750MeasurementTimeMax          = 254;
+cuint8_t constBh1750MeasurementTimeMin          = 31;
+cuint8_t constBh1750MeasurementTimeTyp          = 69;
+
+// =============================================================================
+// File exclusive - New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// File exclusive - Macro-functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class constructors
+// =============================================================================
+
+Bh1750::Bh1750(void)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::Bh1750(void)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Resets data members
+    this->_initialized      = false;
+    this->_busHandler       = nullptr;
+    this->_isPowerDownMode  = true;
+    this->_deviceAddress    = constBh1750DeviceAddressNormal;
+    this->_measurementTime  = constBh1750MeasurementTimeTyp;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return;
+}
+
+Bh1750::~Bh1750(void)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::~Bh1750(void)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Returns successfully
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return;
+}
+
+// =============================================================================
+// Class public methods
+// =============================================================================
+
+//     ///////////////////     CONTROL AND STATUS     ///////////////////     //
+
+Error Bh1750::getLastError(void)
+{
+    // Returns last error
+    return this->_lastError;
+}
+
+bool_t Bh1750::init(Bus *busHandler_p, cbool_t useAlternateAddress_p)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::init(Bus *)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Resets data members
+    this->_initialized  = false;
+    this->_busHandler   = nullptr;
+
+    // Check function arguments for errors
+    if(!isPointerValid(busHandler_p)) {
+        // Returns error
+        this->_lastError = Error::BUS_HANDLER_POINTER_NULL;
+        debugMessage(Error::BUS_HANDLER_POINTER_NULL, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    } else if(busHandler_p->getBusType() != Bus::BusType::TWI) {
+        // Returns error
+        this->_lastError = Error::BUS_HANDLER_NOT_SUPPORTED;
+        debugMessage(Error::BUS_HANDLER_NOT_SUPPORTED, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Update data members
+    this->_busHandler = busHandler_p;
+    if(useAlternateAddress_p) {
+        this->_deviceAddress = constBh1750DeviceAddressAlternate;
+    } else {
+        this->_deviceAddress = constBh1750DeviceAddressNormal;
+    }
+
+    // Mark device as initialized
+    this->_initialized = true;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return true;
+}
+
+bool_t Bh1750::powerDown(void)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::powerDown(void)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Local variables
+    uint8_t auxCommand = 0;
+
+    // Checks initialization
+    if(!this->_initialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Prepares command
+    auxCommand = (uint8_t)Bh1750::Command::POWER_DOWN;
+
+    // Sends data to device
+    if(!this->_busHandler->setDevice(this->_deviceAddress)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+    if(!this->_busHandler->write(&auxCommand, 1)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Update data members
+    this->_isPowerDownMode = true;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return true;
+}
+
+bool_t Bh1750::powerOn(void)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::powerOn(void)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Local variables
+    uint8_t auxCommand = 0;
+
+    // Checks initialization
+    if(!this->_initialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Prepares command
+    auxCommand = (uint8_t)Bh1750::Command::POWER_ON;
+
+    // Sends data to device
+    if(!this->_busHandler->setDevice(this->_deviceAddress)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+    if(!this->_busHandler->write(&auxCommand, 1)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Update data members
+    this->_isPowerDownMode = false;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return true;
+}
+
+bool_t Bh1750::reset(void)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::reset(void)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Local variables
+    uint8_t auxCommand          = 0;
+    bool_t auxIsPowerDownMode   = false;
+
+    // Checks initialization
+    if(!this->_initialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Checks if Power Down mode is on
+    auxIsPowerDownMode = this->_isPowerDownMode;
+
+    // Selects device
+    if(!this->_busHandler->setDevice(this->_deviceAddress)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Changes to Power On mode (if necessary)
+    if(auxIsPowerDownMode) {
+        auxCommand = (uint8_t)Bh1750::Command::POWER_ON;
+        if(!this->_busHandler->write(&auxCommand, 1)) {
+            // Returns error
+            this->_lastError = this->_busHandler->getLastError();
+            debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+            return false;
+        }
+        this->_isPowerDownMode = false;
+    }
+
+    // Prepares command
+    auxCommand = (uint8_t)Bh1750::Command::RESET;
+
+    // Sends data to device
+    if(!this->_busHandler->write(&auxCommand, 1)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Changes back to Power Down mode (if necessary)
+    if(auxIsPowerDownMode) {
+        auxCommand = (uint8_t)Bh1750::Command::POWER_DOWN;
+        if(!this->_busHandler->write(&auxCommand, 1)) {
+            // Returns error
+            this->_lastError = this->_busHandler->getLastError();
+            debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+            return false;
+        }
+        this->_isPowerDownMode = true;
+    }
+
+    // Updates data members
+    this->_measurementTime  = constBh1750MeasurementTimeTyp;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return true;
+}
+
+bool_t Bh1750::setMode(const Bh1750::Mode mode_p)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::setMode(const Bh1750::Mode)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Local variables
+    uint8_t auxCommand1         = 0;
+    uint8_t auxCommand2         = 0;
+    bool_t auxIsPowerDownMode   = false;
+
+    // Checks initialization
+    if(!this->_initialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Prepares command
+    switch(mode_p) {
+    case Bh1750::Mode::CONTINUOUS_HIGH_RES:
+        auxCommand1 = (uint8_t)Bh1750::Command::SET_MODE_CONTINUOUS_HIGH_RES;
+        break;
+    case Bh1750::Mode::CONTINUOUS_HIGH_RES_2:
+        auxCommand1 = (uint8_t)Bh1750::Command::SET_MODE_CONTINUOUS_HIGH_RES_2;
+        break;
+    case Bh1750::Mode::CONTINUOUS_LOW_RES:
+        auxCommand1 = (uint8_t)Bh1750::Command::SET_MODE_CONTINUOUS_LOW_RES;
+        break;
+    case Bh1750::Mode::ONE_TIME_HIGH_RES:
+        auxCommand1 = (uint8_t)Bh1750::Command::SET_MODE_ONE_TIME_HIGH_RES;
+        break;
+    case Bh1750::Mode::ONE_TIME_HIGH_RES_2:
+        auxCommand1 = (uint8_t)Bh1750::Command::SET_MODE_ONE_TIME_HIGH_RES_2;
+        break;
+    case Bh1750::Mode::ONE_TIME_LOW_RES:
+        auxCommand1 = (uint8_t)Bh1750::Command::SET_MODE_ONE_TIME_LOW_RES;
+        break;
+    default:
+        // Returns error
+        this->_lastError = Error::MODE_NOT_SUPPORTED;
+        debugMessage(Error::MODE_NOT_SUPPORTED, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Selects device
+    if(!this->_busHandler->setDevice(this->_deviceAddress)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Checks if Power Down mode is on
+    auxIsPowerDownMode = this->_isPowerDownMode;
+
+    // Changes to Power On mode (if necessary)
+    if(auxIsPowerDownMode) {
+        auxCommand2 = (uint8_t)Bh1750::Command::POWER_ON;
+        if(!this->_busHandler->write(&auxCommand2, 1)) {
+            // Returns error
+            this->_lastError = this->_busHandler->getLastError();
+            debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+            return false;
+        }
+        this->_isPowerDownMode = false;
+    }
+
+    // Sends data to device
+    if(!this->_busHandler->write(&auxCommand1, 1)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Changes back to Power Down mode (if necessary)
+    if(auxIsPowerDownMode) {
+        auxCommand2 = (uint8_t)Bh1750::Command::POWER_DOWN;
+        if(!this->_busHandler->write(&auxCommand2, 1)) {
+            // Returns error
+            this->_lastError = this->_busHandler->getLastError();
+            debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+            return false;
+        }
+        this->_isPowerDownMode = true;
+    }
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return true;
+}
+
+bool_t Bh1750::setMeasurementTime(cuint8_t time_p)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::setMeasurementTime(cuint8_t)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Local variables
+    uint8_t auxCommandHigh      = 0;
+    uint8_t auxCommandLow       = 0;
+    uint8_t auxCommand          = 0;
+    bool_t auxIsPowerDownMode   = false;
+
+    // Checks initialization
+    if(!this->_initialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Checks for errors
+    if(time_p > constBh1750MeasurementTimeMax) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_VALUE_INVALID;
+        debugMessage(Error::ARGUMENT_VALUE_INVALID, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    } else if(time_p < constBh1750MeasurementTimeMin) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_VALUE_INVALID;
+        debugMessage(Error::ARGUMENT_VALUE_INVALID, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Prepares command
+    auxCommandHigh = (uint8_t)Bh1750::Command::SET_MEASUREMENT_TIME_BYTE_HIGH;
+    auxCommandHigh |= (time_p >> 5);
+    auxCommandLow = (uint8_t)Bh1750::Command::SET_MEASUREMENT_TIME_BYTE_LOW;
+    auxCommandLow |= (time_p & 0x1F);
+
+    // Selects device
+    if(!this->_busHandler->setDevice(this->_deviceAddress)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Checks if Power Down mode is on
+    auxIsPowerDownMode = this->_isPowerDownMode;
+
+    // Changes to Power On mode (if necessary)
+    if(auxIsPowerDownMode) {
+        auxCommand = (uint8_t)Bh1750::Command::POWER_ON;
+        if(!this->_busHandler->write(&auxCommand, 1)) {
+            // Returns error
+            this->_lastError = this->_busHandler->getLastError();
+            debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+            return false;
+        }
+        this->_isPowerDownMode = false;
+    }
+
+    // Sends data to device
+    if(!this->_busHandler->write(&auxCommandHigh, 1)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+    if(!this->_busHandler->write(&auxCommandLow, 1)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Changes back to Power Down mode (if necessary)
+    if(auxIsPowerDownMode) {
+        auxCommand = (uint8_t)Bh1750::Command::POWER_DOWN;
+        if(!this->_busHandler->write(&auxCommand, 1)) {
+            // Returns error
+            this->_lastError = this->_busHandler->getLastError();
+            debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+            return false;
+        }
+        this->_isPowerDownMode = true;
+    }
+
+    // Updates data members
+    this->_measurementTime = time_p;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return true;
+}
+
+bool_t Bh1750::getData(uint16_t *luminosity_p)
+{
+    // Mark passage for debugging purpose
+    debugMark("Bh1750::getData(uint16_t *)", Debug::CodeIndex::BH1750_MODULE);
+
+    // Local variables
+    uint8_t auxBuff[2];
+    vuint32_t aux32 = 0;
+
+    // Checks initialization
+    if(!this->_initialized) {
+        // Returns error
+        this->_lastError = Error::NOT_INITIALIZED;
+        debugMessage(Error::NOT_INITIALIZED, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Check function arguments for errors
+    if(!isPointerValid(luminosity_p)) {
+        // Returns error
+        this->_lastError = Error::ARGUMENT_POINTER_NULL;
+        debugMessage(Error::ARGUMENT_POINTER_NULL, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Selects device
+    if(!this->_busHandler->setDevice(this->_deviceAddress)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Gets data from device
+    if(!this->_busHandler->read(auxBuff, 2)) {
+        // Returns error
+        this->_lastError = this->_busHandler->getLastError();
+        debugMessage(this->_lastError, Debug::CodeIndex::BH1750_MODULE);
+        return false;
+    }
+
+    // Process data
+    aux32 = (uint32_t)(auxBuff[1]) << 8;
+    aux32 |= (uint32_t)(auxBuff[0]);
+    aux32 *= 1000;
+    aux32 *= this->_measurementTime;
+    aux32 /= 1200;
+    aux32 /= constBh1750MeasurementTimeTyp;
+    *luminosity_p = (uint16_t)aux32;
+
+    // Returns successfully
+    this->_lastError = Error::NONE;
+    debugMessage(Error::NONE, Debug::CodeIndex::BH1750_MODULE);
+    return true;
+}
+
+// =============================================================================
+// Class private methods
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Class protected methods
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// General public functions definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static functions definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt handlers
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// END OF FILE
+// =============================================================================

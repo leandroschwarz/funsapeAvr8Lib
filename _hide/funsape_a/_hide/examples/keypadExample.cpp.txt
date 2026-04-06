@@ -1,0 +1,227 @@
+// =============================================================================
+// Project:         FunSAPE test project
+// File:            main.cpp
+// Author:          Leandro Schwarz
+// Created:         2024-10-03
+// Modified:        2024-10-03
+// Version:         1.0
+// Notes:           This project is used to test the FunSAPE AVR Library
+//                      features.
+// =============================================================================
+
+// =============================================================================
+// Precompiler constant defintions
+// =============================================================================
+
+#define F_CPU 16000000UL
+
+// =============================================================================
+// Dependencies
+// =============================================================================
+
+#include "funsape/funsapeLibGlobalDefines.hpp"
+#include "funsape/peripheral/funsapeLibGpioBus.hpp"
+#include "funsape/peripheral/funsapeLibUsart0.hpp"
+#include "funsape/device/funsapeLibHd44780.hpp"
+#include "funsape/device/funsapeLibKeypad.hpp"
+
+// =============================================================================
+// Constant definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// New data types
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Static function declarations
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Global variables
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Main function
+// =============================================================================
+
+int main()
+{
+    // -------------------------------------------------------------------------
+    // Local variables ---------------------------------------------------------
+
+    GpioBus gpioKeypadRow;                      // Keypad rows
+    GpioBus gpioKeypadCol;                      // Keypad columns
+    GpioPin gpioLcdRs;                          // LCD control RS pin
+    GpioPin gpioLcdEn;                          // LCD control E pin
+    GpioBus gpioLcdData;                        // LCD data[7:4] pins
+    GpioPin led;                                // On-board LED
+    Hd44780 lcd;                                // LCD object
+    Error lastError             = Error::NONE;  // FunSAPE error code
+    uint8_t keyPressed          = 0;            // Pressed key
+    Keypad keypad;                              // Keypad object
+    bool_t auxBool              = false;        // Function return status
+
+    // -------------------------------------------------------------------------
+    // On-board LED configuration ----------------------------------------------
+
+    led.init(&DDRB, GpioPin::PinIndex::P5);
+    led.setMode(GpioPin::Mode::OUTPUT_PUSH_PULL);
+
+    // -------------------------------------------------------------------------
+    // UART configuration (9600 8N1) -------------------------------------------
+
+    usart0.init();
+    usart0.enableTransmitter();
+    usart0.stdio();
+    printf("[  OK  ] USART configured!\r");
+
+    // -------------------------------------------------------------------------
+    // Keypad configuration ----------------------------------------------------
+
+    // GPIO configuration
+    if(!gpioKeypadCol.init(&DDRC, GpioBus::PinIndex::P0, 4)) {
+        lastError = gpioKeypadCol.getLastError();
+        printf("[ FAIL ] Keypad column GPIO bus configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    if(!gpioKeypadRow.init(&DDRB, GpioBus::PinIndex::P0, 4)) {
+        lastError = gpioKeypadRow.getLastError();
+        printf("[ FAIL ] Keypad row GPIO bus configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+
+    // Keypad hardware linkage
+    if(!keypad.setPorts(&gpioKeypadRow, &gpioKeypadCol)) {
+        lastError = keypad.getLastError();
+        printf("[ FAIL ] Keypad hardware linkage failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // Set key values
+    auxBool = keypad.setKeyValues(
+                    Keypad::Type::KEYPAD_4X4,
+                    0x07, 0x08, 0x09, 0x0A,
+                    0x04, 0x05, 0x06, 0x0B,
+                    0x01, 0x02, 0x03, 0x0C,
+                    0x0E, 0x00, 0x0F, 0x0D
+            );
+    if(!auxBool) {
+        lastError = keypad.getLastError();
+        printf("[ FAIL ] Keypad set key values failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // Keypad initialization (10 ms debounce time)
+    if(!keypad.init(10)) {
+        lastError = keypad.getLastError();
+        printf("[ FAIL ] Keypad initialization failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    printf("[  OK  ] Keypad configured!\r");
+
+    // -------------------------------------------------------------------------
+    // LCD configuration -------------------------------------------------------
+
+    // GPIO configuration
+    if(!gpioLcdRs.init(&DDRD, GpioPin::PinIndex::P7)) {
+        lastError = gpioLcdRs.getLastError();
+        printf("[ FAIL ] RS GPIO pin configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    if(!gpioLcdEn.init(&DDRD, GpioPin::PinIndex::P6)) {
+        lastError = gpioLcdEn.getLastError();
+        printf("[ FAIL ] EN GPIO pin configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    if(!gpioLcdData.init(&DDRD, GpioBus::PinIndex::P2, 4)) {
+        lastError = gpioLcdData.getLastError();
+        printf("[ FAIL ] Data GPIO bus configuration failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // LCD hardware linkage
+    if(!lcd.setControlPort(&gpioLcdEn, &gpioLcdRs)) {
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD control pin linkage failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    if(!lcd.setDataPort(&gpioLcdData)) {
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD data bus linkage failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    // LCD initialization
+    if(!lcd.init(Hd44780::Size::LCD_16X2, Hd44780::Font::FONT_5X8)) {
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD initialization failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    printf("[  OK  ] LCD configured!\r");
+
+    // -------------------------------------------------------------------------
+    // Shows splash screen -----------------------------------------------------
+
+    if(!lcd.clearScreen()) {
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD clear screen failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+    lcd.stdio();
+    printf(" Keypad example \n   2025-02-07   \n");
+    delayMs(2000);
+    if(!lcd.clearScreen()) {
+        usart0.stdio();
+        lastError = lcd.getLastError();
+        printf("[ FAIL ] LCD clear screen failed! Error=0x%04x\r", (uint16_t)lastError);
+        systemHalt();
+    }
+
+    // -------------------------------------------------------------------------
+    // Main loop ---------------------------------------------------------------
+
+    while(1) {
+        // Reads keypad
+        if(!keypad.readKeyPressed(&keyPressed)) {
+            lastError = keypad.getLastError();
+            usart0.stdio();
+            printf("[ FAIL ] Keypad read failed! Error=0x%04x\r", (uint16_t)lastError);
+            systemHalt();
+        }
+        // Decodes response
+        if(keyPressed != 0xFF) {
+            lcd.stdio();
+            led.toggle();
+            switch(keyPressed) {
+            case 0x00 ... 0x0D:
+                printf("%X ", keyPressed);
+                break;
+            case 0x0E:
+                lcd.clearScreen();
+                break;
+            case 0x0F:
+                lcd.cursorMoveNextLine();
+                break;
+            }
+        }
+    }
+
+    return 0;
+}
+
+// =============================================================================
+// Static function definitions
+// =============================================================================
+
+// NONE
+
+// =============================================================================
+// Interrupt callback functions definitions
+// =============================================================================
+
+// NONE
