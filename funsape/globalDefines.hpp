@@ -1477,6 +1477,9 @@ enum class Error : cuint16_t {
     // PARITY_MODE_NOT_SUPPORTED           = 0x00AC,   //!< Parity mode not supported.
     // STOP_BIT_CONFIG_NOT_SUPPORTED       = 0x00AD,   //!< Invalid number of stop bits.
 
+    LCD_CONTROL_PORT_NOT_SET            = 0xFF00,
+    LCD_DATA_PORT_NOT_SET               = 0xFF01,
+
     // "I don't have the slightest idea" error code
     // UNKNOWN                             = 0xFFFF,   // Unknown error - Ops!!!!
 };
